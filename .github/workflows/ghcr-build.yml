@@ -1,0 +1,169 @@
+name: Build and Push to GHCR
+
+# Builds the Dash Docker image and pushes to GHCR.
+# Quality gates (validate) must pass before the image is built.
+# Triggers Dokploy deployment via webhook on merge to main.
+#
+# Published as ghcr.io/masonjames/dash.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: masonjames/dash
+
+jobs:
+  validate:
+    name: Validate (ruff + mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v3
+        with:
+          enable-cache: true
+          cache-dependency-glob: "pyproject.toml"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the project with dev dependencies
+        run: uv sync --extra dev
+
+      - name: Format check
+        run: uv run ruff format --check .
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Type-check
+        run: uv run mypy .
+
+  build:
+    needs: [validate]
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix=
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Docker image
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Output image info
+        run: |
+          echo "## Docker Image Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Image:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "**Digest:** \`${{ steps.build.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    name: Trigger Dokploy Deployment
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger Dokploy deployment via webhook
+        env:
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_DASH_WEBHOOK_URL }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+          GIT_REF: ${{ github.ref }}
+          REPO_NAME: ${{ github.repository }}
+          SERVER_URL: ${{ github.server_url }}
+        run: |
+          if [ -n "$DOKPLOY_WEBHOOK_URL" ]; then
+            echo "Triggering Dokploy deployment..."
+
+            TITLE="${COMMIT_MESSAGE:-Deployment ${COMMIT_SHA:0:7}}"
+            TITLE=$(echo "$TITLE" | head -n1)
+
+            if [ -z "$COMMIT_URL" ]; then
+              COMMIT_URL="${SERVER_URL}/${REPO_NAME}/commit/${COMMIT_SHA}"
+            fi
+
+            PAYLOAD=$(jq -n \
+              --arg ref "$GIT_REF" \
+              --arg sha "$COMMIT_SHA" \
+              --arg message "$TITLE" \
+              --arg url "$COMMIT_URL" \
+              '{
+                ref: $ref,
+                head_commit: {
+                  id: $sha,
+                  message: $message,
+                  url: $url
+                }
+              }')
+
+            response=$(curl -s -w "\n%{http_code}" -X POST "$DOKPLOY_WEBHOOK_URL" \
+              -H "Content-Type: application/json" \
+              -H "x-github-event: push" \
+              -d "$PAYLOAD")
+
+            http_code=$(echo "$response" | tail -n1)
+            body=$(echo "$response" | sed '$d')
+
+            echo "## Dokploy Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Commit:** ${TITLE}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
+              echo "Deployment triggered successfully (HTTP $http_code)" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "Deployment may have failed (HTTP $http_code)" >> $GITHUB_STEP_SUMMARY
+              echo "Response: $body" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "DOKPLOY_DASH_WEBHOOK_URL not configured - skipping deployment trigger"
+            echo "## Dokploy Deployment" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Skipped - no webhook URL configured" >> $GITHUB_STEP_SUMMARY
+          fi
