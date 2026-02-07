@@ -466,10 +466,7 @@ def create_infra_agent_tools(base_url: str, secret: str) -> list:
                     lines = [f"**Grafana Alerts** ({len(alerts)})", ""]
                     for a in alerts[:20]:
                         state = a.get("state", "?")
-                        lines.append(
-                            f"- [{state}] {a.get('name', '?')} "
-                            f"({a.get('severity', 'unknown')})"
-                        )
+                        lines.append(f"- [{state}] {a.get('name', '?')} ({a.get('severity', 'unknown')})")
                     return "\n".join(lines)
                 return json.dumps(alerts, indent=2, default=str)[:2000]
             return f"Job submitted: {result.get('job_id', '?')} — status: {result.get('status', '?')}"
@@ -516,11 +513,7 @@ def create_infra_agent_tools(base_url: str, secret: str) -> list:
                         "",
                     ]
                     for svc in services[:15]:
-                        lines.append(
-                            f"- {svc.get('name', '?')} "
-                            f"({svc.get('replicas', '?')}) "
-                            f"[{svc.get('image', '?')}]"
-                        )
+                        lines.append(f"- {svc.get('name', '?')} ({svc.get('replicas', '?')}) [{svc.get('image', '?')}]")
                     return "\n".join(lines)
                 return json.dumps(data, indent=2, default=str)[:2000]
             return f"Job submitted: {result.get('job_id', '?')} — status: {result.get('status', '?')}"

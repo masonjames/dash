@@ -180,10 +180,7 @@ def create_knowledge_pack_tools(
             try:
                 with engine.connect() as conn:
                     conn.execute(
-                        text(
-                            "UPDATE incident_markers SET knowledge_pack = :kp "
-                            "WHERE id = :id"
-                        ),
+                        text("UPDATE incident_markers SET knowledge_pack = :kp WHERE id = :id"),
                         {"id": incident_id, "kp": json.dumps(updated_kp)},
                     )
                     conn.commit()
