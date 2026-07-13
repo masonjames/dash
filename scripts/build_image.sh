@@ -12,13 +12,18 @@
 #
 ############################################################################
 
-set -e
+set -euo pipefail
 
 CURR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS_ROOT="$(dirname "${CURR_DIR}")"
 DOCKER_FILE="Dockerfile"
-IMAGE_NAME="dash"
-IMAGE_TAG="latest"
+IMAGE_NAME="${IMAGE_NAME:-ghcr.io/masonjames/dash}"
+IMAGE_TAG="${IMAGE_TAG:-$(git -C "${OS_ROOT}" rev-parse HEAD)}"
+
+if [[ ! "${IMAGE_TAG}" =~ ^[a-f0-9]{40}$ ]]; then
+    echo "IMAGE_TAG must be the full 40-character Git commit SHA" >&2
+    exit 2
+fi
 
 # Colors
 ORANGE='\033[38;5;208m'
@@ -33,7 +38,7 @@ echo -e "    ${DIM}Platforms: linux/amd64, linux/arm64${NC}"
 echo ""
 
 echo -e "    ${DIM}> docker buildx build --platform=linux/amd64,linux/arm64 -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKER_FILE} ${OS_ROOT} --push${NC}"
-docker buildx build --platform=linux/amd64,linux/arm64 -t ${IMAGE_NAME}:${IMAGE_TAG} -f ${DOCKER_FILE} ${OS_ROOT} --push
+docker buildx build --platform=linux/amd64,linux/arm64 -t "${IMAGE_NAME}:${IMAGE_TAG}" -f "${DOCKER_FILE}" "${OS_ROOT}" --push
 
 echo ""
 echo -e "    ${BOLD}Done.${NC}"

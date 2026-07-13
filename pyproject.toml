@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["mypy", "python-dotenv", "ruff"]
+dev = ["mypy", "pytest", "python-dotenv", "ruff"]
 
 [build-system]
 requires = ["setuptools"]

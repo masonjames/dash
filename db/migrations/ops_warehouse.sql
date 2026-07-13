@@ -14,14 +14,23 @@ CREATE TABLE IF NOT EXISTS desired_services (
     id              SERIAL PRIMARY KEY,
     app_name        TEXT NOT NULL,
     service_name    TEXT NOT NULL,
+    logical_service_name TEXT NOT NULL,
+    inventory_project_id TEXT,
+    runtime_project_name TEXT,
     environment     TEXT NOT NULL,
+    host            TEXT NOT NULL,
     image           TEXT,
     image_tag       TEXT,
+    current_memory_limit_bytes BIGINT CHECK (
+        current_memory_limit_bytes IS NULL OR current_memory_limit_bytes > 0
+    ),
     domains         TEXT[],
     traefik_labels  JSONB,
     volumes         TEXT[],
     networks        TEXT[],
     source_file     TEXT NOT NULL,
+    source_commit   TEXT NOT NULL,
+    source_content_hash TEXT NOT NULL,
     loaded_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -46,6 +55,8 @@ CREATE TABLE IF NOT EXISTS actual_services (
 
 CREATE TABLE IF NOT EXISTS drift_observations (
     id              SERIAL PRIMARY KEY,
+    environment     TEXT NOT NULL,
+    host            TEXT NOT NULL,
     observed_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     category        TEXT NOT NULL,
     severity        TEXT NOT NULL,
@@ -144,7 +155,10 @@ CREATE INDEX IF NOT EXISTS idx_actual_services_host
 CREATE INDEX IF NOT EXISTS idx_drift_observations_unresolved
     ON drift_observations (resolved_at) WHERE resolved_at IS NULL;
 CREATE UNIQUE INDEX IF NOT EXISTS idx_drift_observations_upsert
-    ON drift_observations (service_name, category) WHERE resolved_at IS NULL;
+    ON drift_observations (environment, host, service_name, category)
+    WHERE resolved_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_drift_observations_partition
+    ON drift_observations (environment, host, observed_at DESC);
 CREATE INDEX IF NOT EXISTS idx_drift_observations_severity
     ON drift_observations (severity);
 CREATE INDEX IF NOT EXISTS idx_deploy_events_occurred

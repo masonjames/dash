@@ -31,5 +31,9 @@ echo -e "${DIM}> mypy ${REPO_ROOT} --config-file pyproject.toml${NC}"
 mypy ${REPO_ROOT} --config-file ${REPO_ROOT}/pyproject.toml
 
 echo ""
+echo -e "${DIM}> pytest -q ${REPO_ROOT}${NC}"
+pytest -q ${REPO_ROOT}
+
+echo ""
 echo -e "${BOLD}Done.${NC}"
 echo ""

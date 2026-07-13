@@ -16,7 +16,6 @@ from agno.os import AgentOS
 
 from dash.agents.analyst import analyst
 from dash.agents.engineer import engineer
-from dash.agents_ops import ops_dash, ops_knowledge, reasoning_ops_dash
 from dash.settings import SLACK_SIGNING_SECRET, SLACK_TOKEN, dash_knowledge, dash_learnings
 from dash.team import dash
 from db import get_postgres_db
@@ -82,8 +81,8 @@ agent_os = AgentOS(
     lifespan=lifespan,
     db=get_postgres_db(),
     teams=[dash],
-    agents=[analyst, engineer, ops_dash, reasoning_ops_dash],
-    knowledge=[dash_knowledge, dash_learnings, ops_knowledge],
+    agents=[analyst, engineer],
+    knowledge=[dash_knowledge, dash_learnings],
     interfaces=interfaces,
     config=str(Path(__file__).parent / "config.yaml"),
 )

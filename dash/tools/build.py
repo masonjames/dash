@@ -30,7 +30,11 @@ def build_analyst_tools(knowledge: Knowledge) -> list:
     return [
         SQLTools(db_engine=ro_engine),
         create_introspect_schema_tool(db_url, engine=ro_engine),
-        create_save_validated_query_tool(knowledge),
+        create_save_validated_query_tool(
+            knowledge,
+            validation_engine=ro_engine,
+            registry_engine=get_sql_engine(),
+        ),
         ReasoningTools(),
     ]
 

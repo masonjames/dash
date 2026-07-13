@@ -9,7 +9,6 @@ No real database or vector DB is needed.
 from __future__ import annotations
 
 import importlib.util
-import json
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -125,13 +124,11 @@ class TestGenerateKnowledgePack:
         assert "Knowledge Pack Generated" in result
         assert "#1" in result
         assert "Ghost OOM crash loop" in result
-        assert "Validated query" in result
-        assert "Incident signature" in result
+        assert "Query candidate" in result
+        assert "Incident signature candidate" in result
         assert "Runbook Suggestion" in result
-        # Knowledge insert was called (validated query)
-        knowledge.insert.assert_called_once()
-        # Learnings insert was called (incident signature)
-        learnings.insert.assert_called_once()
+        knowledge.insert.assert_not_called()
+        learnings.insert.assert_not_called()
 
     def test_generate_saves_correct_query_name(self, tool_map):
         tmap, engine, knowledge, learnings = tool_map
@@ -140,9 +137,10 @@ class TestGenerateKnowledgePack:
 
         tmap["generate_knowledge_pack"](incident_id=42)
 
-        # Verify the name passed to knowledge.insert
-        call_args = knowledge.insert.call_args
-        assert call_args.kwargs["name"] == "incident_42_timeline"
+        result = tmap["generate_knowledge_pack"](incident_id=42)
+
+        assert "incident_42_timeline" in result
+        knowledge.insert.assert_not_called()
 
     def test_generate_saves_incident_signature(self, tool_map):
         tmap, engine, knowledge, learnings = tool_map
@@ -151,17 +149,11 @@ class TestGenerateKnowledgePack:
 
         tmap["generate_knowledge_pack"](incident_id=7)
 
-        call_args = learnings.insert.call_args
-        name = call_args.kwargs["name"]
-        assert name.startswith("incident_sig_7_")
-        # Parse the saved JSON to verify structure
-        text_content = call_args.kwargs["text_content"]
-        sig = json.loads(text_content)
-        assert sig["type"] == "incident_signature"
-        assert sig["incident_id"] == 7
-        assert "ghost-blog" in sig["affected_services"]
-        assert sig["root_cause"] == "Memory limit too low for Ghost 5.x"
-        assert "Out of memory / OOM kill" in sig["symptoms"]
+        result = tmap["generate_knowledge_pack"](incident_id=7)
+
+        assert "incident_sig_7_ghost_oom_crash_loop" in result
+        assert "Memory limit too low for Ghost 5.x" in result
+        learnings.insert.assert_not_called()
 
     def test_generate_not_found(self, tool_map):
         tmap, engine, *_ = tool_map
@@ -202,23 +194,18 @@ class TestGenerateKnowledgePack:
 
         # Gotchas should appear in the runbook suggestion
         assert "512MB" in result
-        # And in the incident signature
-        text_content = learnings.insert.call_args.kwargs["text_content"]
-        sig = json.loads(text_content)
-        assert "Ghost 5.x needs 512MB minimum" in sig["gotchas"]
+        learnings.insert.assert_not_called()
 
-    def test_generate_updates_knowledge_pack_metadata(self, tool_map):
+    def test_generate_does_not_mutate_legacy_incident_metadata(self, tool_map):
         tmap, engine, knowledge, learnings = tool_map
         row = _make_incident_row()
         mock_conn = _setup_conn(engine, row)
 
         tmap["generate_knowledge_pack"](incident_id=1)
 
-        # The UPDATE call is the second execute call (after SELECT)
         calls = mock_conn.execute.call_args_list
-        assert len(calls) >= 2
-        # commit should be called for the UPDATE
-        mock_conn.commit.assert_called()
+        assert len(calls) == 1
+        mock_conn.commit.assert_not_called()
 
     def test_runbook_contains_services(self, tool_map):
         tmap, engine, *_ = tool_map
@@ -239,8 +226,8 @@ class TestGenerateKnowledgePack:
 
         # Knowledge insert should NOT be called (no query to save)
         knowledge.insert.assert_not_called()
-        # But learnings should still be saved
-        learnings.insert.assert_called_once()
+        # Learning admission is canonical and Dockhand-owned, never a vector write.
+        learnings.insert.assert_not_called()
 
 
 # ---------------------------------------------------------------------------
