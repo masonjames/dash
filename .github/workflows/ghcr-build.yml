@@ -71,7 +71,7 @@ jobs:
         uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@af1e73f918a031802d376d3b8bbc3fe56130a9b0 # v4.4.0
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -100,8 +100,10 @@ jobs:
           platforms: linux/amd64
 
       - name: Smoke-test private Ops app from the published image
+        env:
+          PUBLISHED_DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
+          image="${REGISTRY}/${IMAGE_NAME}@${PUBLISHED_DIGEST}"
           docker pull "$image"
           docker run --rm --entrypoint python "$image" -c \
             "from app.ops_main import app; from dash.ops_indexer import INDEXER_NAME; assert INDEXER_NAME == 'dash-canonical-hybrid-v1'; assert sorted(r.path for r in app.routes) == ['/internal/health/ready', '/internal/ops/evaluate-outcome', '/internal/ops/investigate']"
