@@ -17,9 +17,7 @@ def test_runtime_privileges_are_reconciled_after_skipped_migrations() -> None:
     runner = (ROOT / "scripts/migrate_ops.py").read_text()
     reconciliation = (ROOT / "db/runtime_role_privileges.sql").read_text()
 
-    assert runner.index("for migration in migrations:") < runner.index(
-        'root / "db" / "runtime_role_privileges.sql"'
-    )
+    assert runner.index("for migration in migrations:") < runner.index('root / "db" / "runtime_role_privileges.sql"')
     assert 'print(f"already applied {migration.name}")' in runner
     assert "reconciled runtime role privileges" in runner
     assert "REVOKE ALL PRIVILEGES ON ops.schema_migrations" in reconciliation

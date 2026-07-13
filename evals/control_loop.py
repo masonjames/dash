@@ -272,8 +272,7 @@ def _proposal_allowed(
                 item.payload.get("service") != scope_service
                 or item.payload.get("inventory_project") != project
                 or not isinstance(runtime_project_name, str)
-                or item.payload.get("inventory_service")
-                != f"{runtime_project_name}_{scope_service}"
+                or item.payload.get("inventory_service") != f"{runtime_project_name}_{scope_service}"
             ):
                 return False
         else:

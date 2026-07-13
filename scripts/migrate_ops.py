@@ -118,9 +118,7 @@ def main() -> None:
         # omit ACLs while restoring the migration ledger. This idempotent
         # contract must run even when every schema migration says "already
         # applied" so post-restore runtimes are neither broken nor overbroad.
-        privilege_sql = (root / "db" / "runtime_role_privileges.sql").read_text(
-            encoding="utf-8"
-        )
+        privilege_sql = (root / "db" / "runtime_role_privileges.sql").read_text(encoding="utf-8")
         connection.execute(privilege_sql)
         print("reconciled runtime role privileges")
 
