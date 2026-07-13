@@ -10,12 +10,13 @@ Two schemas:
 """
 
 import re
+from functools import lru_cache
 
 from agno.db.postgres import PostgresDb
 from agno.knowledge import Knowledge
 from agno.knowledge.embedder.openai import OpenAIEmbedder
 from agno.vectordb.pgvector import PgVector, SearchType
-from sqlalchemy import Engine, create_engine, event, text
+from sqlalchemy import Engine, create_engine, event
 
 from db.url import db_url
 
@@ -24,6 +25,7 @@ DB_ID = "dash-db"
 # PostgreSQL schema for agent-managed tables (views, summaries, computed data).
 # Company data stays in "public". Agno framework tables use the default schema.
 DASH_SCHEMA = "dash"
+AGNO_SCHEMA = "ai"
 
 # Cached engines — one per access pattern, created on first use.
 _dash_engine: Engine | None = None
@@ -69,18 +71,15 @@ def _guard_public_schema(conn, cursor, statement, parameters, context, executema
 def get_sql_engine() -> Engine:
     """SQLAlchemy engine scoped to the dash schema (cached).
 
-    Bootstraps by creating the schema if it doesn't exist, then returns
-    an engine with search_path=dash,public so the Engineer can read company
-    data in public and write to dash.
+    The privileged migration service owns schema and extension creation.
+    Runtime startup must not require database-level CREATE privileges. This
+    engine therefore assumes the checksummed migration gate has provisioned
+    ``dash`` and returns a search_path-scoped connection that can read company
+    data in public and write only to agent-owned tables.
     """
     global _dash_engine
     if _dash_engine is not None:
         return _dash_engine
-    bootstrap = create_engine(db_url)
-    with bootstrap.connect() as conn:
-        conn.execute(text(f"CREATE SCHEMA IF NOT EXISTS {DASH_SCHEMA}"))
-        conn.commit()
-    bootstrap.dispose()
     _dash_engine = create_engine(
         db_url,
         connect_args={"options": f"-c search_path={DASH_SCHEMA},public"},
@@ -109,6 +108,7 @@ def get_readonly_engine() -> Engine:
     return _readonly_engine
 
 
+@lru_cache(maxsize=None)
 def get_postgres_db(contents_table: str | None = None) -> PostgresDb:
     """Create a PostgresDb instance.
 
@@ -119,8 +119,19 @@ def get_postgres_db(contents_table: str | None = None) -> PostgresDb:
         Configured PostgresDb instance.
     """
     if contents_table is not None:
-        return PostgresDb(id=DB_ID, db_url=db_url, knowledge_table=contents_table)
-    return PostgresDb(id=DB_ID, db_url=db_url)
+        return PostgresDb(
+            id=f"{DB_ID}-{contents_table}",
+            db_url=db_url,
+            db_schema=AGNO_SCHEMA,
+            knowledge_table=contents_table,
+            create_schema=False,
+        )
+    return PostgresDb(
+        id=DB_ID,
+        db_url=db_url,
+        db_schema=AGNO_SCHEMA,
+        create_schema=False,
+    )
 
 
 def create_knowledge(name: str, table_name: str) -> Knowledge:
@@ -138,8 +149,10 @@ def create_knowledge(name: str, table_name: str) -> Knowledge:
         vector_db=PgVector(
             db_url=db_url,
             table_name=table_name,
+            schema=AGNO_SCHEMA,
             search_type=SearchType.hybrid,
             embedder=OpenAIEmbedder(id="text-embedding-3-small"),
+            create_schema=False,
         ),
         contents_db=get_postgres_db(contents_table=f"{table_name}_contents"),
     )

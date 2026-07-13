@@ -1,21 +1,18 @@
 """Knowledge Pack Pipeline tools (Phase 5.4).
 
-After each incident resolution, Ops Dash can auto-generate:
-- Validated queries: the timeline reconstruction query, saved via save_validated_query()
-- Learnings: incident signature (symptom → root cause mapping), saved via save_learning()
-- Runbook suggestion: markdown patch for relevant runbook (human-reviewed)
+Legacy read-only helper for turning a resolved incident into reviewable candidates:
+- Query candidate: must pass the execution-backed save_validated_query gate
+- Learning candidate: must be admitted by Dockhand into the canonical ledger
+- Runbook suggestion: markdown patch for human review
 
-Uses the existing Knowledge and LearningMachine infrastructure to persist
-artifacts that make the system smarter with every resolved incident.
+This module never writes operational truth or disposable vector stores. Dockhand
+owns canonical learning admission and desired-state changes remain PR suggestions.
 """
 
 from __future__ import annotations
 
-import json
-from datetime import datetime, timezone
-
+from datetime import datetime
 from agno.knowledge import Knowledge
-from agno.knowledge.reader.text_reader import TextReader
 from agno.tools import tool
 from agno.utils.log import logger
 from sqlalchemy import create_engine, text
@@ -46,10 +43,7 @@ def create_knowledge_pack_tools(
         """Generate a knowledge pack from a resolved incident.
 
         Reads the incident marker, extracts the timeline query, root cause,
-        resolution, and affected services, then auto-generates:
-        1. A validated query saved to the knowledge base
-        2. An incident signature saved as a learning
-        3. A runbook suggestion (returned as markdown, not auto-merged)
+        resolution, and affected services, then generates reviewable candidates.
 
         Call this AFTER resolving an incident with resolve_incident().
 
@@ -96,32 +90,15 @@ def create_knowledge_pack_tools(
 
             artifacts = []
 
-            # ── 1. Save validated query ──────────────────────────
+            # ── 1. Retain an unvalidated query candidate ─────────
+            # A resolved incident is not proof that a stored query still executes
+            # or returns the expected shape. Reuse is admitted only through the
+            # execution-backed save_validated_query gate.
             if timeline_query:
                 query_name = f"incident_{incident_id}_timeline"
-                query_payload = {
-                    "type": "validated_query",
-                    "name": query_name,
-                    "question": f"Reconstruct the timeline for incident #{incident_id}: {title}",
-                    "query": timeline_query,
-                    "summary": (
-                        f"Timeline reconstruction for {severity} incident "
-                        f"affecting {', '.join(services)}. "
-                        f"Root cause: {root_cause[:100]}"
-                    ),
-                    "tables_used": ["ops_unified_timeline"],
-                    "incident_id": incident_id,
-                }
-                try:
-                    knowledge.insert(
-                        name=query_name,
-                        text_content=json.dumps(query_payload, ensure_ascii=False, indent=2),
-                        reader=TextReader(),
-                        skip_if_exists=True,
-                    )
-                    artifacts.append(f"Validated query '{query_name}' saved")
-                except (AttributeError, TypeError, ValueError, OSError) as e:
-                    artifacts.append(f"Query save failed: {e}")
+                artifacts.append(
+                    f"Query candidate '{query_name}' requires execution and result-shape validation before reuse"
+                )
 
             # ── 2. Save incident signature as learning ───────────
             signature = {
@@ -143,16 +120,10 @@ def create_knowledge_pack_tools(
                 signature["gotchas"] = existing_kp["gotchas"]
 
             learning_name = f"incident_sig_{incident_id}_{_slugify(title)}"
-            try:
-                learnings.insert(
-                    name=learning_name,
-                    text_content=json.dumps(signature, ensure_ascii=False, indent=2),
-                    reader=TextReader(),
-                    skip_if_exists=True,
-                )
-                artifacts.append(f"Incident signature '{learning_name}' saved")
-            except (AttributeError, TypeError, ValueError, OSError) as e:
-                artifacts.append(f"Learning save failed: {e}")
+            artifacts.append(
+                f"Incident signature candidate '{learning_name}' with {len(signature['symptoms'])} normalized "
+                "symptom(s) requires Dockhand canonical admission"
+            )
 
             # ── 3. Generate runbook suggestion ───────────────────
             runbook_md = _generate_runbook_suggestion(
@@ -167,26 +138,6 @@ def create_knowledge_pack_tools(
                 existing_kp=existing_kp,
             )
             artifacts.append("Runbook suggestion generated (see below)")
-
-            # ── 4. Update incident knowledge_pack with metadata ──
-            updated_kp = dict(existing_kp) if isinstance(existing_kp, dict) else {}
-            updated_kp["knowledge_pack_generated"] = True
-            updated_kp["generated_at"] = datetime.now(timezone.utc).isoformat()
-            updated_kp["artifacts"] = {
-                "validated_query": query_name if timeline_query else None,
-                "learning": learning_name,
-            }
-
-            try:
-                with engine.connect() as conn:
-                    conn.execute(
-                        text("UPDATE incident_markers SET knowledge_pack = :kp WHERE id = :id"),
-                        {"id": incident_id, "kp": json.dumps(updated_kp)},
-                    )
-                    conn.commit()
-                artifacts.append("Incident knowledge_pack metadata updated")
-            except (OperationalError, DatabaseError) as e:
-                artifacts.append(f"Knowledge pack update failed: {e}")
 
             # ── Build response ───────────────────────────────────
             lines = [

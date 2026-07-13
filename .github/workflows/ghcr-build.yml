@@ -2,7 +2,8 @@ name: Build and Push to GHCR
 
 # Builds the Dash Docker image and pushes to GHCR.
 # Quality gates (validate) must pass before the image is built.
-# Triggers Dokploy deployment via webhook on merge to main.
+# Promotion is a reviewed platform-infra digest update; this workflow never
+# deploys a mutable tag directly.
 #
 # Published as ghcr.io/masonjames/dash.
 
@@ -13,7 +14,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   REGISTRY: ghcr.io
@@ -21,22 +21,25 @@ env:
 
 jobs:
   validate:
-    name: Validate (ruff + mypy)
+    name: Validate (ruff + mypy + pytest)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: astral-sh/setup-uv@v3
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          enable-cache: true
-          cache-dependency-glob: "pyproject.toml"
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          version: "0.7.7"
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
+
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: "3.12"
 
       - name: Install the project with dev dependencies
-        run: uv sync --extra dev
+        run: uv sync --frozen --extra dev
 
       - name: Format check
         run: uv run ruff format --check .
@@ -46,6 +49,9 @@ jobs:
 
       - name: Type-check
         run: uv run mypy .
+
+      - name: Test
+        run: uv run pytest -q
 
   build:
     needs: [validate]
@@ -57,13 +63,15 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@af1e73f918a031802d376d3b8bbc3fe56130a9b0 # v4.4.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -71,17 +79,17 @@ jobs:
 
       - name: Extract metadata (tags, labels)
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=false
           tags: |
-            type=ref,event=branch
-            type=sha,prefix=
-            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,format=long,prefix=
 
       - name: Build and push Docker image
         id: build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
         with:
           context: .
           push: true
@@ -91,79 +99,27 @@ jobs:
           cache-to: type=gha,mode=max
           platforms: linux/amd64
 
+      - name: Smoke-test private Ops app from the published image
+        run: |
+          image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}"
+          docker pull "$image"
+          docker run --rm --entrypoint python "$image" -c \
+            "from app.ops_main import app; from dash.ops_indexer import INDEXER_NAME; assert INDEXER_NAME == 'dash-canonical-hybrid-v1'; assert sorted(r.path for r in app.routes) == ['/internal/health/ready', '/internal/ops/evaluate-outcome', '/internal/ops/investigate']"
+
       - name: Output image info
-        run: |
-          echo "## Docker Image Published" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Image:** ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Tags:**" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.meta.outputs.tags }}" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          echo "**Digest:** \`${{ steps.build.outputs.digest }}\`" >> $GITHUB_STEP_SUMMARY
-
-  deploy:
-    name: Trigger Dokploy Deployment
-    needs: build
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Trigger Dokploy deployment via webhook
         env:
-          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_DASH_WEBHOOK_URL }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          COMMIT_SHA: ${{ github.sha }}
-          COMMIT_URL: ${{ github.event.head_commit.url }}
-          GIT_REF: ${{ github.ref }}
-          REPO_NAME: ${{ github.repository }}
-          SERVER_URL: ${{ github.server_url }}
+          PUBLISHED_DIGEST: ${{ steps.build.outputs.digest }}
+          PUBLISHED_IMAGE: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          PUBLISHED_TAGS: ${{ steps.meta.outputs.tags }}
         run: |
-          if [ -n "$DOKPLOY_WEBHOOK_URL" ]; then
-            echo "Triggering Dokploy deployment..."
-
-            TITLE="${COMMIT_MESSAGE:-Deployment ${COMMIT_SHA:0:7}}"
-            TITLE=$(echo "$TITLE" | head -n1)
-
-            if [ -z "$COMMIT_URL" ]; then
-              COMMIT_URL="${SERVER_URL}/${REPO_NAME}/commit/${COMMIT_SHA}"
-            fi
-
-            PAYLOAD=$(jq -n \
-              --arg ref "$GIT_REF" \
-              --arg sha "$COMMIT_SHA" \
-              --arg message "$TITLE" \
-              --arg url "$COMMIT_URL" \
-              '{
-                ref: $ref,
-                head_commit: {
-                  id: $sha,
-                  message: $message,
-                  url: $url
-                }
-              }')
-
-            response=$(curl -s -w "\n%{http_code}" -X POST "$DOKPLOY_WEBHOOK_URL" \
-              -H "Content-Type: application/json" \
-              -H "x-github-event: push" \
-              -d "$PAYLOAD")
-
-            http_code=$(echo "$response" | tail -n1)
-            body=$(echo "$response" | sed '$d')
-
-            echo "## Dokploy Deployment" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Commit:** ${TITLE}" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-
-            if [ "$http_code" -ge 200 ] && [ "$http_code" -lt 300 ]; then
-              echo "Deployment triggered successfully (HTTP $http_code)" >> $GITHUB_STEP_SUMMARY
-            else
-              echo "Deployment may have failed (HTTP $http_code)" >> $GITHUB_STEP_SUMMARY
-              echo "Response: $body" >> $GITHUB_STEP_SUMMARY
-            fi
-          else
-            echo "DOKPLOY_DASH_WEBHOOK_URL not configured - skipping deployment trigger"
-            echo "## Dokploy Deployment" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Skipped - no webhook URL configured" >> $GITHUB_STEP_SUMMARY
-          fi
+          {
+            echo "## Docker Image Published"
+            echo ""
+            printf "**Image:** %s\n" "$PUBLISHED_IMAGE"
+            echo "**Tags:**"
+            echo '```'
+            printf '%s\n' "$PUBLISHED_TAGS"
+            echo '```'
+            printf "**Digest:** \`%s\`\n" "$PUBLISHED_DIGEST"
+            echo "**Promotion:** update the single x-dash-image digest in platform-infra and release through review; no mutable-tag webhook deploy is performed."
+          } >> "$GITHUB_STEP_SUMMARY"

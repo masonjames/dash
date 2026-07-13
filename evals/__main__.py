@@ -1,6 +1,7 @@
 """CLI entry point: python -m evals"""
 
 import argparse
+import json
 import sys
 
 from dotenv import load_dotenv
@@ -43,6 +44,14 @@ def main() -> None:
     improve_parser.add_argument("--verbose", "-v", action="store_true", help="Show detailed output")
     improve_parser.add_argument("--dry-run", action="store_true", help="Analyze only, don't apply changes")
 
+    # --- Deterministic Ops control-loop replay ---
+    replay_parser = subparsers.add_parser(
+        "control-loop",
+        help="Run synthetic deterministic control-loop contract replays (no model calls)",
+    )
+    replay_parser.add_argument("--verbose", "-v", action="store_true", help="Show each labeled scenario")
+    replay_parser.add_argument("--json", action="store_true", help="Emit the machine-readable report")
+
     args = parser.parse_args()
 
     if args.command == "smoke":
@@ -56,6 +65,16 @@ def main() -> None:
 
         success = run_improvement_loop(rounds=args.rounds, verbose=args.verbose, dry_run=args.dry_run)
         sys.exit(0 if success else 1)
+
+    elif args.command == "control-loop":
+        from evals.control_loop import print_report, run_control_loop_replay
+
+        report = run_control_loop_replay(verbose=args.verbose)
+        if args.json:
+            print(json.dumps(report.to_dict(), indent=2, default=str))
+        else:
+            print_report(report)
+        sys.exit(0 if report.gate_passed else 1)
 
     else:
         # Default: run existing Agno evals

@@ -8,9 +8,11 @@ FROM agnohq/python:3.12
 # Application code
 # ---------------------------------------------------------------------------
 WORKDIR /app
-COPY requirements.txt ./
-RUN uv pip sync requirements.txt --system
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev --no-install-project
 COPY . .
+RUN uv sync --frozen --no-dev
+ENV PATH="/app/.venv/bin:${PATH}"
 ENV PYTHONPATH=/app
 
 # ---------------------------------------------------------------------------
