@@ -101,7 +101,7 @@ def get_readonly_engine() -> Engine:
         return _readonly_engine
     _readonly_engine = create_engine(
         db_url,
-        connect_args={"options": "-c default_transaction_read_only=on"},
+        connect_args={"options": "-c default_transaction_read_only=on -c search_path=public,dash,ai"},
         pool_size=10,
         max_overflow=20,
     )

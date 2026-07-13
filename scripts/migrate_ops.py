@@ -76,6 +76,16 @@ def main() -> None:
 
     with psycopg.connect(db_url) as connection, connection.transaction():
         connection.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (_LOCK_NAME,))
+        # PostgreSQL's default search path is ``"$user", public``. The
+        # production owner is named ``ai`` and an AgentOS ``ai`` schema already
+        # exists, so inheriting that path can make unqualified warehouse DDL
+        # resolve legacy ``ai.*`` relations. Pin the whole migration transaction
+        # to the canonical company-data schema before executing any DDL. Leave
+        # ``pg_catalog`` implicit so PostgreSQL searches it before ``public``;
+        # explicitly placing it second would let a legacy public function
+        # shadow a built-in used by a migration. This is transaction-local and
+        # does not change the owner or runtime role defaults reconciled below.
+        connection.execute("SET LOCAL search_path = public")
         connection.execute(
             sql.SQL("REVOKE CREATE, TEMPORARY ON DATABASE {} FROM PUBLIC").format(
                 sql.Identifier(str(connection.info.dbname))

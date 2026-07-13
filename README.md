@@ -369,6 +369,18 @@ Beyond API-level auth, Dash enforces data access at the database level:
 
 These are infrastructure guardrails, not prompt instructions. They hold regardless of what the model generates.
 
+Privileged Ops migrations treat `public` as the canonical warehouse schema.
+The migration transaction pins `search_path=public`, leaving `pg_catalog`
+implicitly first so legacy functions cannot shadow PostgreSQL built-ins. This matters
+when the database owner is named `ai`: PostgreSQL's default `"$user",public`
+path would otherwise resolve pre-existing `ai.*` shadow tables. Those legacy
+relations are preserved for old-image rollback but denied to the new runtime.
+Runtime reads resolve `public,dash,ai`, so canonical company data also precedes
+agent-managed objects; Dash and AgentOS objects remain available through their
+explicit schemas. Dockhand and the private Ops services resolve canonical
+`ops,public,dash`. Run warehouse SQL only through `scripts/migrate_ops.py`
+so this invariant and the role reconciliation are both applied.
+
 ## Learn More
 
 - [OpenAI's In-House Data Agent](https://openai.com/index/inside-our-in-house-data-agent/) — the inspiration

@@ -40,3 +40,19 @@ def test_pgvector_never_bootstraps_schema_at_runtime(monkeypatch) -> None:
 
     assert vector_args["schema"] == session.AGNO_SCHEMA
     assert vector_args["create_schema"] is False
+
+
+def test_readonly_engine_resolves_public_before_legacy_ai(monkeypatch) -> None:
+    engine_args: dict[str, Any] = {}
+
+    def fake_create_engine(*args: Any, **kwargs: Any) -> object:
+        engine_args.update(kwargs)
+        return object()
+
+    monkeypatch.setattr(session, "create_engine", fake_create_engine)
+    monkeypatch.setattr(session, "_readonly_engine", None)
+
+    session.get_readonly_engine()
+
+    options = engine_args["connect_args"]["options"]
+    assert options == "-c default_transaction_read_only=on -c search_path=public,dash,ai"
