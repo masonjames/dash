@@ -18,7 +18,6 @@ from starlette.requests import Request
 from dash import internal_ops
 from dash.ops_contract import OpsInvestigationRequest, RemediationProposal
 
-
 SECRET = "test-secret-that-is-at-least-32-bytes-long"
 
 
@@ -146,6 +145,22 @@ def test_public_agentos_does_not_mount_private_ops_or_ops_agents() -> None:
     assert "ops_dash" not in public_source
     assert "dash.internal_ops" in private_source
     assert "agno" not in private_source.casefold()
+
+
+def test_readiness_contract_includes_the_canonical_public_warehouse() -> None:
+    required = set(internal_ops._REQUIRED_TABLES)
+
+    assert {
+        "public.desired_services",
+        "public.actual_services",
+        "public.drift_observations",
+        "public.deploy_events",
+        "public.docker_events",
+        "public.incident_markers",
+        "public.update_status",
+        "public.state_snapshots",
+        "public.ops_unified_timeline",
+    } <= required
 
 
 def test_reader_configuration_never_falls_back_to_general_db_env(monkeypatch: pytest.MonkeyPatch) -> None:

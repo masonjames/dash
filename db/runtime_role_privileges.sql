@@ -41,9 +41,11 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA dash
     REVOKE ALL PRIVILEGES ON SEQUENCES FROM dash_ops_reader, dash_ops_indexer,
         dockhand_ops_writer, dash_api_runtime;
 
--- Dash reasoning: evidence-only. It can read every canonical Ops relation and
--- validated query, but cannot create or mutate database state.
-GRANT USAGE ON SCHEMA ops, dash TO dash_ops_reader;
+-- Dash reasoning: evidence-only. It can read every canonical Ops relation,
+-- the public warehouse, and validated queries, but cannot create or mutate
+-- database state. Public grants are deliberately limited to the canonical
+-- warehouse instead of exposing unrelated company tables.
+GRANT USAGE ON SCHEMA ops, public, dash TO dash_ops_reader;
 DO $runtime_reader_privileges$
 DECLARE
     relation RECORD;
@@ -63,6 +65,10 @@ BEGIN
     END LOOP;
 END
 $runtime_reader_privileges$;
+GRANT SELECT ON public.desired_services, public.actual_services,
+    public.drift_observations, public.deploy_events, public.docker_events,
+    public.incident_markers, public.update_status, public.state_snapshots,
+    public.ops_unified_timeline TO dash_ops_reader;
 GRANT SELECT ON dash.validated_queries TO dash_ops_reader;
 
 -- Dash indexer: the sole runtime writer of the disposable retrieval index.
@@ -130,6 +136,60 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA dash
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
     GRANT SELECT ON TABLES TO dash_api_runtime;
 
+-- The original single-user deployment created an empty warehouse in ``ai``
+-- because PostgreSQL's default search path begins with ``"$user"``. Preserve
+-- those relations for old-image rollback, but never let the least-privileged
+-- runtime resolve or mutate them. Public is canonical; AgentOS still receives
+-- its required access to every other object in ``ai``. Owned serial sequences
+-- are denied with their shadow tables so a stale default cannot be exercised.
+DO $legacy_ai_warehouse_denials$
+DECLARE
+    relation_name TEXT;
+    relation_oid REGCLASS;
+    sequence_name TEXT;
+BEGIN
+    FOREACH relation_name IN ARRAY ARRAY[
+        'desired_services',
+        'actual_services',
+        'drift_observations',
+        'deploy_events',
+        'docker_events',
+        'incident_markers',
+        'update_status',
+        'state_snapshots',
+        'ops_unified_timeline'
+    ]
+    LOOP
+        relation_oid := to_regclass(format('%I.%I', 'ai', relation_name));
+        CONTINUE WHEN relation_oid IS NULL;
+
+        EXECUTE format(
+            'REVOKE ALL PRIVILEGES ON TABLE ai.%I FROM dash_api_runtime',
+            relation_name
+        );
+        FOR sequence_name IN
+            SELECT sequence.relname
+            FROM pg_depend AS dependency
+            JOIN pg_class AS sequence
+              ON sequence.oid = dependency.objid
+             AND sequence.relkind = 'S'
+            JOIN pg_namespace AS namespace
+              ON namespace.oid = sequence.relnamespace
+            WHERE dependency.classid = 'pg_class'::regclass
+              AND dependency.refclassid = 'pg_class'::regclass
+              AND dependency.refobjid = relation_oid
+              AND dependency.deptype IN ('a', 'i')
+              AND namespace.nspname = 'ai'
+        LOOP
+            EXECUTE format(
+                'REVOKE ALL PRIVILEGES ON SEQUENCE ai.%I FROM dash_api_runtime',
+                sequence_name
+            );
+        END LOOP;
+    END LOOP;
+END
+$legacy_ai_warehouse_denials$;
+
 -- These denials are repeated explicitly as auditable invariants.
 REVOKE ALL PRIVILEGES ON ops.schema_migrations,
     ops.ops_retrieval_documents, ops.ops_retrieval_index_status
@@ -139,7 +199,10 @@ REVOKE ALL PRIVILEGES ON ops.ops_portal_request_nonces
 REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA ops FROM dash_api_runtime;
 REVOKE ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA ops FROM dash_api_runtime;
 
-ALTER ROLE dash_ops_reader SET search_path = ops, dash, public;
-ALTER ROLE dash_ops_indexer SET search_path = ops, dash, public;
+ALTER ROLE dash_ops_reader SET search_path = ops, public, dash;
+ALTER ROLE dash_ops_indexer SET search_path = ops, public, dash;
 ALTER ROLE dockhand_ops_writer SET search_path = ops, public;
-ALTER ROLE dash_api_runtime SET search_path = ai, dash, public;
+-- Canonical company data must precede both agent-managed ``dash`` objects and
+-- rollback-only ``ai`` warehouse shadows. Dash views and AgentOS objects are
+-- schema-qualified by the application and remain available in dash/ai.
+ALTER ROLE dash_api_runtime SET search_path = public, dash, ai;

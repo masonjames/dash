@@ -21,8 +21,8 @@ from typing import Any
 
 import psycopg
 from fastapi import APIRouter, HTTPException, Request
-from pydantic import ValidationError
 from psycopg.conninfo import make_conninfo
+from pydantic import ValidationError
 
 from dash.ops_contract import (
     CauseCode,
@@ -33,8 +33,8 @@ from dash.ops_contract import (
     OutcomeEvaluation,
     VerificationOutcome,
 )
-from dash.ops_shadow_reasoning import DETECTOR_VERSION, build_catalog_backed_proposals, diagnose_evidence
 from dash.ops_retrieval import search_canonical_documents
+from dash.ops_shadow_reasoning import DETECTOR_VERSION, build_catalog_backed_proposals, diagnose_evidence
 
 router = APIRouter(prefix="/internal")
 logger = logging.getLogger(__name__)
@@ -52,6 +52,15 @@ _REQUIRED_ENV = (
     "OPS_DB_DATABASE",
 )
 _REQUIRED_TABLES = (
+    "public.desired_services",
+    "public.actual_services",
+    "public.drift_observations",
+    "public.deploy_events",
+    "public.docker_events",
+    "public.incident_markers",
+    "public.update_status",
+    "public.state_snapshots",
+    "public.ops_unified_timeline",
     "ops.event_projection_cursors",
     "ops.event_projection_status",
     "ops.ops_raw_events",

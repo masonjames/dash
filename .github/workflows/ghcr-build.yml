@@ -23,6 +23,20 @@ jobs:
   validate:
     name: Validate (ruff + mypy + pytest)
     runs-on: ubuntu-latest
+    services:
+      postgres-search-path:
+        image: agnohq/pgvector@sha256:e502d095cfb097bc6a4ac8b4bf12224d64c0a0d79fc2fe2b691a268ea2452681
+        env:
+          POSTGRES_USER: ai
+          POSTGRES_DB: dash_search_path_ci
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ai -d dash_search_path_ci"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -50,8 +64,13 @@ jobs:
       - name: Type-check
         run: uv run mypy .
 
+      - name: Prove PostgreSQL search-path boundaries
+        env:
+          DASH_TEST_POSTGRES_DSN: postgresql://ai@127.0.0.1:5432/dash_search_path_ci
+        run: uv run pytest -q tests/test_postgres_search_path_integration.py
+
       - name: Test
-        run: uv run pytest -q
+        run: uv run pytest -q --ignore=tests/test_postgres_search_path_integration.py
 
   build:
     needs: [validate]
