@@ -67,3 +67,16 @@ def test_migrations_and_runtime_ignore_user_schema_shadow_tables() -> None:
     assert "ALTER ROLE dash_api_runtime SET search_path = public, dash, ai" in reconciliation
     assert "ALTER ROLE dash_api_runtime SET search_path = dash, public, ai" not in reconciliation
     assert "ALTER ROLE dash_api_runtime SET search_path = ai, dash, public" not in reconciliation
+
+
+def test_shadow_readiness_requires_full_path_attempt_telemetry() -> None:
+    runner = (ROOT / "scripts/migrate_ops.py").read_text()
+    migration_name = "ops_shadow_attempts.sql"
+    migration = (ROOT / "db/migrations" / migration_name).read_text()
+
+    assert migration_name in runner
+    assert "CREATE TABLE IF NOT EXISTS ops.ops_shadow_attempts" in migration
+    assert "failed_attempts = 0" in migration
+    assert "incomplete_attempts = 0" in migration
+    assert "attempt.covered_days = 7" in migration
+    assert "CREATE OR REPLACE VIEW ops.ops_shadow_readiness" in migration

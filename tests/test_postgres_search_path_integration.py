@@ -72,7 +72,7 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
     migrate_ops.main()  # Reconciliation must remain safe after a no-op migration pass.
 
     with psycopg.connect(dsn, autocommit=True) as connection:
-        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (7,)
+        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (8,)
         assert connection.execute("SELECT marker FROM ai.desired_services").fetchone() == ("ai-sentinel",)
         assert connection.execute("SELECT marker FROM dash.desired_services").fetchone() == ("dash-sentinel",)
         assert connection.execute("SELECT last_value, is_called FROM ai.desired_services_id_seq").fetchone() == (
