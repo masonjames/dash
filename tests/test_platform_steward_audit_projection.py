@@ -31,6 +31,19 @@ from dash.platform_steward_audit_projection import (
 ROOT = Path(__file__).parents[1]
 CONTRACT_ROOT = ROOT / "contracts" / "platform-steward"
 VECTOR_PATH = CONTRACT_ROOT / "v1" / "test-vectors" / "audit-projection-records.json"
+VALID_INVOCATION_PHASES: dict[str, tuple[str, str | None]] = {
+    "succeeded": ("accepted", "accepted"),
+    "rejected": ("rejected", None),
+    "expired": ("accepted", "rejected"),
+    "revoked": ("accepted", "rejected"),
+}
+INVALID_INVOCATION_PHASES = tuple(
+    (disposition, entry_validation, return_validation)
+    for disposition, required in VALID_INVOCATION_PHASES.items()
+    for entry_validation in ("accepted", "rejected")
+    for return_validation in ("accepted", "rejected", None)
+    if (entry_validation, return_validation) != required
+)
 
 
 def _document() -> dict[str, Any]:
@@ -150,6 +163,48 @@ def test_projection_rejects_unknown_enum_values(section: str, field: str, invali
     projection[section][0][field] = invalid
 
     with pytest.raises(AuditProjectionError, match="unsupported value|expected exact value"):
+        normalize_expected_projection(projection)
+
+
+@pytest.mark.parametrize(
+    ("disposition", "entry_validation", "return_validation"),
+    tuple(
+        (disposition, entry_validation, return_validation)
+        for disposition, (entry_validation, return_validation) in VALID_INVOCATION_PHASES.items()
+    ),
+)
+def test_capability_invocation_accepts_only_closed_phase_mapping(
+    disposition: str,
+    entry_validation: str,
+    return_validation: str | None,
+) -> None:
+    projection = _document()["expected_projection"]
+    invocation = projection["capability_invocations"][0]
+    invocation["disposition"] = disposition
+    invocation["entry_validation"] = entry_validation
+    invocation["return_validation"] = return_validation
+
+    normalized = normalize_expected_projection(projection)
+    assert normalized["capability_invocations"][0] == invocation
+
+
+@pytest.mark.parametrize(
+    ("disposition", "entry_validation", "return_validation"),
+    INVALID_INVOCATION_PHASES,
+)
+def test_capability_invocation_rejects_every_impossible_phase_combination(
+    disposition: str,
+    entry_validation: str,
+    return_validation: str | None,
+) -> None:
+    assert len(INVALID_INVOCATION_PHASES) == 20
+    projection = _document()["expected_projection"]
+    invocation = projection["capability_invocations"][0]
+    invocation["disposition"] = disposition
+    invocation["entry_validation"] = entry_validation
+    invocation["return_validation"] = return_validation
+
+    with pytest.raises(AuditProjectionError, match=rf"{disposition} invocation requires"):
         normalize_expected_projection(projection)
 
 

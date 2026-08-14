@@ -755,12 +755,20 @@ def _capability_invocation(value: object, path: str) -> dict[str, JSONValue]:
             ("started_at", _timestamp),
         ),
     )
-    if result["disposition"] == "succeeded" and (
-        result["entry_validation"] != "accepted" or result["return_validation"] != "accepted"
-    ):
-        raise _fail(path, "successful invocation requires provider validation at entry and return")
-    if result["return_validation"] is not None and result["entry_validation"] != "accepted":
-        raise _fail(path, "return validation is impossible after rejected entry validation")
+    disposition = cast(str, result["disposition"])
+    required_phases: dict[str, tuple[str, str | None]] = {
+        "succeeded": ("accepted", "accepted"),
+        "rejected": ("rejected", None),
+        "expired": ("accepted", "rejected"),
+        "revoked": ("accepted", "rejected"),
+    }
+    required_entry, required_return = required_phases[disposition]
+    if result["entry_validation"] != required_entry or result["return_validation"] != required_return:
+        raise _fail(
+            path,
+            f"{disposition} invocation requires entry_validation={required_entry!r} "
+            f"and return_validation={required_return!r}",
+        )
     return result
 
 
