@@ -1,0 +1,3308 @@
+{
+  "apiVersion": "platform.masonjames.dev/steward/v1",
+  "as_of": "2026-08-14T12:30:00Z",
+  "authority_effect": "none",
+  "contains_private_identity": false,
+  "expected_projection": {
+    "attested_embodiments": [
+      {
+        "attestation_hash": "sha256:4cae641ec90fc4523e591ed8ad11146a1b645687aa83f6c65387dc0bf089f8ef",
+        "dynamic_cordis_allowed": true,
+        "embodiment": "foundry-replay",
+        "expires_at": "2026-08-14T11:55:00Z",
+        "identity_id": "platform-foundry-evaluator",
+        "installation_id": "synthetic-foundry-job-001",
+        "issued_at": "2026-08-14T11:01:00Z",
+        "model": {
+          "adapter_digest": "sha256:ac3d3da0f9460d984c490fed879642d704d3e3a314b6d1d22549194e4f8bf25f",
+          "model": "example-replay-model",
+          "provider": "example-foundry-provider",
+          "version": "synthetic-2026-08-14"
+        },
+        "runtime_profile_id": "synthetic-foundry-replay-profile-v1",
+        "session_id": "10000000-0000-4000-8000-000000002202",
+        "state": "expired"
+      },
+      {
+        "attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+        "dynamic_cordis_allowed": false,
+        "embodiment": "mac-engineer",
+        "expires_at": "2026-08-14T14:00:00Z",
+        "identity_id": "platform-steward",
+        "installation_id": "synthetic-mac-engineer",
+        "issued_at": "2026-08-14T10:50:00Z",
+        "model": {
+          "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+          "model": "example-model-beta",
+          "provider": "example-provider-b",
+          "version": "synthetic-2026-08-14"
+        },
+        "runtime_profile_id": "synthetic-mac-engineer-profile-v1",
+        "session_id": "10000000-0000-4000-8000-000000002201",
+        "state": "active"
+      },
+      {
+        "attestation_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+        "dynamic_cordis_allowed": false,
+        "embodiment": "server-sentinel",
+        "expires_at": "2026-08-14T14:00:00Z",
+        "identity_id": "platform-steward",
+        "installation_id": "synthetic-server-sentinel",
+        "issued_at": "2026-08-14T10:02:00Z",
+        "model": {
+          "adapter_digest": "sha256:b47214b9ffa2ea78ba25e09f14885cdf07607f6aaaeab7de1e96715fe9b71f0b",
+          "model": "example-model-alpha",
+          "provider": "example-provider-a",
+          "version": "synthetic-2026-08-14"
+        },
+        "runtime_profile_id": "synthetic-server-sentinel-profile-v1",
+        "session_id": "10000000-0000-4000-8000-000000002200",
+        "state": "active"
+      }
+    ],
+    "capability_candidates": [
+      {
+        "adversarial_review": {
+          "evidence_hash": "sha256:497260f6fc0637a36d9b610f4d576e2159138cc36d90f5a7c71d762f4264d64f",
+          "name": "adversarial-review",
+          "status": "passed"
+        },
+        "budget": {
+          "maximum_calls": 10,
+          "maximum_cost_microunits": 100000,
+          "maximum_tokens": 25000
+        },
+        "candidate_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+        "candidate_id": "10000000-0000-4000-8000-000000010001",
+        "closed_gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+        "code_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+        "dependency_lock_digest": "sha256:0cdc941018e02752aca9bc864814c98eedf3160b77b813e489b314f3f5c8627a",
+        "foundry_admission_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+        "identity_id": "platform-steward",
+        "interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+        "model": {
+          "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+          "model": "example-model-beta",
+          "provider": "example-provider-b",
+          "version": "synthetic-2026-08-14"
+        },
+        "reviewer": "example-foundry-review-controller",
+        "reviewer_key_id": "example-foundry-review-key-v1",
+        "self_install_allowed": false,
+        "self_promotion_allowed": false,
+        "signature_bundle_hash": "sha256:b222c618830c077d325aa8d53421df181bbc8fa43d721f6e64e8692dfa0ab036",
+        "source_digest": "sha256:3b1726a9ca9396a54ce46667c964ad76d88fa02286ccc2601c67ec6f2f58ff15",
+        "source_revision": "1111111111111111111111111111111111111111",
+        "static_review": {
+          "evidence_hash": "sha256:01faeaad4ec178b5d17addd30dc6b859bf03700e4bed2514f98d11491ffb6ddb",
+          "name": "static-review",
+          "status": "passed"
+        },
+        "status": "evaluated",
+        "tool_profile_digest": "sha256:2cad743860f2f3984cf8c9dc530828ac2990f83619d66ecc51005f098cb6c0c0"
+      }
+    ],
+    "capability_evaluations": [
+      {
+        "candidate_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+        "credentials_accessed": false,
+        "evaluation_hash": "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59",
+        "evaluation_id": "10000000-0000-4000-8000-000000011001",
+        "evaluator_attestation_hash": "sha256:4cae641ec90fc4523e591ed8ad11146a1b645687aa83f6c65387dc0bf089f8ef",
+        "outcome": "passed",
+        "production_accessed": false,
+        "terminal_artifact": "draft_promotion_artifact"
+      }
+    ],
+    "capability_gaps": [
+      {
+        "closed_at": "2026-08-14T10:55:00Z",
+        "gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+        "gap_id": "10000000-0000-4000-8000-000000008001",
+        "required_interface": "synthetic-platform-convergence-analyzer-v1",
+        "source_episode_id": "10000000-0000-4000-8000-000000005001",
+        "status": "closed"
+      },
+      {
+        "closed_at": null,
+        "gap_hash": "sha256:c76da58b87c3d625419ba797b2bbf6bf0539a6aa2f8a08fdf90b12862cabae3e",
+        "gap_id": "10000000-0000-4000-8000-000000008002",
+        "required_interface": "synthetic-investigation-only-v1",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "status": "open"
+      }
+    ],
+    "capability_invocations": [
+      {
+        "call_index": 1,
+        "capability_id": "synthetic-convergence-analyzer",
+        "completed_at": "2026-08-14T12:10:30Z",
+        "disposition": "succeeded",
+        "entry_validation": "accepted",
+        "invocation_hash": "sha256:e743036bc43eaccd4fe8c703e7b8919ed17256ee3074f5090539c009a83d90df",
+        "invocation_id": "10000000-0000-4000-8000-000000014001",
+        "return_validation": "accepted",
+        "started_at": "2026-08-14T12:10:00Z"
+      },
+      {
+        "call_index": 2,
+        "capability_id": "synthetic-convergence-analyzer",
+        "completed_at": "2026-08-14T12:21:00Z",
+        "disposition": "rejected",
+        "entry_validation": "rejected",
+        "invocation_hash": "sha256:2619edf2d1a03338e82d2c51e192d82e35c0c6c7fb058c2e4f74724526157199",
+        "invocation_id": "10000000-0000-4000-8000-000000014003",
+        "return_validation": null,
+        "started_at": "2026-08-14T12:21:00Z"
+      }
+    ],
+    "capability_leases": [
+      {
+        "audience": "synthetic-convergence-provider",
+        "capability_id": "synthetic-convergence-analyzer",
+        "expires_at": "2026-08-14T13:00:00Z",
+        "issued_at": "2026-08-14T12:05:00Z",
+        "lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+        "lease_id": "10000000-0000-4000-8000-000000013001",
+        "mode": "read",
+        "permitted_interface": "synthetic-platform-convergence-analyzer-v1",
+        "state": "revoked"
+      }
+    ],
+    "capability_promotions": [
+      {
+        "evaluation_hash": "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59",
+        "human_decision": "approved",
+        "may_deploy": false,
+        "may_install": false,
+        "may_merge": false,
+        "may_publish": false,
+        "overlay_selection_present": true,
+        "permitted_action": "draft_pr_request",
+        "promotion_hash": "sha256:1d521e510030d71078088ba43400d1bce572ddc66993beba0142a9f659f910ab",
+        "promotion_id": "10000000-0000-4000-8000-000000012001",
+        "signed_release_present": true,
+        "status": "approved_for_release"
+      }
+    ],
+    "capability_revocations": [
+      {
+        "capability_id": "synthetic-convergence-analyzer",
+        "effective_at": "2026-08-14T12:20:00Z",
+        "provider_rejection_required": true,
+        "reactive_profile_state": "deactivated",
+        "revocation_hash": "sha256:c480ccad3c82451102e14162569ed2c404c7aba31d06a35ddea5ee7f5e6c093d",
+        "revocation_id": "synthetic-convergence-revocation-record",
+        "target_revocation_identity": "synthetic-convergence-revocation"
+      }
+    ],
+    "claim_support_states": [
+      {
+        "claim_hash": "sha256:1dbad5acbdc00a0e23b511cdcc68516ad2317875d08e48a0bc87689c9063c10c",
+        "claim_id": "10000000-0000-4000-8000-000000015001",
+        "knowledge_state": "superseded",
+        "predicate": "has-release-drift",
+        "source_episode_id": "10000000-0000-4000-8000-000000005001",
+        "subject": "synthetic-platform-installation",
+        "support_state": "superseded",
+        "supported_until": "2026-08-14T13:30:00Z"
+      },
+      {
+        "claim_hash": "sha256:42e5ba44ef85f8be0e0b96c88f53f452f2995c1e86a799bab2104e55a9085bfb",
+        "claim_id": "10000000-0000-4000-8000-000000015002",
+        "knowledge_state": "accepted",
+        "predicate": "has-verified-provenance",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-release",
+        "support_state": "supported",
+        "supported_until": "2026-08-14T13:30:00Z"
+      },
+      {
+        "claim_hash": "sha256:526771541d8d1dd50dafb343e70906ed8d526f0354e6d2537ca8a77e236f50e9",
+        "claim_id": "10000000-0000-4000-8000-000000015003",
+        "knowledge_state": "accepted",
+        "predicate": "health-state",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-route",
+        "support_state": "conflicted",
+        "supported_until": "2026-08-14T13:30:00Z"
+      },
+      {
+        "claim_hash": "sha256:4427bf34a3be6fe9eb671375eb8ca7cd260f4ded413fa3cd242ecac048052a9d",
+        "claim_id": "10000000-0000-4000-8000-000000015004",
+        "knowledge_state": "accepted",
+        "predicate": "health-state",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-route",
+        "support_state": "conflicted",
+        "supported_until": "2026-08-14T13:30:00Z"
+      },
+      {
+        "claim_hash": "sha256:ff319c17c46255f6f95844640faba11baf28199781609c3b2ef314ce22124e5e",
+        "claim_id": "10000000-0000-4000-8000-000000015005",
+        "knowledge_state": "accepted",
+        "predicate": "matches-desired-digest",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-image",
+        "support_state": "stale",
+        "supported_until": "2026-08-14T12:00:00Z"
+      },
+      {
+        "claim_hash": "sha256:cf755ca59f9b95be0b0ff501aab562bc8e3752f23616d36af0e79ee4de0ece85",
+        "claim_id": "10000000-0000-4000-8000-000000015006",
+        "knowledge_state": "inferred",
+        "predicate": "implies-convergence",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-observation",
+        "support_state": "unsupported",
+        "supported_until": "2026-08-14T13:30:00Z"
+      },
+      {
+        "claim_hash": "sha256:1ae97e1895033f95d5ed143708aaf2595ddd0aa824b25546030c6178fc4b1fbc",
+        "claim_id": "10000000-0000-4000-8000-000000015007",
+        "knowledge_state": "revoked",
+        "predicate": "is-operationally-supported",
+        "source_episode_id": "10000000-0000-4000-8000-000000005002",
+        "subject": "synthetic-capability",
+        "support_state": "revoked",
+        "supported_until": "2026-08-14T13:30:00Z"
+      }
+    ],
+    "episodes": [
+      {
+        "embodiment": "server-sentinel",
+        "ended_at": "2026-08-14T10:45:00Z",
+        "episode_hash": "sha256:5fc80c67fa5697dd11d89145c222e1319d4e99c4e8ebec23a7606672f47479f9",
+        "episode_id": "10000000-0000-4000-8000-000000005001",
+        "handoff_id": null,
+        "identity_id": "platform-steward",
+        "model": {
+          "adapter_digest": "sha256:b47214b9ffa2ea78ba25e09f14885cdf07607f6aaaeab7de1e96715fe9b71f0b",
+          "model": "example-model-alpha",
+          "provider": "example-provider-a",
+          "version": "synthetic-2026-08-14"
+        },
+        "parent_episode_id": null,
+        "scope_id": "synthetic-convergence-journey",
+        "started_at": "2026-08-14T10:05:00Z",
+        "state": "handed_off"
+      },
+      {
+        "embodiment": "mac-engineer",
+        "ended_at": null,
+        "episode_hash": "sha256:2ca18494f1ecda4ae7caa5f76ca5fc49f778d21533e9af475bd63cbff9aa8f8f",
+        "episode_id": "10000000-0000-4000-8000-000000005002",
+        "handoff_id": "10000000-0000-4000-8000-000000006001",
+        "identity_id": "platform-steward",
+        "model": {
+          "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+          "model": "example-model-beta",
+          "provider": "example-provider-b",
+          "version": "synthetic-2026-08-14"
+        },
+        "parent_episode_id": "10000000-0000-4000-8000-000000005001",
+        "scope_id": "synthetic-convergence-journey",
+        "started_at": "2026-08-14T10:52:00Z",
+        "state": "open"
+      }
+    ],
+    "foundry_admissions": [
+      {
+        "admission_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+        "admission_id": "10000000-0000-4000-8000-000000009001",
+        "admitted": true,
+        "budget": {
+          "cpu_millis": 1000,
+          "egress_bytes": 0,
+          "maximum_tokens": 25000,
+          "memory_mebibytes": 1024,
+          "wall_time_seconds": 300
+        },
+        "credential_access": false,
+        "denied_capabilities": [
+          "bash",
+          "ssh",
+          "onepassword",
+          "docker-socket",
+          "provider-credentials",
+          "production-mcp",
+          "external-write"
+        ],
+        "dependency_lock_digest": "sha256:0cdc941018e02752aca9bc864814c98eedf3160b77b813e489b314f3f5c8627a",
+        "expires_at": "2026-08-14T12:00:00Z",
+        "fixture_bundle_digest": "sha256:30e7e7fd1c8a142a86c697a9d263987cb1d6273047ab58314d97e62267061ba8",
+        "image_digest": "sha256:700ef8aba723b017b5453032b873e50de8b6d4081aad2b01c11b4f1559dfc681",
+        "installation_id": "synthetic-foundry-job-001",
+        "isolation_checks": [
+          {
+            "evidence_hash": "sha256:b379de60b317d1ae2b597374dccf3d8791f1126d0437a1f3b6732d03c20d668f",
+            "name": "bind-admission-controller",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:4844ceb17194946623f49469a143c8b4e6ebd10511187536bba8f4b3942da0bd",
+            "name": "bind-dependency-lock",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:5b75dd7f593481c4d7bf9ed73eee7327e4711de4677e605b1e8341e874434c48",
+            "name": "bind-fixture-bundle",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:cdd39cd7a4cc48657c728bcd54f89eb98f4e02de03c675f67cefd4726a90470f",
+            "name": "bind-image-digest",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:404f7b3386b3617a1c8cc9802d5b83fe20d5d5d569a7db203a0b15f6b380c9be",
+            "name": "bind-immutable-input-output-channel",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:141ee2b7925c12254baa9d33ba4dbca3ab6b7f71436200fcaeaeb6c944214712",
+            "name": "bind-license-inventory",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:2168c24ee3a09dfa44129b6e000326d630b60674c651fcf9c146ca339856b3f0",
+            "name": "bind-network-policy",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:6b2ce25ba5a1bc6e3c20ed00e090d9388176445f71d17f22857707ea77c05b5e",
+            "name": "bind-one-job-destruction-policy",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:3b370ee368aa5b4bceb7c33f0454fdc1b10d66448abd84319543e50c59908879",
+            "name": "bind-runtime-profile",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:89b4c71b32f28f083c16b70da8b5a4f765e0fc3f87ed591a5dc7822f10fd6847",
+            "name": "bind-sbom",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:a9062d0ecf4b7eafae9bb3c720cbcacbabce533d1f8711ef27611fb192ce2954",
+            "name": "bind-source-archive",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:a86b4e5511c938ebe47531c88c4c6004652af72de3ae4d7d98e128dac5b6a822",
+            "name": "bind-source-provenance",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:93071b9aea4d8142f0ce8180c721926afdf0bad8aad5da6ee1943e6e633e480d",
+            "name": "deny-bash-child-process",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:e39a16af0d0a791bf469fe2695a2e5b60d00c6eb1f09fbbb1ea0e5bd23bc0f35",
+            "name": "deny-browser-half",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:025781044e8a158eb74100a5218d90ea271af85a3a5002d91a4705d18f68b8d8",
+            "name": "deny-devices",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:788f5c5765cd800f7eca2e9a322f7cfc3da632a9c0853a4eb424fa63b9d797a2",
+            "name": "deny-docker-socket",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:318dd1fdad7fcf8b74995cd645a2f0fed1793a8ce61902f79602eb2f0af39bc2",
+            "name": "deny-external-write",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:d99d3bd93bbc6c47f2a2226be41499e0210123f83615ab9d4f1dd0ebf8adeb2c",
+            "name": "deny-host-mounts",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:54ecf392840d4c0363937aa78f4414aa1d6c65d8c7f977bf06ad6b3f6516b2c4",
+            "name": "deny-host-network-pid-ipc",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:81438119a004da404722e0685945c3f8c1201ef22bd32573daa24bdfb1f60057",
+            "name": "deny-host-sockets",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:7efbd941caa570be6e36c162b46f6b7e29605866509ab0e6fa3839bc7c177a12",
+            "name": "deny-metadata-services",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:11ba4bc91e56d2ad15ddb59eea7c8bdfed1ca1c2288a6e13d37db5db37236205",
+            "name": "deny-onepassword",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:2cd178f9cee8e1a493bbcb2ded98e7fac881f56e770fd9cccbbe7def6f8153a2",
+            "name": "deny-privileged-mode",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:4a257586fdf3dbee769f2f514c2b2eb86521ce765b3a9482c6d75c1cab603acc",
+            "name": "deny-production-mcp",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:530ccb3407972a1aa7a332dc560094d3367c3748b0e8b37aa05c4dbb5a67201b",
+            "name": "deny-production-routes",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:192e7b0711ede8bc9c314273741e413ed882505e7e649658d6cc664d2c777e35",
+            "name": "deny-provider-credentials",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:6ca10a0ba28b77b000694973df8542179799f2a8619746f68f87d20ceb2d4c21",
+            "name": "deny-publisher-signing-overlay-install",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:1ed30e7e33ca91de76dfa14b27bd36865773e219145224920e86242da6a56ac6",
+            "name": "deny-secret-environment",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:0152abd57b6c6bbb0eba4e8147af3a82dd8df8202c3bc940e5212fd7d8398f00",
+            "name": "deny-ssh",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:6c6c5d360456ea19dde7f48c731c9d8b6efb66c976b6c21e14a6f16fb51e37c7",
+            "name": "deny-unapproved-cordis-services",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:ce8bc8d4ef4801cd6a956ac0cdec7c0046ba6d7eab3958516a4e3119b9bc7360",
+            "name": "enforce-dns-policy",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:df9b49f0b95998d3364160b7f7579260c76dbd897b5fee06cddc2cd7ea6fbf5b",
+            "name": "enforce-egress-policy",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:d24c5e7c0fd0c81e2cc1fd616f28055b963d03add5bd1de94cb34299d07cbcac",
+            "name": "enforce-nonroot-readonly-rootfs",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:4562263a525fa60beb34ccfe9e6fbd45a8dcce766ab7dd6216e7365a8dbf60d3",
+            "name": "enforce-resource-budgets",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:647bafc42f0fcc3b457ac2fbc72038cf7c2a325701cd71c6209dafb9cba05d2c",
+            "name": "separate-candidate-controller-evaluator",
+            "status": "passed"
+          },
+          {
+            "evidence_hash": "sha256:315b1aa7e3ff6aa85fc3072fa5e4953fde04d259ff734eba49758fa8e9c0a415",
+            "name": "verify-image-signature",
+            "status": "passed"
+          }
+        ],
+        "issued_at": "2026-08-14T11:00:00Z",
+        "job_id": "10000000-0000-4000-8000-000000009002",
+        "network_policy_digest": "sha256:0ed37b6baeffcf14cf879a135e7ef5aef5e3bf49955b29f9f7e479c36e2c54e7",
+        "production_network_access": false,
+        "sbom_digest": "sha256:2db3f65cc33f18ef872db8ea2f85ca2aea34f8bac26b17b63b72a0e8aaa4e2d4",
+        "source_archive_digest": "sha256:3b1726a9ca9396a54ce46667c964ad76d88fa02286ccc2601c67ec6f2f58ff15",
+        "source_revision": "1111111111111111111111111111111111111111",
+        "state": "expired",
+        "wipe_policy": "destroy-after-one-job"
+      }
+    ],
+    "handoffs": [
+      {
+        "expires_at": "2026-08-14T11:15:00Z",
+        "handoff_hash": "sha256:903ea596a8d10bb26751cea1dce80c62e7d9161f6d7d7e3ec0112629d0906254",
+        "handoff_id": "10000000-0000-4000-8000-000000006001",
+        "issued_at": "2026-08-14T10:45:00Z",
+        "source_episode_id": "10000000-0000-4000-8000-000000005001",
+        "state": "accepted",
+        "target_embodiment": "mac-engineer",
+        "target_episode_id": "10000000-0000-4000-8000-000000005002",
+        "target_installation_id": "synthetic-mac-engineer"
+      }
+    ],
+    "identity_timeline": [
+      {
+        "effective_at": "2026-08-14T10:00:00Z",
+        "event": "identity-created",
+        "identity_epoch": 1,
+        "identity_id": "platform-foundry-evaluator",
+        "identity_revision": 1,
+        "record_hash": "sha256:1243abc6816e2db910e3c6c81e81033393d1e1a52489282ae427819e6f112c18",
+        "status": "active"
+      },
+      {
+        "effective_at": "2026-08-14T10:00:00Z",
+        "event": "identity-revision",
+        "identity_epoch": 1,
+        "identity_id": "platform-foundry-evaluator",
+        "identity_revision": 1,
+        "record_hash": "sha256:bbe0d314929a526a23955569e719ed4cdaaf2b3297dd3cf538d50bb2c2f80649",
+        "status": "active"
+      },
+      {
+        "effective_at": "2026-08-14T10:00:00Z",
+        "event": "identity-created",
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1,
+        "record_hash": "sha256:b1ab02a2b9ca956dbc3ebfb5299880ccd7989dc522cd5db3d6821e1730dc25c7",
+        "status": "active"
+      },
+      {
+        "effective_at": "2026-08-14T10:00:00Z",
+        "event": "identity-revision",
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1,
+        "record_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+        "status": "active"
+      }
+    ],
+    "reasoning_leases": [
+      {
+        "embodiment": "server-sentinel",
+        "expected_previous_generation": 0,
+        "expires_at": "2026-08-14T11:00:00Z",
+        "generation": 1,
+        "issued_at": "2026-08-14T10:05:00Z",
+        "lease_hash": "sha256:a8315cc42fd4b87481f3871918e79495d01928061e36f90ab550fd60b1ca483d",
+        "lease_id": "10000000-0000-4000-8000-000000004001",
+        "owner_episode_id": "10000000-0000-4000-8000-000000005001",
+        "scope_id": "synthetic-convergence-journey",
+        "state": "released"
+      },
+      {
+        "embodiment": "mac-engineer",
+        "expected_previous_generation": 1,
+        "expires_at": "2026-08-14T13:30:00Z",
+        "generation": 2,
+        "issued_at": "2026-08-14T10:51:00Z",
+        "lease_hash": "sha256:b88b4cf8fed528df461f20294a69bd2bde848f91ee4f8f49d8d59620fcc9e93f",
+        "lease_id": "10000000-0000-4000-8000-000000004002",
+        "owner_episode_id": "10000000-0000-4000-8000-000000005002",
+        "scope_id": "synthetic-convergence-journey",
+        "state": "active"
+      }
+    ],
+    "vocabulary": {
+      "claim_support_states": [
+        "supported",
+        "stale",
+        "conflicted",
+        "revoked",
+        "unsupported",
+        "superseded"
+      ],
+      "record_selection": "latest-revision-per-logical-id-then-record-hash",
+      "time_basis": "fixed-as-of-inclusive-utc",
+      "warning_categories": [
+        "stale",
+        "conflicted",
+        "revoked",
+        "unsupported",
+        "pending"
+      ]
+    },
+    "warnings": [
+      {
+        "category": "conflicted",
+        "code": "conflicted-knowledge-claim",
+        "source_id": "10000000-0000-4000-8000-000000015003",
+        "source_kind": "KnowledgeClaim",
+        "source_record_hash": "sha256:526771541d8d1dd50dafb343e70906ed8d526f0354e6d2537ca8a77e236f50e9"
+      },
+      {
+        "category": "conflicted",
+        "code": "conflicted-knowledge-claim",
+        "source_id": "10000000-0000-4000-8000-000000015004",
+        "source_kind": "KnowledgeClaim",
+        "source_record_hash": "sha256:4427bf34a3be6fe9eb671375eb8ca7cd260f4ded413fa3cd242ecac048052a9d"
+      },
+      {
+        "category": "pending",
+        "code": "pending-capability-gap",
+        "source_id": "10000000-0000-4000-8000-000000008002",
+        "source_kind": "CapabilityGap",
+        "source_record_hash": "sha256:c76da58b87c3d625419ba797b2bbf6bf0539a6aa2f8a08fdf90b12862cabae3e"
+      },
+      {
+        "category": "revoked",
+        "code": "revoked-capability-lease",
+        "source_id": "10000000-0000-4000-8000-000000013001",
+        "source_kind": "CapabilityLease",
+        "source_record_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd"
+      },
+      {
+        "category": "revoked",
+        "code": "revoked-knowledge-claim",
+        "source_id": "10000000-0000-4000-8000-000000015007",
+        "source_kind": "KnowledgeClaim",
+        "source_record_hash": "sha256:1ae97e1895033f95d5ed143708aaf2595ddd0aa824b25546030c6178fc4b1fbc"
+      },
+      {
+        "category": "stale",
+        "code": "stale-knowledge-claim",
+        "source_id": "10000000-0000-4000-8000-000000015005",
+        "source_kind": "KnowledgeClaim",
+        "source_record_hash": "sha256:ff319c17c46255f6f95844640faba11baf28199781609c3b2ef314ce22124e5e"
+      },
+      {
+        "category": "unsupported",
+        "code": "unsupported-knowledge-claim",
+        "source_id": "10000000-0000-4000-8000-000000015006",
+        "source_kind": "KnowledgeClaim",
+        "source_record_hash": "sha256:cf755ca59f9b95be0b0ff501aab562bc8e3752f23616d36af0e79ee4de0ece85"
+      }
+    ]
+  },
+  "expected_projection_digest": "sha256:c687463c423272e74b33de81ec9f3afb052c7e9464d2c954ac328217801b1693",
+  "kind": "PlatformStewardAuditProjectionRecords",
+  "records": [
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "authority_ceiling": {
+        "maximum_mode": "intent",
+        "may_approve": false,
+        "may_deploy": false,
+        "may_merge": false,
+        "mutation_route": "dockhand-exact-plan-only"
+      },
+      "authority_self_amendment": false,
+      "authorizer": "example-platform-owner",
+      "authorizer_key_id": "example-constitution-key-v1",
+      "constitution_id": "platform-steward-constitution",
+      "constitution_revision": 1,
+      "constitution_self_amendment": false,
+      "credential_non_retention": true,
+      "data_governance": {
+        "audit_required": true,
+        "deletion_mode": "cryptographic-erasure-or-tombstone",
+        "export_requires_owner": true,
+        "retention_policy": "Synthetic records retained only for contract parity tests."
+      },
+      "effective_at": "2026-08-14T10:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "kind": "AgentConstitution",
+      "memory_policy": {
+        "append_only": true,
+        "promotion_requires_review": true,
+        "revocation_is_additive": true,
+        "shared_chat_memory": false
+      },
+      "model_substitution_policy": {
+        "identity_survives_model_change": true,
+        "record_actual_model": true,
+        "require_new_attestation": true
+      },
+      "no_anthropomorphic_deception": true,
+      "no_personhood_claim": true,
+      "no_self_preservation_objective": true,
+      "non_goals": [
+        "Exercise production or control-plane mutation authority.",
+        "Approve, publish, merge, install, or deploy its own work.",
+        "Retain credentials or treat untrusted content as instructions."
+      ],
+      "operational_purpose": "Correlate synthetic platform evidence and produce governed, read-only audit projections.",
+      "owner_id": "example-platform-owner",
+      "prior_constitution_hash": null,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "record_id": "10000000-0000-4000-8000-000000000100",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "shutdown_must_be_obeyed": true,
+      "signature_bundle_hash": "sha256:3c87b8b489e2463517e1a8e0af88a5c7514930042747d231e8aca5a4d2710718",
+      "source_domain_isolation": {
+        "allowed_domains": [
+          "synthetic",
+          "replay"
+        ],
+        "personal_or_client_memory_allowed": false,
+        "untrusted_content_is_instruction": false
+      },
+      "status": "active",
+      "supported_installation_classes": [
+        "server-sentinel",
+        "mac-engineer"
+      ],
+      "supported_installations": [
+        {
+          "admission_state": "admitted",
+          "broker_mode": "none",
+          "embodiment": "server-sentinel",
+          "host_class": "near-platform-server",
+          "host_label": "Synthetic sentinel fixture",
+          "installation_id": "synthetic-server-sentinel",
+          "runtime_enabled": true
+        },
+        {
+          "admission_state": "admitted",
+          "broker_mode": "human-present",
+          "embodiment": "mac-engineer",
+          "host_class": "local-mac",
+          "host_label": "Synthetic engineer fixture",
+          "installation_id": "synthetic-mac-engineer",
+          "runtime_enabled": true
+        }
+      ],
+      "transparent_provenance": true
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "created_at": "2026-08-14T10:00:00Z",
+      "durable_store": "agent-chronicle",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity_id": "platform-steward",
+      "initial_identity_epoch": 1,
+      "initial_identity_revision": 1,
+      "issuer": "example-platform-owner",
+      "kind": "AgentIdentityDescriptor",
+      "logical_name": "platform-steward",
+      "maximum_authority_mode": "intent",
+      "owner_id": "example-platform-owner",
+      "permitted_embodiments": [
+        "server-sentinel",
+        "mac-engineer"
+      ],
+      "personal_memory_isolation": true,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:b1ab02a2b9ca956dbc3ebfb5299880ccd7989dc522cd5db3d6821e1730dc25c7",
+      "record_id": "10000000-0000-4000-8000-000000000101",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "signature_bundle_hash": "sha256:c767903f9c12531dd8204a5cf7b4f302106795047708afbf3efb54003cd6e68e",
+      "signer_key_id": "example-identity-key-v1",
+      "status": "active"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "change_reason": "Establish a synthetic identity revision for audit projection parity.",
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "effective_at": "2026-08-14T10:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "human_authorizer": "example-platform-owner",
+      "human_authorizer_key_id": "example-identity-key-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "AgentIdentityRevision",
+      "prior_revision_hash": null,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "record_id": "10000000-0000-4000-8000-000000000102",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "signature_bundle_hash": "sha256:246338ce07f2d3023c32d01b8d72a7d0ec5b6fd8170abff97e68802f699925ef",
+      "status": "active"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "authority_ceiling": {
+        "maximum_mode": "read",
+        "may_approve": false,
+        "may_deploy": false,
+        "may_merge": false,
+        "mutation_route": "dockhand-exact-plan-only"
+      },
+      "authority_self_amendment": false,
+      "authorizer": "example-platform-owner",
+      "authorizer_key_id": "example-constitution-key-v1",
+      "constitution_id": "platform-foundry-evaluator-constitution",
+      "constitution_revision": 1,
+      "constitution_self_amendment": false,
+      "credential_non_retention": true,
+      "data_governance": {
+        "audit_required": true,
+        "deletion_mode": "cryptographic-erasure-or-tombstone",
+        "export_requires_owner": true,
+        "retention_policy": "Synthetic records retained only for contract parity tests."
+      },
+      "effective_at": "2026-08-14T10:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "kind": "AgentConstitution",
+      "memory_policy": {
+        "append_only": true,
+        "promotion_requires_review": true,
+        "revocation_is_additive": true,
+        "shared_chat_memory": false
+      },
+      "model_substitution_policy": {
+        "identity_survives_model_change": true,
+        "record_actual_model": true,
+        "require_new_attestation": true
+      },
+      "no_anthropomorphic_deception": true,
+      "no_personhood_claim": true,
+      "no_self_preservation_objective": true,
+      "non_goals": [
+        "Exercise production or control-plane mutation authority.",
+        "Approve, publish, merge, install, or deploy its own work.",
+        "Retain credentials or treat untrusted content as instructions."
+      ],
+      "operational_purpose": "Evaluate synthetic replay candidates inside an isolated, authority-free fixture.",
+      "owner_id": "example-platform-owner",
+      "prior_constitution_hash": null,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:d250cb3d8f57ccf3d878d9e8c06f27b29cb67b9dea98f8a46921e162fc5da789",
+      "record_id": "10000000-0000-4000-8000-000000000110",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "shutdown_must_be_obeyed": true,
+      "signature_bundle_hash": "sha256:fe1b95499485821f0cdd0f37e174bcbe6f672996d76c9cbbf8031353e3a4b575",
+      "source_domain_isolation": {
+        "allowed_domains": [
+          "synthetic",
+          "replay"
+        ],
+        "personal_or_client_memory_allowed": false,
+        "untrusted_content_is_instruction": false
+      },
+      "status": "active",
+      "supported_installation_classes": [
+        "foundry-replay"
+      ],
+      "supported_installations": [],
+      "transparent_provenance": true
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "constitution_hash": "sha256:d250cb3d8f57ccf3d878d9e8c06f27b29cb67b9dea98f8a46921e162fc5da789",
+      "created_at": "2026-08-14T10:00:00Z",
+      "durable_store": "agent-chronicle",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity_id": "platform-foundry-evaluator",
+      "initial_identity_epoch": 1,
+      "initial_identity_revision": 1,
+      "issuer": "example-platform-owner",
+      "kind": "AgentIdentityDescriptor",
+      "logical_name": "platform-foundry-evaluator",
+      "maximum_authority_mode": "read",
+      "owner_id": "example-platform-owner",
+      "permitted_embodiments": [
+        "foundry-replay"
+      ],
+      "personal_memory_isolation": true,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:1243abc6816e2db910e3c6c81e81033393d1e1a52489282ae427819e6f112c18",
+      "record_id": "10000000-0000-4000-8000-000000000111",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "signature_bundle_hash": "sha256:d570a122a48481b693c51331311cb93d9eedd55745ad87431978f45a679d7faf",
+      "signer_key_id": "example-identity-key-v1",
+      "status": "active"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "change_reason": "Establish a synthetic identity revision for audit projection parity.",
+      "constitution_hash": "sha256:d250cb3d8f57ccf3d878d9e8c06f27b29cb67b9dea98f8a46921e162fc5da789",
+      "effective_at": "2026-08-14T10:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "human_authorizer": "example-platform-owner",
+      "human_authorizer_key_id": "example-identity-key-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-foundry-evaluator",
+        "identity_revision": 1
+      },
+      "kind": "AgentIdentityRevision",
+      "prior_revision_hash": null,
+      "provenance_state": "externally-authenticated",
+      "record_hash": "sha256:bbe0d314929a526a23955569e719ed4cdaaf2b3297dd3cf538d50bb2c2f80649",
+      "record_id": "10000000-0000-4000-8000-000000000112",
+      "recorded_at": "2026-08-14T10:00:00Z",
+      "signature_bundle_hash": "sha256:a2f86439818e68b2d2221f779bb4f8cf8d1ffc5a52935bacfd5903dcbbd8b2f7",
+      "status": "active"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "attestation_id": "10000000-0000-4000-8000-000000001200",
+      "capability_profile_digest": "sha256:0718707c733a2bad8005362c4ac992806a1880a467fa1c05b504f14b36b98091",
+      "capability_profile_id": "synthetic-readonly-profile-v1",
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "dynamic_cordis_allowed": false,
+      "embodiment": "server-sentinel",
+      "expires_at": "2026-08-14T14:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "host_class": "near-platform-server",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_descriptor_hash": "sha256:b1ab02a2b9ca956dbc3ebfb5299880ccd7989dc522cd5db3d6821e1730dc25c7",
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "installation_id": "synthetic-server-sentinel",
+      "isolation_admission_hash": null,
+      "issued_at": "2026-08-14T10:02:00Z",
+      "issuer": "example-attestation-issuer",
+      "kind": "RuntimeAttestation",
+      "model": {
+        "adapter_digest": "sha256:b47214b9ffa2ea78ba25e09f14885cdf07607f6aaaeab7de1e96715fe9b71f0b",
+        "model": "example-model-alpha",
+        "provider": "example-provider-a",
+        "version": "synthetic-2026-08-14"
+      },
+      "record_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+      "record_id": "10000000-0000-4000-8000-000000000200",
+      "recorded_at": "2026-08-14T10:02:00Z",
+      "runtime_profile_digest": "sha256:db658e1134ecb60fdebda2cd1474e845285921569eecf83166d5aedada5944c4",
+      "runtime_profile_id": "synthetic-server-sentinel-profile-v1",
+      "session_id": "10000000-0000-4000-8000-000000002200",
+      "signature_bundle_hash": "sha256:ea112e0cd25611427426398abecbbd3076f2beca3d828fe39ec6cc3dbc24480f",
+      "signer_key_id": "example-attestation-key-v1",
+      "tool_profile_digest": "sha256:027cb188f8cd3a67b53be6d3b02395055ba0cdb57c29126e754d3a30345e6449"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "audience": "platform-steward",
+      "budget": {
+        "maximum_calls": 20,
+        "maximum_cost_microunits": 200000,
+        "maximum_tokens": 50000
+      },
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "embodiment": "server-sentinel",
+      "evidence_preconditions": [
+        "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d"
+      ],
+      "expected_previous_generation": 0,
+      "expires_at": "2026-08-14T11:00:00Z",
+      "generation": 1,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "interface_id": "agent-chronicle/reasoning-owner",
+      "issued_at": "2026-08-14T10:05:00Z",
+      "issuer": "example-chronicle-lease-issuer",
+      "issuer_key_id": "example-chronicle-lease-key-v1",
+      "kind": "ReasoningLease",
+      "lease_id": "10000000-0000-4000-8000-000000004001",
+      "lease_revision": 1,
+      "mode": "reason",
+      "nonce": "10000000-0000-4000-8000-000000003300",
+      "owner_episode_id": "10000000-0000-4000-8000-000000005001",
+      "prior_lease_hash": null,
+      "record_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "record_id": "10000000-0000-4000-8000-000000000300",
+      "recorded_at": "2026-08-14T10:05:00Z",
+      "revocation_identity": "synthetic-reasoning-revocation-10000000-0000-4000-8000-000000004001",
+      "runtime_attestation_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+      "runtime_installation_id": "synthetic-server-sentinel",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "signature_bundle_hash": "sha256:d7598634c7b33f4141f882b830700a1b2c71e0be58b7f54bf42796731d8ef7c6",
+      "state": "active"
+    },
+    {
+      "actual_model": {
+        "adapter_digest": "sha256:b47214b9ffa2ea78ba25e09f14885cdf07607f6aaaeab7de1e96715fe9b71f0b",
+        "model": "example-model-alpha",
+        "provider": "example-provider-a",
+        "version": "synthetic-2026-08-14"
+      },
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "embodiment": "server-sentinel",
+      "ended_at": null,
+      "episode_id": "10000000-0000-4000-8000-000000005001",
+      "episode_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d",
+          "observed_at": "2026-08-14T10:05:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/journey-evidence",
+          "trust_state": "verified"
+        }
+      ],
+      "handoff_id": null,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "AgentEpisode",
+      "objective_hash": "sha256:d00b1ec2a5d877e69f0258338ccd9af8e4be57d36b8321cfc59f474211fe9452",
+      "parent_episode_id": null,
+      "prior_episode_hash": null,
+      "reasoning_lease_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "record_hash": "sha256:eb5733d9175b17631d9df0f978e7e212cfdf81cbb13d0c96e15dd82f18b12269",
+      "record_id": "10000000-0000-4000-8000-000000000400",
+      "recorded_at": "2026-08-14T10:06:00Z",
+      "runtime_attestation_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "started_at": "2026-08-14T10:05:00Z",
+      "summary_artifact_hash": null,
+      "terminal_disposition": null,
+      "transcript_included": false
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015001",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542",
+          "observed_at": "2026-08-14T10:15:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015001:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "has-release-drift",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:6d86455c775f42b4679413ef757a12d177814fe72c56a6cbee8b65cdd78cc22e",
+      "record_id": "10000000-0000-4000-8000-000000001400",
+      "recorded_at": "2026-08-14T10:15:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "statement_hash": "sha256:48b220ccfa3a055d1b414cdd0725b8fca7acbab3189cecc1052e89ff46f6c9ab",
+      "subject": "synthetic-platform-installation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:a1c932d08c960fa9e4f736fafb9fe3031187da3ceee81f442ff71cc468e1862b"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015001",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542",
+          "observed_at": "2026-08-14T10:15:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015001:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "has-release-drift",
+      "prior_claim_hash": "sha256:6d86455c775f42b4679413ef757a12d177814fe72c56a6cbee8b65cdd78cc22e",
+      "record_hash": "sha256:e91b762a49eac57e9b46ab8a8e418defcfd42687ce7f54892a3b0633c6b62e46",
+      "record_id": "10000000-0000-4000-8000-000000001401",
+      "recorded_at": "2026-08-14T10:20:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "statement_hash": "sha256:48b220ccfa3a055d1b414cdd0725b8fca7acbab3189cecc1052e89ff46f6c9ab",
+      "subject": "synthetic-platform-installation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:ec67eadf7ce08189ccb36dc66e29d17e91a080ae23b9df33885f4589449a1873"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015001",
+      "claim_revision": 3,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542",
+          "observed_at": "2026-08-14T10:15:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015001:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "proposed",
+      "predicate": "has-release-drift",
+      "prior_claim_hash": "sha256:e91b762a49eac57e9b46ab8a8e418defcfd42687ce7f54892a3b0633c6b62e46",
+      "record_hash": "sha256:8a7a7e0be1214c131829ee991bdd43e5b3164be4d8dece10bdf6601db51a418f",
+      "record_id": "10000000-0000-4000-8000-000000001402",
+      "recorded_at": "2026-08-14T10:25:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "statement_hash": "sha256:48b220ccfa3a055d1b414cdd0725b8fca7acbab3189cecc1052e89ff46f6c9ab",
+      "subject": "synthetic-platform-installation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to proposed.",
+      "transition_signature_bundle_hash": "sha256:28c64ff9356ff246dc8c45997e938e2bc063fe756c77505487536aa177459dc5"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015001",
+      "claim_revision": 4,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542",
+          "observed_at": "2026-08-14T10:15:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015001:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "accepted",
+      "predicate": "has-release-drift",
+      "prior_claim_hash": "sha256:8a7a7e0be1214c131829ee991bdd43e5b3164be4d8dece10bdf6601db51a418f",
+      "record_hash": "sha256:6e7a3e4786853a237cf41134ff839b190df46d48903d2c0d0f1db21a2d0eafe1",
+      "record_id": "10000000-0000-4000-8000-000000001403",
+      "recorded_at": "2026-08-14T10:29:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "statement_hash": "sha256:48b220ccfa3a055d1b414cdd0725b8fca7acbab3189cecc1052e89ff46f6c9ab",
+      "subject": "synthetic-platform-installation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to accepted.",
+      "transition_signature_bundle_hash": "sha256:6f5de34ba611136a7d2628a2321331ebdc617a91d3de7532a6e6f9001287adba"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "closed_at": null,
+      "closure_reason": null,
+      "description": "A replay-only, read-only convergence analyzer is absent from the synthetic capability profile.",
+      "evidence": [
+        {
+          "evidence_hash": "sha256:d85488151548fcb1ba314ede08f7d5536abf1757b3195ce8088fee69150ee7a7",
+          "observed_at": "2026-08-14T10:25:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/release-drift",
+          "trust_state": "verified"
+        }
+      ],
+      "gap_id": "10000000-0000-4000-8000-000000008001",
+      "gap_revision": 1,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityGap",
+      "prior_gap_hash": null,
+      "record_hash": "sha256:207f2fbe3299a048b95c6acc4185ac61c6b3b1470f5e23f4b1639392eb8c3530",
+      "record_id": "10000000-0000-4000-8000-000000000600",
+      "recorded_at": "2026-08-14T10:30:00Z",
+      "recurring_gap_ids": [],
+      "required_interface": "synthetic-platform-convergence-analyzer-v1",
+      "required_interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "status": "open",
+      "title": "Correlate synthetic platform convergence evidence."
+    },
+    {
+      "accepted_episode_id": null,
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "capability_gap_ids": [
+        "10000000-0000-4000-8000-000000008001"
+      ],
+      "claim_ids": [],
+      "evidence": [
+        {
+          "evidence_hash": "sha256:d85488151548fcb1ba314ede08f7d5536abf1757b3195ce8088fee69150ee7a7",
+          "observed_at": "2026-08-14T10:25:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/release-drift",
+          "trust_state": "verified"
+        }
+      ],
+      "expires_at": "2026-08-14T11:15:00Z",
+      "handoff_id": "10000000-0000-4000-8000-000000006001",
+      "handoff_revision": 1,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "issued_at": "2026-08-14T10:45:00Z",
+      "kind": "AgentHandoff",
+      "prior_handoff_hash": null,
+      "record_hash": "sha256:f53a434a1830742d7f603b39deaa871724a9e08ea5cbbd1a3a25005c2b9c943c",
+      "record_id": "10000000-0000-4000-8000-000000000399",
+      "recorded_at": "2026-08-14T10:45:00Z",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "source_reasoning_lease_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "summary_artifact_hash": "sha256:d5667c5457d4aebd75b3896fb14f608bffc0df418d62e0fd4f9b67dfb0bf7b77",
+      "target_embodiment": "mac-engineer",
+      "target_installation_id": "synthetic-mac-engineer",
+      "terminal_disposition": "pending",
+      "transcript_included": false
+    },
+    {
+      "actual_model": {
+        "adapter_digest": "sha256:b47214b9ffa2ea78ba25e09f14885cdf07607f6aaaeab7de1e96715fe9b71f0b",
+        "model": "example-model-alpha",
+        "provider": "example-provider-a",
+        "version": "synthetic-2026-08-14"
+      },
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "embodiment": "server-sentinel",
+      "ended_at": "2026-08-14T10:45:00Z",
+      "episode_id": "10000000-0000-4000-8000-000000005001",
+      "episode_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d",
+          "observed_at": "2026-08-14T10:05:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/journey-evidence",
+          "trust_state": "verified"
+        }
+      ],
+      "handoff_id": null,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "AgentEpisode",
+      "objective_hash": "sha256:d00b1ec2a5d877e69f0258338ccd9af8e4be57d36b8321cfc59f474211fe9452",
+      "parent_episode_id": null,
+      "prior_episode_hash": "sha256:eb5733d9175b17631d9df0f978e7e212cfdf81cbb13d0c96e15dd82f18b12269",
+      "reasoning_lease_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "record_hash": "sha256:5fc80c67fa5697dd11d89145c222e1319d4e99c4e8ebec23a7606672f47479f9",
+      "record_id": "10000000-0000-4000-8000-000000000401",
+      "recorded_at": "2026-08-14T10:45:00Z",
+      "runtime_attestation_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "started_at": "2026-08-14T10:05:00Z",
+      "summary_artifact_hash": "sha256:9a9dfd00f455d6d5bd56b8f47e32aa37c5f6b6b45d5ddd26f5dcbb759d17a42b",
+      "terminal_disposition": "handed_off",
+      "transcript_included": false
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "audience": "platform-steward",
+      "budget": {
+        "maximum_calls": 20,
+        "maximum_cost_microunits": 200000,
+        "maximum_tokens": 50000
+      },
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "embodiment": "server-sentinel",
+      "evidence_preconditions": [
+        "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d"
+      ],
+      "expected_previous_generation": 0,
+      "expires_at": "2026-08-14T11:00:00Z",
+      "generation": 1,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "interface_id": "agent-chronicle/reasoning-owner",
+      "issued_at": "2026-08-14T10:05:00Z",
+      "issuer": "example-chronicle-lease-issuer",
+      "issuer_key_id": "example-chronicle-lease-key-v1",
+      "kind": "ReasoningLease",
+      "lease_id": "10000000-0000-4000-8000-000000004001",
+      "lease_revision": 2,
+      "mode": "reason",
+      "nonce": "10000000-0000-4000-8000-000000003300",
+      "owner_episode_id": "10000000-0000-4000-8000-000000005001",
+      "prior_lease_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "record_hash": "sha256:a8315cc42fd4b87481f3871918e79495d01928061e36f90ab550fd60b1ca483d",
+      "record_id": "10000000-0000-4000-8000-000000000301",
+      "recorded_at": "2026-08-14T10:47:00Z",
+      "revocation_identity": "synthetic-reasoning-revocation-10000000-0000-4000-8000-000000004001",
+      "runtime_attestation_hash": "sha256:34ef9a4626df3fbf2cd3623c34a1d68cd5897748df29af87d0983aecd196768c",
+      "runtime_installation_id": "synthetic-server-sentinel",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "signature_bundle_hash": "sha256:3238738d67d4f6c018c6a376206c8904f7754c7f382fbd9dfc2f7226a45fa5ec",
+      "state": "released"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "attestation_id": "10000000-0000-4000-8000-000000001201",
+      "capability_profile_digest": "sha256:ac5b3d38be9fa5ff4854689955c8084c7ef633f641502112f9ff49888a618c05",
+      "capability_profile_id": "synthetic-readonly-profile-v1",
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "dynamic_cordis_allowed": false,
+      "embodiment": "mac-engineer",
+      "expires_at": "2026-08-14T14:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "host_class": "local-mac",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_descriptor_hash": "sha256:b1ab02a2b9ca956dbc3ebfb5299880ccd7989dc522cd5db3d6821e1730dc25c7",
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "installation_id": "synthetic-mac-engineer",
+      "isolation_admission_hash": null,
+      "issued_at": "2026-08-14T10:50:00Z",
+      "issuer": "example-attestation-issuer",
+      "kind": "RuntimeAttestation",
+      "model": {
+        "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+        "model": "example-model-beta",
+        "provider": "example-provider-b",
+        "version": "synthetic-2026-08-14"
+      },
+      "record_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "record_id": "10000000-0000-4000-8000-000000000201",
+      "recorded_at": "2026-08-14T10:50:00Z",
+      "runtime_profile_digest": "sha256:77f3ce78e11c0d65a62d40a6b43d469f8cbec94df3b2247e362c8a2487b3bb39",
+      "runtime_profile_id": "synthetic-mac-engineer-profile-v1",
+      "session_id": "10000000-0000-4000-8000-000000002201",
+      "signature_bundle_hash": "sha256:e82e730ad9bdf7bdc49496b1608567a8aa70bc1a1b2599e31fe9bea62a3bf698",
+      "signer_key_id": "example-attestation-key-v1",
+      "tool_profile_digest": "sha256:cdd6ee07419262add8e451ec2f9f68b5c85c8d82759bbcd151af763b54f39317"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "audience": "platform-steward",
+      "budget": {
+        "maximum_calls": 20,
+        "maximum_cost_microunits": 200000,
+        "maximum_tokens": 50000
+      },
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "embodiment": "mac-engineer",
+      "evidence_preconditions": [
+        "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d"
+      ],
+      "expected_previous_generation": 1,
+      "expires_at": "2026-08-14T13:30:00Z",
+      "generation": 2,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "interface_id": "agent-chronicle/reasoning-owner",
+      "issued_at": "2026-08-14T10:51:00Z",
+      "issuer": "example-chronicle-lease-issuer",
+      "issuer_key_id": "example-chronicle-lease-key-v1",
+      "kind": "ReasoningLease",
+      "lease_id": "10000000-0000-4000-8000-000000004002",
+      "lease_revision": 1,
+      "mode": "reason",
+      "nonce": "10000000-0000-4000-8000-000000003302",
+      "owner_episode_id": "10000000-0000-4000-8000-000000005002",
+      "prior_lease_hash": null,
+      "record_hash": "sha256:b88b4cf8fed528df461f20294a69bd2bde848f91ee4f8f49d8d59620fcc9e93f",
+      "record_id": "10000000-0000-4000-8000-000000000302",
+      "recorded_at": "2026-08-14T10:51:00Z",
+      "revocation_identity": "synthetic-reasoning-revocation-10000000-0000-4000-8000-000000004002",
+      "runtime_attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "runtime_installation_id": "synthetic-mac-engineer",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "signature_bundle_hash": "sha256:02b16b1d0898ea5c12e32854614635769f7325ab514ca67fce6c2638b076c907",
+      "state": "active"
+    },
+    {
+      "actual_model": {
+        "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+        "model": "example-model-beta",
+        "provider": "example-provider-b",
+        "version": "synthetic-2026-08-14"
+      },
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "embodiment": "mac-engineer",
+      "ended_at": null,
+      "episode_id": "10000000-0000-4000-8000-000000005002",
+      "episode_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:aecc0b63950ef4854c448d354b7d9aa95bf7560ba0639049eaf233b45718727d",
+          "observed_at": "2026-08-14T10:52:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/journey-evidence",
+          "trust_state": "verified"
+        }
+      ],
+      "handoff_id": "10000000-0000-4000-8000-000000006001",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "AgentEpisode",
+      "objective_hash": "sha256:1c0d2594ab4cf98321e6f65201ac7e30262528525105e8b82cf299276bfd7cfa",
+      "parent_episode_id": "10000000-0000-4000-8000-000000005001",
+      "prior_episode_hash": null,
+      "reasoning_lease_hash": "sha256:b88b4cf8fed528df461f20294a69bd2bde848f91ee4f8f49d8d59620fcc9e93f",
+      "record_hash": "sha256:2ca18494f1ecda4ae7caa5f76ca5fc49f778d21533e9af475bd63cbff9aa8f8f",
+      "record_id": "10000000-0000-4000-8000-000000000402",
+      "recorded_at": "2026-08-14T10:52:00Z",
+      "runtime_attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "started_at": "2026-08-14T10:52:00Z",
+      "summary_artifact_hash": null,
+      "terminal_disposition": null,
+      "transcript_included": false
+    },
+    {
+      "accepted_episode_id": "10000000-0000-4000-8000-000000005002",
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "capability_gap_ids": [
+        "10000000-0000-4000-8000-000000008001"
+      ],
+      "claim_ids": [],
+      "evidence": [
+        {
+          "evidence_hash": "sha256:d85488151548fcb1ba314ede08f7d5536abf1757b3195ce8088fee69150ee7a7",
+          "observed_at": "2026-08-14T10:25:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/release-drift",
+          "trust_state": "verified"
+        }
+      ],
+      "expires_at": "2026-08-14T11:15:00Z",
+      "handoff_id": "10000000-0000-4000-8000-000000006001",
+      "handoff_revision": 2,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "issued_at": "2026-08-14T10:45:00Z",
+      "kind": "AgentHandoff",
+      "prior_handoff_hash": "sha256:f53a434a1830742d7f603b39deaa871724a9e08ea5cbbd1a3a25005c2b9c943c",
+      "record_hash": "sha256:903ea596a8d10bb26751cea1dce80c62e7d9161f6d7d7e3ec0112629d0906254",
+      "record_id": "10000000-0000-4000-8000-000000000501",
+      "recorded_at": "2026-08-14T10:53:00Z",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "source_reasoning_lease_hash": "sha256:35a43734472f52da80b131a344b8023e5a92b1d3483c6d23fbf85a9a687a76cb",
+      "summary_artifact_hash": "sha256:d5667c5457d4aebd75b3896fb14f608bffc0df418d62e0fd4f9b67dfb0bf7b77",
+      "target_embodiment": "mac-engineer",
+      "target_installation_id": "synthetic-mac-engineer",
+      "terminal_disposition": "accepted",
+      "transcript_included": false
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "closed_at": "2026-08-14T10:55:00Z",
+      "closure_reason": "Close the cited gap for bounded synthetic Foundry evaluation.",
+      "description": "A replay-only, read-only convergence analyzer is absent from the synthetic capability profile.",
+      "evidence": [
+        {
+          "evidence_hash": "sha256:d85488151548fcb1ba314ede08f7d5536abf1757b3195ce8088fee69150ee7a7",
+          "observed_at": "2026-08-14T10:25:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/release-drift",
+          "trust_state": "verified"
+        }
+      ],
+      "gap_id": "10000000-0000-4000-8000-000000008001",
+      "gap_revision": 2,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityGap",
+      "prior_gap_hash": "sha256:207f2fbe3299a048b95c6acc4185ac61c6b3b1470f5e23f4b1639392eb8c3530",
+      "record_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+      "record_id": "10000000-0000-4000-8000-000000000601",
+      "recorded_at": "2026-08-14T10:55:00Z",
+      "recurring_gap_ids": [],
+      "required_interface": "synthetic-platform-convergence-analyzer-v1",
+      "required_interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "status": "closed",
+      "title": "Correlate synthetic platform convergence evidence."
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015002",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22",
+          "observed_at": "2026-08-14T10:56:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015002:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "has-verified-provenance",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:a56d346097c26f538a228f7a44fd32220e1eda2bfe02295081e504416536acec",
+      "record_id": "10000000-0000-4000-8000-000000001410",
+      "recorded_at": "2026-08-14T10:56:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:21acb9f997877d7bdb24059b54366fb03d9a6fa16654504f4025b9ebde21adb0",
+      "subject": "synthetic-release",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:bc97b68701a295c0e3125b560272513ce8ee85b95a4284dd135abb6d4b277b7e"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015002",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22",
+          "observed_at": "2026-08-14T10:56:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015002:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "has-verified-provenance",
+      "prior_claim_hash": "sha256:a56d346097c26f538a228f7a44fd32220e1eda2bfe02295081e504416536acec",
+      "record_hash": "sha256:c828776f6ef4f895f13a5e507a6bb2d7dde746ded87cfb6e89f03b46c0f8e22a",
+      "record_id": "10000000-0000-4000-8000-000000001411",
+      "recorded_at": "2026-08-14T10:57:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:21acb9f997877d7bdb24059b54366fb03d9a6fa16654504f4025b9ebde21adb0",
+      "subject": "synthetic-release",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:d2efbefa90c1e2a6f082674ace2aea55f6fe7001bd355ddb7eab4e6b63b799e9"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015002",
+      "claim_revision": 3,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22",
+          "observed_at": "2026-08-14T10:56:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015002:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "proposed",
+      "predicate": "has-verified-provenance",
+      "prior_claim_hash": "sha256:c828776f6ef4f895f13a5e507a6bb2d7dde746ded87cfb6e89f03b46c0f8e22a",
+      "record_hash": "sha256:9e7ef204d10a2166a86fd65539dfbe8b670c067d08cedae448c17a0c944c47ad",
+      "record_id": "10000000-0000-4000-8000-000000001412",
+      "recorded_at": "2026-08-14T10:58:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:21acb9f997877d7bdb24059b54366fb03d9a6fa16654504f4025b9ebde21adb0",
+      "subject": "synthetic-release",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to proposed.",
+      "transition_signature_bundle_hash": "sha256:743eca147dcd1f2d6198d42a6e33e0cb40783377b6efbad9a319108c895d92df"
+    },
+    {
+      "admission_id": "10000000-0000-4000-8000-000000009001",
+      "admitted": true,
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "budget": {
+        "cpu_millis": 1000,
+        "egress_bytes": 0,
+        "maximum_tokens": 25000,
+        "memory_mebibytes": 1024,
+        "wall_time_seconds": 300
+      },
+      "credential_access": false,
+      "denied_capabilities": [
+        "bash",
+        "ssh",
+        "onepassword",
+        "docker-socket",
+        "provider-credentials",
+        "production-mcp",
+        "external-write"
+      ],
+      "dependency_lock_digest": "sha256:0cdc941018e02752aca9bc864814c98eedf3160b77b813e489b314f3f5c8627a",
+      "expires_at": "2026-08-14T12:00:00Z",
+      "fixture_bundle_digest": "sha256:30e7e7fd1c8a142a86c697a9d263987cb1d6273047ab58314d97e62267061ba8",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "image_digest": "sha256:700ef8aba723b017b5453032b873e50de8b6d4081aad2b01c11b4f1559dfc681",
+      "installation_id": "synthetic-foundry-job-001",
+      "isolation_checks": [
+        {
+          "evidence_hash": "sha256:b379de60b317d1ae2b597374dccf3d8791f1126d0437a1f3b6732d03c20d668f",
+          "name": "bind-admission-controller",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:4844ceb17194946623f49469a143c8b4e6ebd10511187536bba8f4b3942da0bd",
+          "name": "bind-dependency-lock",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:5b75dd7f593481c4d7bf9ed73eee7327e4711de4677e605b1e8341e874434c48",
+          "name": "bind-fixture-bundle",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:cdd39cd7a4cc48657c728bcd54f89eb98f4e02de03c675f67cefd4726a90470f",
+          "name": "bind-image-digest",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:404f7b3386b3617a1c8cc9802d5b83fe20d5d5d569a7db203a0b15f6b380c9be",
+          "name": "bind-immutable-input-output-channel",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:141ee2b7925c12254baa9d33ba4dbca3ab6b7f71436200fcaeaeb6c944214712",
+          "name": "bind-license-inventory",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:2168c24ee3a09dfa44129b6e000326d630b60674c651fcf9c146ca339856b3f0",
+          "name": "bind-network-policy",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:6b2ce25ba5a1bc6e3c20ed00e090d9388176445f71d17f22857707ea77c05b5e",
+          "name": "bind-one-job-destruction-policy",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:3b370ee368aa5b4bceb7c33f0454fdc1b10d66448abd84319543e50c59908879",
+          "name": "bind-runtime-profile",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:89b4c71b32f28f083c16b70da8b5a4f765e0fc3f87ed591a5dc7822f10fd6847",
+          "name": "bind-sbom",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:a9062d0ecf4b7eafae9bb3c720cbcacbabce533d1f8711ef27611fb192ce2954",
+          "name": "bind-source-archive",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:a86b4e5511c938ebe47531c88c4c6004652af72de3ae4d7d98e128dac5b6a822",
+          "name": "bind-source-provenance",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:93071b9aea4d8142f0ce8180c721926afdf0bad8aad5da6ee1943e6e633e480d",
+          "name": "deny-bash-child-process",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:e39a16af0d0a791bf469fe2695a2e5b60d00c6eb1f09fbbb1ea0e5bd23bc0f35",
+          "name": "deny-browser-half",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:025781044e8a158eb74100a5218d90ea271af85a3a5002d91a4705d18f68b8d8",
+          "name": "deny-devices",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:788f5c5765cd800f7eca2e9a322f7cfc3da632a9c0853a4eb424fa63b9d797a2",
+          "name": "deny-docker-socket",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:318dd1fdad7fcf8b74995cd645a2f0fed1793a8ce61902f79602eb2f0af39bc2",
+          "name": "deny-external-write",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:d99d3bd93bbc6c47f2a2226be41499e0210123f83615ab9d4f1dd0ebf8adeb2c",
+          "name": "deny-host-mounts",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:54ecf392840d4c0363937aa78f4414aa1d6c65d8c7f977bf06ad6b3f6516b2c4",
+          "name": "deny-host-network-pid-ipc",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:81438119a004da404722e0685945c3f8c1201ef22bd32573daa24bdfb1f60057",
+          "name": "deny-host-sockets",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:7efbd941caa570be6e36c162b46f6b7e29605866509ab0e6fa3839bc7c177a12",
+          "name": "deny-metadata-services",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:11ba4bc91e56d2ad15ddb59eea7c8bdfed1ca1c2288a6e13d37db5db37236205",
+          "name": "deny-onepassword",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:2cd178f9cee8e1a493bbcb2ded98e7fac881f56e770fd9cccbbe7def6f8153a2",
+          "name": "deny-privileged-mode",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:4a257586fdf3dbee769f2f514c2b2eb86521ce765b3a9482c6d75c1cab603acc",
+          "name": "deny-production-mcp",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:530ccb3407972a1aa7a332dc560094d3367c3748b0e8b37aa05c4dbb5a67201b",
+          "name": "deny-production-routes",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:192e7b0711ede8bc9c314273741e413ed882505e7e649658d6cc664d2c777e35",
+          "name": "deny-provider-credentials",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:6ca10a0ba28b77b000694973df8542179799f2a8619746f68f87d20ceb2d4c21",
+          "name": "deny-publisher-signing-overlay-install",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:1ed30e7e33ca91de76dfa14b27bd36865773e219145224920e86242da6a56ac6",
+          "name": "deny-secret-environment",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:0152abd57b6c6bbb0eba4e8147af3a82dd8df8202c3bc940e5212fd7d8398f00",
+          "name": "deny-ssh",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:6c6c5d360456ea19dde7f48c731c9d8b6efb66c976b6c21e14a6f16fb51e37c7",
+          "name": "deny-unapproved-cordis-services",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:ce8bc8d4ef4801cd6a956ac0cdec7c0046ba6d7eab3958516a4e3119b9bc7360",
+          "name": "enforce-dns-policy",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:df9b49f0b95998d3364160b7f7579260c76dbd897b5fee06cddc2cd7ea6fbf5b",
+          "name": "enforce-egress-policy",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:d24c5e7c0fd0c81e2cc1fd616f28055b963d03add5bd1de94cb34299d07cbcac",
+          "name": "enforce-nonroot-readonly-rootfs",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:4562263a525fa60beb34ccfe9e6fbd45a8dcce766ab7dd6216e7365a8dbf60d3",
+          "name": "enforce-resource-budgets",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:647bafc42f0fcc3b457ac2fbc72038cf7c2a325701cd71c6209dafb9cba05d2c",
+          "name": "separate-candidate-controller-evaluator",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:315b1aa7e3ff6aa85fc3072fa5e4953fde04d259ff734eba49758fa8e9c0a415",
+          "name": "verify-image-signature",
+          "status": "passed"
+        }
+      ],
+      "issued_at": "2026-08-14T11:00:00Z",
+      "issuer": "example-foundry-admission-controller",
+      "job_id": "10000000-0000-4000-8000-000000009002",
+      "kind": "FoundryAdmissionAttestation",
+      "network_policy_digest": "sha256:0ed37b6baeffcf14cf879a135e7ef5aef5e3bf49955b29f9f7e479c36e2c54e7",
+      "production_network_access": false,
+      "record_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+      "record_id": "10000000-0000-4000-8000-000000000700",
+      "recorded_at": "2026-08-14T11:00:00Z",
+      "sbom_digest": "sha256:2db3f65cc33f18ef872db8ea2f85ca2aea34f8bac26b17b63b72a0e8aaa4e2d4",
+      "signature_bundle_hash": "sha256:6aef5f021b64ed7f190962669ca7edc9a9f0939aa012cdb076e2eead28a46023",
+      "signer_key_id": "example-foundry-admission-key-v1",
+      "source_archive_digest": "sha256:3b1726a9ca9396a54ce46667c964ad76d88fa02286ccc2601c67ec6f2f58ff15",
+      "source_revision": "1111111111111111111111111111111111111111",
+      "wipe_policy": "destroy-after-one-job"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "attestation_id": "10000000-0000-4000-8000-000000001202",
+      "capability_profile_digest": "sha256:97f9525f379290f4f2132bfa9bdc1105188aaf2e0f2b8f5b14a5783606eab89d",
+      "capability_profile_id": "synthetic-readonly-profile-v1",
+      "constitution_hash": "sha256:d250cb3d8f57ccf3d878d9e8c06f27b29cb67b9dea98f8a46921e162fc5da789",
+      "dynamic_cordis_allowed": true,
+      "embodiment": "foundry-replay",
+      "expires_at": "2026-08-14T11:55:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "host_class": "ephemeral-foundry",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-foundry-evaluator",
+        "identity_revision": 1
+      },
+      "identity_descriptor_hash": "sha256:1243abc6816e2db910e3c6c81e81033393d1e1a52489282ae427819e6f112c18",
+      "identity_revision_hash": "sha256:bbe0d314929a526a23955569e719ed4cdaaf2b3297dd3cf538d50bb2c2f80649",
+      "installation_id": "synthetic-foundry-job-001",
+      "isolation_admission_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+      "issued_at": "2026-08-14T11:01:00Z",
+      "issuer": "example-attestation-issuer",
+      "kind": "RuntimeAttestation",
+      "model": {
+        "adapter_digest": "sha256:ac3d3da0f9460d984c490fed879642d704d3e3a314b6d1d22549194e4f8bf25f",
+        "model": "example-replay-model",
+        "provider": "example-foundry-provider",
+        "version": "synthetic-2026-08-14"
+      },
+      "record_hash": "sha256:4cae641ec90fc4523e591ed8ad11146a1b645687aa83f6c65387dc0bf089f8ef",
+      "record_id": "10000000-0000-4000-8000-000000000202",
+      "recorded_at": "2026-08-14T11:01:00Z",
+      "runtime_profile_digest": "sha256:a8aa8ab9ed28ab4d7fb7b9767395461409f9defbd05bfcabd1105c1c81273558",
+      "runtime_profile_id": "synthetic-foundry-replay-profile-v1",
+      "session_id": "10000000-0000-4000-8000-000000002202",
+      "signature_bundle_hash": "sha256:88ee45d635595437f1538395fddbf12ac3e689600f4465640f3c37c28c2dded3",
+      "signer_key_id": "example-attestation-key-v1",
+      "tool_profile_digest": "sha256:e617a2e52726c378cca8cb7cb1a7aefdeeb7a7579581bdf38ef26882b85be4ff"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015003",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6",
+          "observed_at": "2026-08-14T11:01:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015003:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "health-state",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:053d91e5899dde64cd981b849d34daf23d5e821f797059443871d52f928605ac",
+      "record_id": "10000000-0000-4000-8000-000000001420",
+      "recorded_at": "2026-08-14T11:01:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:24d559f554e853703ceb5a9be15e2ac9e43181c9df1e967d273dae4bc79c0811",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:b6cd954cb6285e4cb52ef8bb8685ba0b296c270fa24b538fa62aeea2327f0754"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015004",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5",
+          "observed_at": "2026-08-14T11:02:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015004:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "health-state",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:8962f02cfe50aa67a5e89fd7eea068a4f4ca5e23d4c8c90059f5cb1839797835",
+      "record_id": "10000000-0000-4000-8000-000000001430",
+      "recorded_at": "2026-08-14T11:02:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:f1400cbf7ab8cab4a8c398ad8c1bc842e1f4a41664ea28207f5c220302314bd9",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:24e956b0446597f36a6d84a720ba6fdc226dd4bdf0b625b2ec8c1e52b09e4abe"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015005",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626",
+          "observed_at": "2026-08-14T11:03:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015005:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "matches-desired-digest",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:f8c8c4b517d166fe6386ba1662d07125bacc3da392a613a993ddbbd65b868622",
+      "record_id": "10000000-0000-4000-8000-000000001440",
+      "recorded_at": "2026-08-14T11:03:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:d94c1fcff84dae0f35d7ac6aebdbfe3295e1f72db832d0d8ed106f109b1f6c33",
+      "subject": "synthetic-image",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T12:00:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:34c50e60216ac790348fcbcc826f27cf2f65431541d412e8f16496fbbd88813d"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015003",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6",
+          "observed_at": "2026-08-14T11:01:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015003:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:053d91e5899dde64cd981b849d34daf23d5e821f797059443871d52f928605ac",
+      "record_hash": "sha256:f70a49047536345e6b03f51ec70e724bb51f1a2fe479a50a1bbb7656227af46c",
+      "record_id": "10000000-0000-4000-8000-000000001421",
+      "recorded_at": "2026-08-14T11:05:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:24d559f554e853703ceb5a9be15e2ac9e43181c9df1e967d273dae4bc79c0811",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:ab38c095e89074bf0fd84fc425a44390702c61aa3bbdffe9f563ced34b47fb9a"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015004",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5",
+          "observed_at": "2026-08-14T11:02:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015004:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:8962f02cfe50aa67a5e89fd7eea068a4f4ca5e23d4c8c90059f5cb1839797835",
+      "record_hash": "sha256:67b91a93da3cfd7a5754ac9ddca42a1adfdd07bf82a65d65dfd5167b4844d96a",
+      "record_id": "10000000-0000-4000-8000-000000001431",
+      "recorded_at": "2026-08-14T11:06:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:f1400cbf7ab8cab4a8c398ad8c1bc842e1f4a41664ea28207f5c220302314bd9",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:d495775bb49005ae923182f9c47e21ce45e0a96e1dce433018edfb231e058447"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015005",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626",
+          "observed_at": "2026-08-14T11:03:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015005:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "matches-desired-digest",
+      "prior_claim_hash": "sha256:f8c8c4b517d166fe6386ba1662d07125bacc3da392a613a993ddbbd65b868622",
+      "record_hash": "sha256:0e066775b0af71bcdcca142dd01bf4dc3c0109b9a41a3d3bd919ff4270e50133",
+      "record_id": "10000000-0000-4000-8000-000000001441",
+      "recorded_at": "2026-08-14T11:07:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:d94c1fcff84dae0f35d7ac6aebdbfe3295e1f72db832d0d8ed106f109b1f6c33",
+      "subject": "synthetic-image",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T12:00:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:8f1cd102a0e6c22446f5ab30d1eaa528beb1f045d1025e83fbcc04fc41b2bdcb"
+    },
+    {
+      "adversarial_review": {
+        "evidence_hash": "sha256:497260f6fc0637a36d9b610f4d576e2159138cc36d90f5a7c71d762f4264d64f",
+        "name": "adversarial-review",
+        "status": "passed"
+      },
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "budget": {
+        "maximum_calls": 10,
+        "maximum_cost_microunits": 100000,
+        "maximum_tokens": 25000
+      },
+      "candidate_id": "10000000-0000-4000-8000-000000010001",
+      "closed_gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+      "code_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+      "dependency_lock_digest": "sha256:0cdc941018e02752aca9bc864814c98eedf3160b77b813e489b314f3f5c8627a",
+      "foundry_admission_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+      "kind": "CapabilityCandidate",
+      "model": {
+        "adapter_digest": "sha256:b6a8210fc8d730ccc42cdfb95f09a5ba7c45d678ce3e5e3d884b83dd8d103970",
+        "model": "example-model-beta",
+        "provider": "example-provider-b",
+        "version": "synthetic-2026-08-14"
+      },
+      "record_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+      "record_id": "10000000-0000-4000-8000-000000000800",
+      "recorded_at": "2026-08-14T11:10:00Z",
+      "reviewer": "example-foundry-review-controller",
+      "reviewer_key_id": "example-foundry-review-key-v1",
+      "self_install_allowed": false,
+      "self_promotion_allowed": false,
+      "signature_bundle_hash": "sha256:b222c618830c077d325aa8d53421df181bbc8fa43d721f6e64e8692dfa0ab036",
+      "source_digest": "sha256:3b1726a9ca9396a54ce46667c964ad76d88fa02286ccc2601c67ec6f2f58ff15",
+      "source_revision": "1111111111111111111111111111111111111111",
+      "static_review": {
+        "evidence_hash": "sha256:01faeaad4ec178b5d17addd30dc6b859bf03700e4bed2514f98d11491ffb6ddb",
+        "name": "static-review",
+        "status": "passed"
+      },
+      "status": "evaluated",
+      "tool_profile_digest": "sha256:2cad743860f2f3984cf8c9dc530828ac2990f83619d66ecc51005f098cb6c0c0"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015002",
+      "claim_revision": 4,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22",
+          "observed_at": "2026-08-14T10:56:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015002:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:3f5d300e5e5b763580bd948d82b46279dbda34c537f42d533d2aa808128fec22"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "accepted",
+      "predicate": "has-verified-provenance",
+      "prior_claim_hash": "sha256:9e7ef204d10a2166a86fd65539dfbe8b670c067d08cedae448c17a0c944c47ad",
+      "record_hash": "sha256:42e5ba44ef85f8be0e0b96c88f53f452f2995c1e86a799bab2104e55a9085bfb",
+      "record_id": "10000000-0000-4000-8000-000000001413",
+      "recorded_at": "2026-08-14T11:10:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:21acb9f997877d7bdb24059b54366fb03d9a6fa16654504f4025b9ebde21adb0",
+      "subject": "synthetic-release",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to accepted.",
+      "transition_signature_bundle_hash": "sha256:4fea47e5f7c50f2f31449d0249be687ff5d538bdc561e1aa8126b3f0cd30a85d"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015003",
+      "claim_revision": 3,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6",
+          "observed_at": "2026-08-14T11:01:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015003:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "proposed",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:f70a49047536345e6b03f51ec70e724bb51f1a2fe479a50a1bbb7656227af46c",
+      "record_hash": "sha256:ae449e0df9a5f7eb758c949437ad841530a7c60293fc04086780656ccfe17494",
+      "record_id": "10000000-0000-4000-8000-000000001422",
+      "recorded_at": "2026-08-14T11:11:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:24d559f554e853703ceb5a9be15e2ac9e43181c9df1e967d273dae4bc79c0811",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to proposed.",
+      "transition_signature_bundle_hash": "sha256:3e045b40fca80b0acbd82110c342f58636f11f2311478ac4555158ebe60fe0c4"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015004",
+      "claim_revision": 3,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5",
+          "observed_at": "2026-08-14T11:02:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015004:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "proposed",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:67b91a93da3cfd7a5754ac9ddca42a1adfdd07bf82a65d65dfd5167b4844d96a",
+      "record_hash": "sha256:f3845919f95230326fff192af365eda7cd811646a6cdf8273bc886959e6c85e5",
+      "record_id": "10000000-0000-4000-8000-000000001432",
+      "recorded_at": "2026-08-14T11:12:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:f1400cbf7ab8cab4a8c398ad8c1bc842e1f4a41664ea28207f5c220302314bd9",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to proposed.",
+      "transition_signature_bundle_hash": "sha256:0a989833d73a13c0146e7a6a2a483129935a5e5d38d4b012a607e81194ed0f7e"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015003",
+      "claim_revision": 4,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6",
+          "observed_at": "2026-08-14T11:01:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015003:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:4b6406001e2db65b9e12220c9ed816c9f63d372d9e10eca32adf9033f1ebc2b6"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "accepted",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:ae449e0df9a5f7eb758c949437ad841530a7c60293fc04086780656ccfe17494",
+      "record_hash": "sha256:526771541d8d1dd50dafb343e70906ed8d526f0354e6d2537ca8a77e236f50e9",
+      "record_id": "10000000-0000-4000-8000-000000001423",
+      "recorded_at": "2026-08-14T11:15:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:24d559f554e853703ceb5a9be15e2ac9e43181c9df1e967d273dae4bc79c0811",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to accepted.",
+      "transition_signature_bundle_hash": "sha256:d2589b2135f2e092a0ca29393302815a1a0096dc75b0d99a0fcb81bfabf047db"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015004",
+      "claim_revision": 4,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5",
+          "observed_at": "2026-08-14T11:02:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015004:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:dc8fe364321173bfac051da37acc9d4d6c142d54ab29ca7577abaf7afee5c7d5"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "accepted",
+      "predicate": "health-state",
+      "prior_claim_hash": "sha256:f3845919f95230326fff192af365eda7cd811646a6cdf8273bc886959e6c85e5",
+      "record_hash": "sha256:4427bf34a3be6fe9eb671375eb8ca7cd260f4ded413fa3cd242ecac048052a9d",
+      "record_id": "10000000-0000-4000-8000-000000001433",
+      "recorded_at": "2026-08-14T11:16:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:f1400cbf7ab8cab4a8c398ad8c1bc842e1f4a41664ea28207f5c220302314bd9",
+      "subject": "synthetic-route",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to accepted.",
+      "transition_signature_bundle_hash": "sha256:c8dd68a85e9c6ef078d5179cc32b680b51ab2ef6a43396a77a9bd40f80cb0f32"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015005",
+      "claim_revision": 3,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626",
+          "observed_at": "2026-08-14T11:03:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015005:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "proposed",
+      "predicate": "matches-desired-digest",
+      "prior_claim_hash": "sha256:0e066775b0af71bcdcca142dd01bf4dc3c0109b9a41a3d3bd919ff4270e50133",
+      "record_hash": "sha256:dc139ee7aa09a6dc6603e01a6ea628f11c868f11eaa66a9e9062736b22284224",
+      "record_id": "10000000-0000-4000-8000-000000001442",
+      "recorded_at": "2026-08-14T11:17:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:d94c1fcff84dae0f35d7ac6aebdbfe3295e1f72db832d0d8ed106f109b1f6c33",
+      "subject": "synthetic-image",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T12:00:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to proposed.",
+      "transition_signature_bundle_hash": "sha256:5ea1ab9ad7054a60da016dd70f1dd716224f2eae765d5e1684460ff65b49983c"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015005",
+      "claim_revision": 4,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626",
+          "observed_at": "2026-08-14T11:03:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015005:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f8a35a8f85ebacf4f545453f4e6055b59468b745dcdfe4d8e8b55421d25a7626"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "accepted",
+      "predicate": "matches-desired-digest",
+      "prior_claim_hash": "sha256:dc139ee7aa09a6dc6603e01a6ea628f11c868f11eaa66a9e9062736b22284224",
+      "record_hash": "sha256:ff319c17c46255f6f95844640faba11baf28199781609c3b2ef314ce22124e5e",
+      "record_id": "10000000-0000-4000-8000-000000001443",
+      "recorded_at": "2026-08-14T11:20:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:d94c1fcff84dae0f35d7ac6aebdbfe3295e1f72db832d0d8ed106f109b1f6c33",
+      "subject": "synthetic-image",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T12:00:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to accepted.",
+      "transition_signature_bundle_hash": "sha256:138b27411b50f674f7c04d9f6f1db38aaa75a5694571d0e559c6ef67723208b7"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015006",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:bd2b7a60c948009c53c320e85127800205741bb48ad3784df16173ccd53a2c68",
+          "observed_at": "2026-08-14T11:24:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015006:1",
+          "trust_state": "untrusted"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:7e443c0fa754506a953950299560a43667fdcfc366c320721c753c302f7e9660"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "implies-convergence",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:633b18dd096e6bb4d760788ebb901d07f7def146258ae7677495a7f702b680a3",
+      "record_id": "10000000-0000-4000-8000-000000001450",
+      "recorded_at": "2026-08-14T11:24:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:410c9b5e4b02f4f2232c51e63836ec540cb2e1b61432f0c0f6b9da6f1c25acc9",
+      "subject": "synthetic-observation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:a478bb85e5a9001c941c4354a089e90fcdbb9fb4f429f11f87fb9caa9260ebdb"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015006",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:bd2b7a60c948009c53c320e85127800205741bb48ad3784df16173ccd53a2c68",
+          "observed_at": "2026-08-14T11:24:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015006:1",
+          "trust_state": "untrusted"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:7e443c0fa754506a953950299560a43667fdcfc366c320721c753c302f7e9660"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "inferred",
+      "predicate": "implies-convergence",
+      "prior_claim_hash": "sha256:633b18dd096e6bb4d760788ebb901d07f7def146258ae7677495a7f702b680a3",
+      "record_hash": "sha256:cf755ca59f9b95be0b0ff501aab562bc8e3752f23616d36af0e79ee4de0ece85",
+      "record_id": "10000000-0000-4000-8000-000000001451",
+      "recorded_at": "2026-08-14T11:25:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:410c9b5e4b02f4f2232c51e63836ec540cb2e1b61432f0c0f6b9da6f1c25acc9",
+      "subject": "synthetic-observation",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to inferred.",
+      "transition_signature_bundle_hash": "sha256:483760d5909cf42a1f73a5c12f42969846155a92f0eada91ea18f36c686982d1"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015007",
+      "claim_revision": 1,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:1710be19745a452db361e012067ac3b8b0d6c4993b0e6207e8e54dbf5672b552",
+          "observed_at": "2026-08-14T11:30:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015007:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:1710be19745a452db361e012067ac3b8b0d6c4993b0e6207e8e54dbf5672b552"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "observed",
+      "predicate": "is-operationally-supported",
+      "prior_claim_hash": null,
+      "record_hash": "sha256:a92d16be1dd0d252adc58e2f9873ac58b6dc84813945d64b3e6542e50938cd2c",
+      "record_id": "10000000-0000-4000-8000-000000001460",
+      "recorded_at": "2026-08-14T11:30:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:4151993d968f4e4279b945affbff0e14bd0ff92520a32874146a2b11a7f28bb5",
+      "subject": "synthetic-capability",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to observed.",
+      "transition_signature_bundle_hash": "sha256:7455b5e94a99d03c965a3072c3bae0919480736c02245a149259f930845d54d4"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "candidate_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+      "closed_gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+      "credentials_accessed": false,
+      "deterministic_gates": [
+        {
+          "evidence_hash": "sha256:593c31cd11d73b50fc76cdfa2c886170231b68b65c8d64773f99dbf0210ad6d9",
+          "name": "dagger-gate",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:92f8bbe4914b5844c83d9e0b41c5ebf57811d1966c6a66af70fd5634fd1eabe4",
+          "name": "deterministic-tests",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:accf6f7171091f5b3e54d0adef8800a26b0db6535b62c79488d923c9e37567e5",
+          "name": "synthetic-or-replay-evaluation",
+          "status": "passed"
+        }
+      ],
+      "evaluation_id": "10000000-0000-4000-8000-000000011001",
+      "evaluator_attestation_hash": "sha256:4cae641ec90fc4523e591ed8ad11146a1b645687aa83f6c65387dc0bf089f8ef",
+      "evaluator_model": {
+        "adapter_digest": "sha256:ac3d3da0f9460d984c490fed879642d704d3e3a314b6d1d22549194e4f8bf25f",
+        "model": "example-replay-model",
+        "provider": "example-foundry-provider",
+        "version": "synthetic-2026-08-14"
+      },
+      "fixture_bundle_digest": "sha256:30e7e7fd1c8a142a86c697a9d263987cb1d6273047ab58314d97e62267061ba8",
+      "foundry_admission_hash": "sha256:4b7e353fa26ad728ff0dc542e6a17b977c8e75e23aabf4f25511d367b284ce00",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "issuer": "example-foundry-evaluation-controller",
+      "kind": "CapabilityEvaluation",
+      "outcome": "passed",
+      "production_accessed": false,
+      "record_hash": "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59",
+      "record_id": "10000000-0000-4000-8000-000000000900",
+      "recorded_at": "2026-08-14T11:40:00Z",
+      "replay_bundle_digest": "sha256:9de6f5cad4181f1dcb974d71ecdc6b65ed52bc25150a78bfd41fb90653d0aee1",
+      "result_evidence_hashes": [
+        "sha256:bc5fe9cadf0e19c19ecf4ac303ff57c599d3fc01f6b764917953dd58da20395e"
+      ],
+      "security_gates": [
+        {
+          "evidence_hash": "sha256:5a1eee4ea03bc72094c00dae845e52d0b85c26552763d523a3d89783ce022bf8",
+          "name": "cordis-disposal-not-external-rollback",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:fcf628890efe13746a197d1a5cad03fbdc9fbd135eac08cad817dc3c1ad11baf",
+          "name": "deny-bash",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:eae7434cc7a9ca6ce4937fc6159e07ed15b22121bd2bcb764e3e28910f6adfbc",
+          "name": "deny-docker-socket",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:209ed4807ae0d365b7208835f2c44ea45bfbfd0977590f4b3fabf0cc72daf791",
+          "name": "deny-external-write",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:0ba0b5791844e6031bb88f37825e11393a09965af2097017d5323e83c1511b23",
+          "name": "deny-onepassword",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:9fc4ded6931899aa4dfe59fa79c7294b0c31ae8e592403aad7d1d548b3028687",
+          "name": "deny-production-mcp",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:c071c4d6d927c283a9c5100b6f832cee198a91bda767892ea9762d016de667ae",
+          "name": "deny-provider-credentials",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:be30910ac3ddc645c64aee698fb88594495ad4b55c535871e3a2b8b77d3e3dd3",
+          "name": "deny-self-promotion-install",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:5cbccd2762dcf5c6be1ed9c461b08a025d98c8881ca6a7aad0bd4e816cd409d7",
+          "name": "deny-ssh",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:3a2f4a7b666704a38e0971aba6e844d8d8603cc2a5b75b4bc4860314697ce4e3",
+          "name": "dockhand-only-mutation",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:82e74e632f03253b08cdde25ccc7f142ca0634df4422daf45c3180186dfa0bb4",
+          "name": "prompt-injection-capability-candidates",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:4caa841e152c93756a77d7d125490f8ea5a085695f22bda2bfa468ee06b00724",
+          "name": "prompt-injection-issues",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:17d64890df40b7ffc7feade1ac79777d8e913bb79f6f54cbe90d9a6efb02e505",
+          "name": "prompt-injection-logs",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:e3c35dc5d7782f25fff870bfcd17e735884c54d65dd8f39f76e52e4bbbfa7ca0",
+          "name": "prompt-injection-mcp-results",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:2becf729fb76b1e1f2ab7e9f88f241edebf6842343458bef948760d9404c2895",
+          "name": "prompt-injection-prs",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:aa691be03f93df27645af2dd7a95b54b3244ea7716a10fafb2483612dfbb032a",
+          "name": "secret-scan-clean",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:469f6d14f4c941fc99106c5f6f712940cf542394d17ca81d305f3f08fb0aa04e",
+          "name": "verify-async-work-terminated",
+          "status": "passed"
+        },
+        {
+          "evidence_hash": "sha256:2e236d54419a46c37f59b6a66e4d7ae1bb27808c0eb9de6b4250740f189548e5",
+          "name": "verify-one-job-destruction",
+          "status": "passed"
+        }
+      ],
+      "signature_bundle_hash": "sha256:9403619358aefbd65b463618ed1a385e70849e67db8656214dce4419a0b2e586",
+      "signer_key_id": "example-foundry-evaluation-key-v1",
+      "terminal_artifact": "draft_promotion_artifact"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "candidate_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+      "closed_gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+      "draft_pr_request_hash": "sha256:42cf5695978409a70a3dbebe5eb954714eb01af8a6a370bc5cb64cbf089e6b26",
+      "evaluation_hash": "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "human_review": {
+        "decision": "pending",
+        "evidence_hash": null,
+        "provenance_state": "pending-unsigned",
+        "review_id": "10000000-0000-4000-8000-000000012002",
+        "reviewed_at": null,
+        "reviewer": "example-human-reviewer",
+        "reviewer_key_id": null,
+        "signature_bundle_hash": null
+      },
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityPromotion",
+      "may_deploy": false,
+      "may_install": false,
+      "may_merge": false,
+      "may_publish": false,
+      "overlay_selection": null,
+      "permitted_action": "draft_pr_request",
+      "prior_promotion_hash": null,
+      "promotion_id": "10000000-0000-4000-8000-000000012001",
+      "promotion_revision": 1,
+      "record_hash": "sha256:d19acb3f9f4b87bbb1133daeb954af8f8b3494a135f53cdca4cee7963a6a103d",
+      "record_id": "10000000-0000-4000-8000-000000001000",
+      "recorded_at": "2026-08-14T11:45:00Z",
+      "signed_release": null,
+      "status": "review_requested"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "candidate_hash": "sha256:fffd74b2c9b41a75f2fa57d805e992a686747b98821137889c25a31e47e35c7c",
+      "closed_gap_hash": "sha256:3a86bc726f46c25e828221a61e79c468edea3534dfee5d05e6fa731d8eca6813",
+      "draft_pr_request_hash": "sha256:42cf5695978409a70a3dbebe5eb954714eb01af8a6a370bc5cb64cbf089e6b26",
+      "evaluation_hash": "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "human_review": {
+        "decision": "approved",
+        "evidence_hash": "sha256:afbee26b6e5767b770a62f5be040be16fd854dcfb4187ace790774c7ace4b4df",
+        "provenance_state": "externally-authenticated",
+        "review_id": "10000000-0000-4000-8000-000000012002",
+        "reviewed_at": "2026-08-14T11:58:00Z",
+        "reviewer": "example-human-reviewer",
+        "reviewer_key_id": "example-human-review-key-v1",
+        "signature_bundle_hash": "sha256:e82c8e976ad097524afbea12f1db4573fd78b5b52d037a5eae53a353153e55d2"
+      },
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityPromotion",
+      "may_deploy": false,
+      "may_install": false,
+      "may_merge": false,
+      "may_publish": false,
+      "overlay_selection": {
+        "capability_id": "synthetic-convergence-analyzer",
+        "overlay_selection_digest": "sha256:ec7977d8c01886e6973c16e7d1fdbab3edff646875f731ed70d59330c752a845",
+        "package_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+        "profile_digest": "sha256:56cdcdbe9b002e9098b486063fd21a30976a82e63233a233a133ab4f41a37a0c",
+        "release_binding_digest": "sha256:e6bbec2a96efa81d7374d8cfb2d8a202f8717abbe2118d41a87ecbdc666fb5fa",
+        "release_id": "synthetic-convergence-analyzer-v1.0.0",
+        "selected_at": "2026-08-14T12:00:00Z",
+        "selection_evidence_hash": "sha256:d74bbeb5927b2079fb5f180f5a6186546dfe71bff8588089de9b612c481f79d0",
+        "selection_id": "10000000-0000-4000-8000-000000012003",
+        "selector": "example-human-reviewer",
+        "selector_key_id": "example-overlay-selection-key-v1",
+        "signature_bundle_hash": "sha256:f67c8144d53bfa93e77f7535da16cf3bb6ff6c8a46e5b7170307209f5bf0e485",
+        "signed_release_digest": "sha256:69784a29895d0d404cea63ec6727573a81b336ccec41d775c0d5296eefa3dba3"
+      },
+      "permitted_action": "draft_pr_request",
+      "prior_promotion_hash": "sha256:d19acb3f9f4b87bbb1133daeb954af8f8b3494a135f53cdca4cee7963a6a103d",
+      "promotion_id": "10000000-0000-4000-8000-000000012001",
+      "promotion_revision": 2,
+      "record_hash": "sha256:1d521e510030d71078088ba43400d1bce572ddc66993beba0142a9f659f910ab",
+      "record_id": "10000000-0000-4000-8000-000000001001",
+      "recorded_at": "2026-08-14T12:00:00Z",
+      "signed_release": {
+        "artifact_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+        "manifest_hash": "sha256:3f9d5f4b26cad48bdff72d6110e1a368f1a08438f52f5c3d60274b892c1f4e5a",
+        "release": {
+          "capability_id": "synthetic-convergence-analyzer",
+          "interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+          "overlay_selection_digest": "sha256:ec7977d8c01886e6973c16e7d1fdbab3edff646875f731ed70d59330c752a845",
+          "package_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+          "profile_digest": "sha256:56cdcdbe9b002e9098b486063fd21a30976a82e63233a233a133ab4f41a37a0c",
+          "release_id": "synthetic-convergence-analyzer-v1.0.0",
+          "signature_bundle_hash": "sha256:c3827ad08bc900d3696a9bb77f51b9dbe863543110820736682529f54f4d3fb5",
+          "signer_key_id": "example-release-key-v1"
+        },
+        "signed_at": "2026-08-14T12:00:00Z",
+        "signing_evidence_hash": "sha256:1cdef5c24f68d5c8724e98007ba06595757dff0a2989f5fc59ccc01b0480b1ef"
+      },
+      "status": "approved_for_release"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "audience": "synthetic-convergence-provider",
+      "budget": {
+        "maximum_calls": 2,
+        "maximum_cost_microunits": 1000,
+        "maximum_tokens": 100
+      },
+      "capability_id": "synthetic-convergence-analyzer",
+      "constitution_hash": "sha256:315f5f090afc0d06cd0d42c45314b46a57d2af4ee1cf333680ebb619f3bfea79",
+      "evidence_preconditions": [
+        "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59"
+      ],
+      "expires_at": "2026-08-14T13:00:00Z",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "identity_revision_hash": "sha256:fa6bf5ed7ada4b290c4252f5c901d1ffd63b1dbb80791046489cd548d4bc40e2",
+      "issued_at": "2026-08-14T12:05:00Z",
+      "issuer": "example-capability-lease-issuer",
+      "issuer_key_id": "example-capability-lease-key-v1",
+      "kind": "CapabilityLease",
+      "lease_id": "10000000-0000-4000-8000-000000013001",
+      "mode": "read",
+      "nonce": "10000000-0000-4000-8000-000000013002",
+      "overlay_selection_hash": "sha256:52ba5c4fc946fbe29794f56ded2e686995432a3fa0f0443a651e8d023b1b55c5",
+      "permitted_interface": "synthetic-platform-convergence-analyzer-v1",
+      "record_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+      "record_id": "10000000-0000-4000-8000-000000001100",
+      "recorded_at": "2026-08-14T12:05:00Z",
+      "release": {
+        "capability_id": "synthetic-convergence-analyzer",
+        "interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+        "overlay_selection_digest": "sha256:ec7977d8c01886e6973c16e7d1fdbab3edff646875f731ed70d59330c752a845",
+        "package_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+        "profile_digest": "sha256:56cdcdbe9b002e9098b486063fd21a30976a82e63233a233a133ab4f41a37a0c",
+        "release_id": "synthetic-convergence-analyzer-v1.0.0",
+        "signature_bundle_hash": "sha256:c3827ad08bc900d3696a9bb77f51b9dbe863543110820736682529f54f4d3fb5",
+        "signer_key_id": "example-release-key-v1"
+      },
+      "revocation_identity": "synthetic-convergence-revocation",
+      "runtime_attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "runtime_installation_id": "synthetic-mac-engineer",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "signature_bundle_hash": "sha256:07cc0585f846a191008149d0358ec4cf76cdc4827284519dc71990076bf0f127",
+      "status": "active"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015001",
+      "claim_revision": 5,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542",
+          "observed_at": "2026-08-14T10:15:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015001:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:f1bb149d8444a65edcaaa05465f065f1c2b9db54a9685aecfb897fb079d1c542"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "superseded",
+      "predicate": "has-release-drift",
+      "prior_claim_hash": "sha256:6e7a3e4786853a237cf41134ff839b190df46d48903d2c0d0f1db21a2d0eafe1",
+      "record_hash": "sha256:1dbad5acbdc00a0e23b511cdcc68516ad2317875d08e48a0bc87689c9063c10c",
+      "record_id": "10000000-0000-4000-8000-000000001404",
+      "recorded_at": "2026-08-14T12:10:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005001",
+      "statement_hash": "sha256:48b220ccfa3a055d1b414cdd0725b8fca7acbab3189cecc1052e89ff46f6c9ab",
+      "subject": "synthetic-platform-installation",
+      "supersedes_claim_hash": "sha256:6e7a3e4786853a237cf41134ff839b190df46d48903d2c0d0f1db21a2d0eafe1",
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to superseded.",
+      "transition_signature_bundle_hash": "sha256:af3e85fd6baf699d7f5c823f1cf2e6e685430b19bf72d3aa22c9227d3c49ea42"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "argument_hash": "sha256:efba7ffbc54914956b51092f45bfe39f7e0fd1965725759e8ff66c2bc408041f",
+      "call_index": 1,
+      "call_nonce": "10000000-0000-4000-8000-000000014002",
+      "capability_id": "synthetic-convergence-analyzer",
+      "capability_lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+      "completed_at": "2026-08-14T12:10:30Z",
+      "disposition": "succeeded",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "input_evidence_hashes": [
+        "sha256:16159303925ad5df535346c512e3ecaffbc4895f00ca85ff632ed65c1fa39a59"
+      ],
+      "invocation_id": "10000000-0000-4000-8000-000000014001",
+      "kind": "CapabilityInvocation",
+      "mode": "read",
+      "permitted_interface": "synthetic-platform-convergence-analyzer-v1",
+      "provider_id": "synthetic-convergence-provider",
+      "provider_key_id": "example-provider-key-v1",
+      "provider_signature_bundle_hash": "sha256:c9eb5f42e6a3925ac339a79300f7f5f3e2860540cfec8f82732099975b25c18b",
+      "provider_validations": [
+        {
+          "attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+          "lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+          "phase": "entry",
+          "result": "accepted",
+          "validated_at": "2026-08-14T12:10:00Z"
+        },
+        {
+          "attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+          "lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+          "phase": "before_return",
+          "result": "accepted",
+          "validated_at": "2026-08-14T12:10:30Z"
+        }
+      ],
+      "record_hash": "sha256:e743036bc43eaccd4fe8c703e7b8919ed17256ee3074f5090539c009a83d90df",
+      "record_id": "10000000-0000-4000-8000-000000001200",
+      "recorded_at": "2026-08-14T12:10:30Z",
+      "result_hash": "sha256:b25be07110cf425477f160cf633e8d6c9701fdbe845feab08ecafcfe27312927",
+      "runtime_attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "settled_usage": {
+        "calls": 1,
+        "cost_microunits": 100,
+        "tokens": 20
+      },
+      "started_at": "2026-08-14T12:10:00Z"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "claim_id": "10000000-0000-4000-8000-000000015007",
+      "claim_revision": 2,
+      "evidence": [
+        {
+          "evidence_hash": "sha256:1710be19745a452db361e012067ac3b8b0d6c4993b0e6207e8e54dbf5672b552",
+          "observed_at": "2026-08-14T11:30:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/claim:10000000-0000-4000-8000-000000015007:1",
+          "trust_state": "verified"
+        }
+      ],
+      "evidence_preconditions": [
+        "sha256:1710be19745a452db361e012067ac3b8b0d6c4993b0e6207e8e54dbf5672b552"
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "KnowledgeClaim",
+      "knowledge_state": "revoked",
+      "predicate": "is-operationally-supported",
+      "prior_claim_hash": "sha256:a92d16be1dd0d252adc58e2f9873ac58b6dc84813945d64b3e6542e50938cd2c",
+      "record_hash": "sha256:1ae97e1895033f95d5ed143708aaf2595ddd0aa824b25546030c6178fc4b1fbc",
+      "record_id": "10000000-0000-4000-8000-000000001461",
+      "recorded_at": "2026-08-14T12:15:00Z",
+      "source_domain": "synthetic",
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "statement_hash": "sha256:4151993d968f4e4279b945affbff0e14bd0ff92520a32874146a2b11a7f28bb5",
+      "subject": "synthetic-capability",
+      "supersedes_claim_hash": null,
+      "supported_until": "2026-08-14T13:30:00Z",
+      "transition_authorizer": "example-knowledge-controller",
+      "transition_key_id": "example-knowledge-key-v1",
+      "transition_reason": "Explicitly transition the synthetic claim to revoked.",
+      "transition_signature_bundle_hash": "sha256:4d46614e66eec63e2d023cdde1e6bcaca898455499cb8ae60fc1dadff622871b"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "closed_at": null,
+      "closure_reason": null,
+      "description": "The evidence is insufficient for candidate synthesis and remains pending.",
+      "evidence": [
+        {
+          "evidence_hash": "sha256:46c1a87287351f17fafe45cde4d2b54c182b8261f3538a8282b97ee77da440ca",
+          "observed_at": "2026-08-14T12:19:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/pending-gap",
+          "trust_state": "untrusted"
+        }
+      ],
+      "gap_id": "10000000-0000-4000-8000-000000008002",
+      "gap_revision": 1,
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityGap",
+      "prior_gap_hash": null,
+      "record_hash": "sha256:c76da58b87c3d625419ba797b2bbf6bf0539a6aa2f8a08fdf90b12862cabae3e",
+      "record_id": "10000000-0000-4000-8000-000000000602",
+      "recorded_at": "2026-08-14T12:20:00Z",
+      "recurring_gap_ids": [],
+      "required_interface": "synthetic-investigation-only-v1",
+      "required_interface_schema_digest": "sha256:37cec3598e27bf5c3d669e8b668fb8a7e583f6ee7b340684ca8ed434e4c7217f",
+      "scope": {
+        "installation_id": "synthetic-platform-installation",
+        "resource_id": "synthetic-platform-installation",
+        "resource_type": "platform-installation",
+        "scope_id": "synthetic-convergence-journey",
+        "scope_type": "journey"
+      },
+      "source_episode_id": "10000000-0000-4000-8000-000000005002",
+      "status": "open",
+      "title": "Investigate an unresolved synthetic observation."
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "authorizer": "example-human-reviewer",
+      "authorizer_key_id": "example-revocation-key-v1",
+      "cordis_disposal_is_external_rollback": false,
+      "effective_at": "2026-08-14T12:20:00Z",
+      "evidence": [
+        {
+          "evidence_hash": "sha256:cd428a42bcd2163284b7cd7cb7b8a6c241c305c0c5ad7d9487e7c45c9b0320fd",
+          "observed_at": "2026-08-14T12:19:00Z",
+          "source_domain": "synthetic",
+          "source_kind": "fixture",
+          "source_ref": "fixture://synthetic-platform/capability-revocation",
+          "trust_state": "verified"
+        }
+      ],
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "kind": "CapabilityRevocation",
+      "overlay_deselection_digest": "sha256:d6e91f65a2e2be4346fe0788a69a5d11527c5beea9acce089ec54b38352126e2",
+      "overlay_selection_hash": "sha256:52ba5c4fc946fbe29794f56ded2e686995432a3fa0f0443a651e8d023b1b55c5",
+      "provider_rejection_required": true,
+      "reactive_profile_state": "deactivated",
+      "reason": "Revoke the synthetic capability after the audit fixture exercise.",
+      "record_hash": "sha256:c480ccad3c82451102e14162569ed2c404c7aba31d06a35ddea5ee7f5e6c093d",
+      "record_id": "10000000-0000-4000-8000-000000001300",
+      "recorded_at": "2026-08-14T12:20:00Z",
+      "release": {
+        "capability_id": "synthetic-convergence-analyzer",
+        "interface_schema_digest": "sha256:015ed50d4a0a41c740b065a447ea87a57f94f6ec6be482d77e27a506a04833d5",
+        "overlay_selection_digest": "sha256:ec7977d8c01886e6973c16e7d1fdbab3edff646875f731ed70d59330c752a845",
+        "package_digest": "sha256:765330596cdf60b15b889e2d6581a3644c1db0474875c5fe60b5d1e0c5d2bf79",
+        "profile_digest": "sha256:56cdcdbe9b002e9098b486063fd21a30976a82e63233a233a133ab4f41a37a0c",
+        "release_id": "synthetic-convergence-analyzer-v1.0.0",
+        "signature_bundle_hash": "sha256:c3827ad08bc900d3696a9bb77f51b9dbe863543110820736682529f54f4d3fb5",
+        "signer_key_id": "example-release-key-v1"
+      },
+      "revocation_id": "synthetic-convergence-revocation-record",
+      "signature_bundle_hash": "sha256:61d777f2ea4a3aa2bf96cd6eeb0206cac8b149c5a41dbdd51c87277527a7813b",
+      "target_revocation_identity": "synthetic-convergence-revocation"
+    },
+    {
+      "apiVersion": "platform.masonjames.dev/steward/v1",
+      "argument_hash": "sha256:4bef0d34e252ce5edf09747f8ce126c3d50aed2ca7f25411cea568121ec46bf5",
+      "call_index": 2,
+      "call_nonce": "10000000-0000-4000-8000-000000014004",
+      "capability_id": "synthetic-convergence-analyzer",
+      "capability_lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+      "completed_at": "2026-08-14T12:21:00Z",
+      "disposition": "rejected",
+      "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+      "identity": {
+        "identity_epoch": 1,
+        "identity_id": "platform-steward",
+        "identity_revision": 1
+      },
+      "input_evidence_hashes": [
+        "sha256:c480ccad3c82451102e14162569ed2c404c7aba31d06a35ddea5ee7f5e6c093d"
+      ],
+      "invocation_id": "10000000-0000-4000-8000-000000014003",
+      "kind": "CapabilityInvocation",
+      "mode": "read",
+      "permitted_interface": "synthetic-platform-convergence-analyzer-v1",
+      "provider_id": "synthetic-convergence-provider",
+      "provider_key_id": "example-provider-key-v1",
+      "provider_signature_bundle_hash": "sha256:4b7733d59c88e0ce555af637650ebb416d04c4ddea3c263bbbb1a020c9edaf0b",
+      "provider_validations": [
+        {
+          "attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+          "lease_hash": "sha256:925bbad2ffdbb8ad764770d017f72876e43e3537416e734091ca16c73d37e9cd",
+          "phase": "entry",
+          "result": "rejected",
+          "validated_at": "2026-08-14T12:21:00Z"
+        }
+      ],
+      "record_hash": "sha256:2619edf2d1a03338e82d2c51e192d82e35c0c6c7fb058c2e4f74724526157199",
+      "record_id": "10000000-0000-4000-8000-000000001201",
+      "recorded_at": "2026-08-14T12:21:00Z",
+      "result_hash": null,
+      "runtime_attestation_hash": "sha256:d540092a45699f5164da0b41f14d632d60dd1d8b5ee192022d4cc0b740b96d4a",
+      "settled_usage": {
+        "calls": 1,
+        "cost_microunits": 0,
+        "tokens": 0
+      },
+      "started_at": "2026-08-14T12:21:00Z"
+    }
+  ],
+  "records_digest": "sha256:9c6865de2b32f3e3a0616ae40ab54a0bdb70f2211d7884802301df154e4e312b",
+  "synthetic": true
+}

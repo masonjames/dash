@@ -1,0 +1,25 @@
+{
+  "canonical_commit": "c02dbcdfacc6421c10eb863016d8aff346cef436",
+  "canonical_generator": {
+    "path": "ops/steward/contracts/steward_v1.py",
+    "sha256": "sha256:6ea228e5331dec4fb72be2fc077a940928291f230955103cb20eea33652c82d4"
+  },
+  "canonical_repository": "https://github.com/masonjames/platform-infra",
+  "generated_directory": "contracts/platform-steward/v1",
+  "generated_file_count": 19,
+  "schema_manifest": {
+    "path": "contracts/platform-steward/v1/schema-manifest.json",
+    "sha256": "sha256:d685f2fd4af55f7222f3c1205b55c4bf7c20c85d0cb3038a29fa0adf5b3211ee"
+  },
+  "source_lock_version": 1,
+  "test_vectors": {
+    "audit_projection": {
+      "path": "contracts/platform-steward/v1/test-vectors/audit-projection-records.json",
+      "sha256": "sha256:9866294256dd497d31a696a58f0db854a05064a6cb4f007b93a9f36f7236223e"
+    },
+    "canonical_hash": {
+      "path": "contracts/platform-steward/v1/test-vectors/canonical-hash-vectors.json",
+      "sha256": "sha256:4525bc33203e926e2dbe8aa6319be1d33a55c36c151573a522d7f3238370e603"
+    }
+  }
+}

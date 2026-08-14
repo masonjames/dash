@@ -1,0 +1,733 @@
+{
+  "$defs": {
+    "boundedString": {
+      "maxLength": 4096,
+      "minLength": 1,
+      "type": "string"
+    },
+    "budget": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_calls": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "maximum_cost_microunits": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "maximum_tokens": {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maximum_calls",
+        "maximum_cost_microunits",
+        "maximum_tokens"
+      ],
+      "type": "object"
+    },
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evaluationGate": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "name": {
+          "$ref": "#/$defs/identifier"
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "ambiguous"
+          ]
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "evidence_hash"
+      ],
+      "type": "object"
+    },
+    "evidenceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "observed_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "source_domain": {
+          "enum": [
+            "platform-operations",
+            "platform-engineering",
+            "synthetic",
+            "replay"
+          ]
+        },
+        "source_kind": {
+          "enum": [
+            "fixture",
+            "observation",
+            "repository",
+            "release",
+            "lifecycle",
+            "human_review",
+            "evaluation"
+          ]
+        },
+        "source_ref": {
+          "maxLength": 2048,
+          "minLength": 1,
+          "type": "string"
+        },
+        "trust_state": {
+          "enum": [
+            "untrusted",
+            "cited",
+            "verified"
+          ]
+        }
+      },
+      "required": [
+        "evidence_hash",
+        "source_kind",
+        "source_ref",
+        "source_domain",
+        "observed_at",
+        "trust_state"
+      ],
+      "type": "object"
+    },
+    "humanReview": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "evidence_hash": {
+                "$ref": "#/$defs/digest"
+              },
+              "provenance_state": {
+                "const": "externally-authenticated"
+              },
+              "reviewed_at": {
+                "$ref": "#/$defs/utcTimestamp"
+              },
+              "reviewer_key_id": {
+                "$ref": "#/$defs/identifier"
+              },
+              "signature_bundle_hash": {
+                "$ref": "#/$defs/digest"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "decision": {
+                "const": "pending"
+              }
+            },
+            "required": [
+              "decision"
+            ]
+          },
+          "then": {
+            "properties": {
+              "evidence_hash": {
+                "type": "null"
+              },
+              "provenance_state": {
+                "const": "pending-unsigned"
+              },
+              "reviewed_at": {
+                "type": "null"
+              },
+              "reviewer_key_id": {
+                "type": "null"
+              },
+              "signature_bundle_hash": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "evidence_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance_state": {
+          "enum": [
+            "pending-unsigned",
+            "externally-authenticated"
+          ]
+        },
+        "review_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "reviewed_at": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/utcTimestamp"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reviewer": {
+          "$ref": "#/$defs/identifier"
+        },
+        "reviewer_key_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/identifier"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "signature_bundle_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "review_id",
+        "reviewer",
+        "reviewer_key_id",
+        "signature_bundle_hash",
+        "provenance_state",
+        "decision",
+        "reviewed_at",
+        "evidence_hash"
+      ],
+      "type": "object"
+    },
+    "identifier": {
+      "maxLength": 200,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._:/-]*$",
+      "type": "string"
+    },
+    "identityBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "identity_epoch": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "identity_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "identity_revision": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "identity_id",
+        "identity_revision",
+        "identity_epoch"
+      ],
+      "type": "object"
+    },
+    "modelProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "model": {
+          "$ref": "#/$defs/identifier"
+        },
+        "provider": {
+          "$ref": "#/$defs/identifier"
+        },
+        "version": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "version",
+        "adapter_digest"
+      ],
+      "type": "object"
+    },
+    "overlaySelection": {
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "overlay_selection_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "package_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "release_binding_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "release_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "selected_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "selection_evidence_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "selection_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "selector": {
+          "$ref": "#/$defs/identifier"
+        },
+        "selector_key_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "signature_bundle_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "signed_release_digest": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "selection_id",
+        "signed_release_digest",
+        "release_binding_digest",
+        "release_id",
+        "capability_id",
+        "package_digest",
+        "profile_digest",
+        "overlay_selection_digest",
+        "selected_at",
+        "selector",
+        "selector_key_id",
+        "signature_bundle_hash",
+        "selection_evidence_hash"
+      ],
+      "type": "object"
+    },
+    "providerValidation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "lease_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "phase": {
+          "enum": [
+            "entry",
+            "before_return"
+          ]
+        },
+        "result": {
+          "enum": [
+            "accepted",
+            "rejected"
+          ]
+        },
+        "validated_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        }
+      },
+      "required": [
+        "phase",
+        "validated_at",
+        "lease_hash",
+        "attestation_hash",
+        "result"
+      ],
+      "type": "object"
+    },
+    "releaseBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "capability_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "interface_schema_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "overlay_selection_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "package_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "profile_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "release_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "signature_bundle_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "signer_key_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "required": [
+        "release_id",
+        "capability_id",
+        "package_digest",
+        "interface_schema_digest",
+        "profile_digest",
+        "overlay_selection_digest",
+        "signer_key_id",
+        "signature_bundle_hash"
+      ],
+      "type": "object"
+    },
+    "scope": {
+      "additionalProperties": false,
+      "properties": {
+        "installation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "resource_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "resource_type": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_type": {
+          "enum": [
+            "installation",
+            "incident",
+            "journey",
+            "task"
+          ]
+        }
+      },
+      "required": [
+        "scope_type",
+        "scope_id",
+        "installation_id",
+        "resource_type",
+        "resource_id"
+      ],
+      "type": "object"
+    },
+    "settledUsage": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "const": 1
+        },
+        "cost_microunits": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "tokens": {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "calls",
+        "tokens",
+        "cost_microunits"
+      ],
+      "type": "object"
+    },
+    "signedRelease": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_digest": {
+          "$ref": "#/$defs/digest"
+        },
+        "manifest_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "release": {
+          "$ref": "#/$defs/releaseBinding"
+        },
+        "signed_at": {
+          "$ref": "#/$defs/utcTimestamp"
+        },
+        "signing_evidence_hash": {
+          "$ref": "#/$defs/digest"
+        }
+      },
+      "required": [
+        "manifest_hash",
+        "artifact_digest",
+        "release",
+        "signed_at",
+        "signing_evidence_hash"
+      ],
+      "type": "object"
+    },
+    "supportedInstallation": {
+      "additionalProperties": false,
+      "properties": {
+        "admission_state": {
+          "enum": [
+            "designated",
+            "admitted",
+            "retired"
+          ]
+        },
+        "broker_mode": {
+          "enum": [
+            "none",
+            "human-present"
+          ]
+        },
+        "embodiment": {
+          "enum": [
+            "server-sentinel",
+            "mac-engineer"
+          ]
+        },
+        "host_class": {
+          "enum": [
+            "near-platform-server",
+            "local-mac"
+          ]
+        },
+        "host_label": {
+          "$ref": "#/$defs/boundedString"
+        },
+        "installation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "runtime_enabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "installation_id",
+        "embodiment",
+        "host_label",
+        "host_class",
+        "admission_state",
+        "runtime_enabled",
+        "broker_mode"
+      ],
+      "type": "object"
+    },
+    "utcTimestamp": {
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$",
+      "type": "string"
+    },
+    "uuid": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.masonjames.dev/platform-steward/v1/reasoning-lease.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {
+      "const": "platform.masonjames.dev/steward/v1"
+    },
+    "audience": {
+      "$ref": "#/$defs/identifier"
+    },
+    "budget": {
+      "$ref": "#/$defs/budget"
+    },
+    "constitution_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "embodiment": {
+      "enum": [
+        "server-sentinel",
+        "mac-engineer",
+        "foundry-replay"
+      ]
+    },
+    "evidence_preconditions": {
+      "items": {
+        "$ref": "#/$defs/digest"
+      },
+      "maxItems": 64,
+      "minItems": 0,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "expected_previous_generation": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "expires_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "generation": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "hash_algorithm": {
+      "const": "domain-separated-canonical-json-sha256-v1"
+    },
+    "identity": {
+      "$ref": "#/$defs/identityBinding"
+    },
+    "identity_revision_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "interface_id": {
+      "const": "agent-chronicle/reasoning-owner"
+    },
+    "issued_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "issuer": {
+      "$ref": "#/$defs/identifier"
+    },
+    "issuer_key_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "kind": {
+      "const": "ReasoningLease"
+    },
+    "lease_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "lease_revision": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "mode": {
+      "const": "reason"
+    },
+    "nonce": {
+      "$ref": "#/$defs/uuid"
+    },
+    "owner_episode_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "prior_lease_hash": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/digest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "record_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "record_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "recorded_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "revocation_identity": {
+      "$ref": "#/$defs/identifier"
+    },
+    "runtime_attestation_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "runtime_installation_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "scope": {
+      "$ref": "#/$defs/scope"
+    },
+    "signature_bundle_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "state": {
+      "enum": [
+        "active",
+        "released",
+        "revoked",
+        "expired"
+      ]
+    }
+  },
+  "required": [
+    "apiVersion",
+    "kind",
+    "record_id",
+    "recorded_at",
+    "hash_algorithm",
+    "record_hash",
+    "lease_id",
+    "lease_revision",
+    "prior_lease_hash",
+    "identity",
+    "identity_revision_hash",
+    "constitution_hash",
+    "runtime_attestation_hash",
+    "runtime_installation_id",
+    "scope",
+    "issuer",
+    "issuer_key_id",
+    "signature_bundle_hash",
+    "audience",
+    "issued_at",
+    "expires_at",
+    "nonce",
+    "budget",
+    "revocation_identity",
+    "evidence_preconditions",
+    "owner_episode_id",
+    "embodiment",
+    "interface_id",
+    "mode",
+    "generation",
+    "expected_previous_generation",
+    "state"
+  ],
+  "title": "ReasoningLease",
+  "type": "object"
+}
