@@ -85,18 +85,18 @@ def test_shadow_readiness_requires_full_path_attempt_telemetry() -> None:
     assert "CREATE OR REPLACE VIEW ops.ops_shadow_readiness" in migration
 
 
-def test_agent_chronicle_candidate_is_checksummed_but_unregistered_and_disabled() -> None:
+def test_agent_chronicle_migration_is_checksummed_registered_and_disabled() -> None:
     runner = (ROOT / "scripts/migrate_ops.py").read_text()
     candidate = CHRONICLE_MIGRATION.read_bytes()
     pinned_checksum = CHRONICLE_CHECKSUM.read_text(encoding="ascii").strip()
 
-    assert CHRONICLE_MIGRATION.name not in runner
-    assert runner.count('root / "db" / "migrations" / "ops_') == 8
+    assert CHRONICLE_MIGRATION.name in runner
+    assert runner.count('root / "db" / "migrations" / "ops_') == 9
     assert hashlib.sha256(candidate).hexdigest() == pinned_checksum
-    assert b"UNREGISTERED AND DEFAULT-DISABLED" in candidate
+    assert b"REGISTERED AND DEFAULT-DISABLED" in candidate
     assert b"enabled BOOLEAN NOT NULL DEFAULT FALSE" in candidate
     assert b"VALUES (TRUE, FALSE)" in candidate
-    assert b"source and tests do not authorize applying it" in candidate
+    assert b"neither action authorizes enabling the Chronicle writer gate" in candidate
     assert b"never delete, truncate, or rewrite Chronicle history" in candidate
 
 
@@ -284,16 +284,14 @@ def test_agent_chronicle_candidate_is_trigger_immutable_and_acl_is_explicit() ->
     assert "TO dockhand_ops_writer, dash_ops_reader" in reconciliation
 
 
-def test_agent_chronicle_source_only_merge_cannot_publish_ghcr() -> None:
+def test_registered_agent_chronicle_paths_trigger_immutable_image_publication() -> None:
     workflow = (ROOT / ".github/workflows/ghcr-build.yml").read_text()
-    ignored_paths = (
+    registered_runtime_paths = (
         "db/migrations/ops_agent_chronicle_v1_disabled.sql",
         "db/migrations/ops_agent_chronicle_v1_disabled.sql.sha256",
         "db/runtime_role_privileges.sql",
-        "tests/test_migration_contract.py",
-        "tests/test_postgres_search_path_integration.py",
-        ".github/workflows/ghcr-build.yml",
+        "scripts/migrate_ops.py",
     )
 
-    for path in ignored_paths:
-        assert f'- "{path}"' in workflow
+    for path in registered_runtime_paths:
+        assert f'- "{path}"' not in workflow
