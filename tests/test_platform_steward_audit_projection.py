@@ -13,7 +13,9 @@ from typing import Any
 import pytest
 
 from dash.platform_steward_audit_projection import (
+    API_VERSION,
     CLAIM_SUPPORT_STATES,
+    RECORD_HASH_DOMAIN,
     PINNED_AUDIT_VECTOR_SHA256,
     PINNED_CANONICAL_COMMIT,
     PINNED_SOURCE_LOCK,
@@ -22,6 +24,7 @@ from dash.platform_steward_audit_projection import (
     AuditProjectionError,
     canonical_digest,
     canonical_json_bytes,
+    _derive_expected_projection,
     load_json_strict,
     load_pinned_audit_projection,
     normalize_expected_projection,
@@ -54,6 +57,56 @@ def _refresh_projection_digest(document: dict[str, Any]) -> None:
     document["expected_projection_digest"] = canonical_digest(document["expected_projection"])
 
 
+def _record(document: dict[str, Any], kind: str, **matches: Any) -> dict[str, Any]:
+    return next(
+        record
+        for record in document["records"]
+        if record["kind"] == kind and all(record[field] == expected for field, expected in matches.items())
+    )
+
+
+def _seal_record(record: dict[str, Any]) -> None:
+    unhashed = dict(record)
+    unhashed.pop("record_hash", None)
+    domain = RECORD_HASH_DOMAIN + API_VERSION.encode() + b"\x00" + record["kind"].encode() + b"\x00"
+    record["record_hash"] = "sha256:" + hashlib.sha256(domain + canonical_json_bytes(unhashed)).hexdigest()
+
+
+def _refresh_records_digest(document: dict[str, Any]) -> None:
+    document["records_digest"] = canonical_digest(document["records"])
+
+
+def _replace_hash_references(value: Any, replacements: dict[str, str]) -> None:
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if isinstance(item, str) and item in replacements:
+                value[key] = replacements[item]
+            else:
+                _replace_hash_references(item, replacements)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            if isinstance(item, str) and item in replacements:
+                value[index] = replacements[item]
+            else:
+                _replace_hash_references(item, replacements)
+
+
+def _reseal_document(document: dict[str, Any]) -> None:
+    replacements: dict[str, str] = {}
+    for record in document["records"]:
+        previous_hash = record["record_hash"]
+        _replace_hash_references(record, replacements)
+        _seal_record(record)
+        replacements[previous_hash] = record["record_hash"]
+    document["records"].sort(key=lambda item: (item["recorded_at"], item["record_id"]))
+    _refresh_records_digest(document)
+    document["expected_projection"] = _derive_expected_projection(
+        document["records"],
+        as_of=document["as_of"],
+    )
+    _refresh_projection_digest(document)
+
+
 def test_pinned_generated_mirror_loads_with_all_sections_and_no_authority() -> None:
     document = load_pinned_audit_projection(ROOT)
     projection = document["expected_projection"]
@@ -64,6 +117,8 @@ def test_pinned_generated_mirror_loads_with_all_sections_and_no_authority() -> N
     assert document["expected_projection_digest"] == canonical_digest(projection)
     assert set(projection) == {name for name, _ in PROJECTION_FIELDS}
     assert len(projection) == 16
+    derived = _derive_expected_projection(document["records"], as_of=document["as_of"])
+    assert canonical_json_bytes(derived) == canonical_json_bytes(projection)
 
 
 def test_public_vector_bytes_and_source_lock_are_exactly_pinned() -> None:
@@ -216,8 +271,40 @@ def test_projection_digest_binds_normalized_content() -> None:
         validate_audit_projection_document(document)
 
     _refresh_projection_digest(document)
-    validated = validate_audit_projection_document(document)
-    assert validated["expected_projection"]["episodes"][0]["model"]["provider"] == "another-provider"
+    with pytest.raises(AuditProjectionError, match="does not byte-match the deterministic projection"):
+        validate_audit_projection_document(document)
+
+
+def test_raw_records_are_validated_against_their_exact_closed_schema_before_hash_trust() -> None:
+    document = _document()
+    constitution = _record(document, "AgentConstitution", constitution_id="platform-steward-constitution")
+    constitution["future_field"] = "resealed-but-not-v1"
+    _seal_record(constitution)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="closed AgentConstitution schema violation"):
+        validate_audit_projection_document(document)
+
+
+def test_resealed_empty_projection_cannot_hide_the_validated_record_graph() -> None:
+    document = _document()
+    for section, value in document["expected_projection"].items():
+        if isinstance(value, list):
+            document["expected_projection"][section] = []
+    _refresh_projection_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="does not byte-match the deterministic projection"):
+        validate_audit_projection_document(document)
+
+
+def test_resealed_missing_derived_warnings_are_rejected() -> None:
+    document = _document()
+    assert document["expected_projection"]["warnings"]
+    document["expected_projection"]["warnings"] = []
+    _refresh_projection_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="does not byte-match the deterministic projection"):
+        validate_audit_projection_document(document)
 
 
 def test_record_hash_binds_each_raw_record() -> None:
@@ -236,6 +323,356 @@ def test_records_digest_binds_record_order() -> None:
         validate_audit_projection_document(document)
 
 
+def test_accepted_handoff_must_target_its_exact_child_episode() -> None:
+    document = _document()
+    handoff = _record(document, "AgentHandoff", handoff_revision=2)
+    handoff["accepted_episode_id"] = handoff["source_episode_id"]
+    _seal_record(handoff)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="accepted handoff"):
+        validate_audit_projection_document(document)
+
+
+def test_handoff_cannot_reference_a_gap_materialized_after_issuance() -> None:
+    document = _document()
+    for handoff in (record for record in document["records"] if record["kind"] == "AgentHandoff"):
+        handoff["issued_at"] = "2026-08-14T10:29:00Z"
+    source_terminal = _record(document, "AgentEpisode", episode_revision=2)
+    source_terminal["ended_at"] = "2026-08-14T10:29:00Z"
+    _reseal_document(document)
+
+    with pytest.raises(AuditProjectionError, match="new handoff must be pending"):
+        validate_audit_projection_document(document)
+
+
+def test_handed_off_episode_end_must_equal_pending_handoff_issuance() -> None:
+    document = _document()
+    source_terminal = _record(document, "AgentEpisode", episode_revision=2)
+    source_terminal["ended_at"] = "2026-08-14T10:44:00Z"
+    _reseal_document(document)
+
+    with pytest.raises(AuditProjectionError, match="handed-off episode end"):
+        validate_audit_projection_document(document)
+
+
+def test_late_terminal_episode_cannot_be_reordered_after_authority_expiry() -> None:
+    document = _document()
+    source_terminal = _record(document, "AgentEpisode", episode_revision=2)
+    source_terminal["recorded_at"] = "2026-08-14T11:05:00Z"
+    accepted_handoff = _record(document, "AgentHandoff", handoff_revision=2)
+    accepted_handoff["recorded_at"] = "2026-08-14T11:06:00Z"
+    _reseal_document(document)
+
+    with pytest.raises(
+        AuditProjectionError,
+        match="handoff reasoning-lease release|episode terminal revision",
+    ):
+        validate_audit_projection_document(document)
+
+
+def test_capability_lease_cannot_predate_approved_promotion_materialization() -> None:
+    document = _document()
+    lease = _record(document, "CapabilityLease")
+    lease["issued_at"] = "2026-08-14T11:59:00Z"
+    _reseal_document(document)
+
+    with pytest.raises(AuditProjectionError, match="signed-release and overlay binding"):
+        validate_audit_projection_document(document)
+
+
+@pytest.mark.parametrize(
+    ("kind", "matches", "field", "invalid", "message"),
+    [
+        (
+            "CapabilityCandidate",
+            {},
+            "closed_gap_hash",
+            "sha256:" + "a" * 64,
+            "present CapabilityGap",
+        ),
+        (
+            "CapabilityCandidate",
+            {},
+            "foundry_admission_hash",
+            "sha256:" + "b" * 64,
+            "present FoundryAdmissionAttestation",
+        ),
+        (
+            "CapabilityEvaluation",
+            {},
+            "candidate_hash",
+            "sha256:" + "c" * 64,
+            "present CapabilityCandidate",
+        ),
+        (
+            "CapabilityEvaluation",
+            {},
+            "evaluator_attestation_hash",
+            "sha256:" + "d" * 64,
+            "present RuntimeAttestation",
+        ),
+        (
+            "CapabilityPromotion",
+            {"promotion_revision": 1},
+            "evaluation_hash",
+            "sha256:" + "e" * 64,
+            "present CapabilityEvaluation",
+        ),
+        (
+            "CapabilityInvocation",
+            {"call_index": 1},
+            "capability_id",
+            "unrelated-capability",
+            "unrelated to its exact lease",
+        ),
+    ],
+)
+def test_resealed_records_cannot_break_required_cross_record_links(
+    kind: str,
+    matches: dict[str, Any],
+    field: str,
+    invalid: Any,
+    message: str,
+) -> None:
+    document = _document()
+    record = _record(document, kind, **matches)
+    record[field] = invalid
+    _seal_record(record)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match=message):
+        validate_audit_projection_document(document)
+
+
+def test_revocation_release_must_match_a_present_capability_lease() -> None:
+    document = _document()
+    revocation = _record(document, "CapabilityRevocation")
+    revocation["release"]["capability_id"] = "unrelated-capability"
+    _seal_record(revocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="revocation is unrelated"):
+        validate_audit_projection_document(document)
+
+
+def test_review_requested_promotion_cannot_retain_signed_release_or_overlay() -> None:
+    document = _document()
+    promotion = _record(document, "CapabilityPromotion", promotion_revision=2)
+    promotion["status"] = "review_requested"
+    promotion["human_review"].update(
+        {
+            "decision": "pending",
+            "evidence_hash": None,
+            "provenance_state": "pending-unsigned",
+            "reviewed_at": None,
+            "reviewer_key_id": None,
+            "signature_bundle_hash": None,
+        }
+    )
+    assert promotion["signed_release"] is not None
+    assert promotion["overlay_selection"] is not None
+    _seal_record(promotion)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="promotion revision|must remain unsigned"):
+        validate_audit_projection_document(document)
+
+
+def test_duplicate_generation_one_reasoning_lease_owner_fails_cas() -> None:
+    document = _document()
+    original = _record(document, "ReasoningLease", lease_revision=1, generation=1)
+    duplicate = copy.deepcopy(original)
+    duplicate.update(
+        {
+            "record_id": "10000000-0000-4000-8000-000000000303",
+            "lease_id": "10000000-0000-4000-8000-000000004003",
+            "nonce": "10000000-0000-4000-8000-000000003303",
+            "owner_episode_id": "10000000-0000-4000-8000-000000005003",
+        }
+    )
+    _seal_record(duplicate)
+    document["records"].append(duplicate)
+    document["records"].sort(key=lambda item: (item["recorded_at"], item["record_id"]))
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="compare-and-swap ownership"):
+        validate_audit_projection_document(document)
+
+
+def test_runtime_attestation_issued_after_as_of_is_rejected_even_when_resealed() -> None:
+    document = _document()
+    attestation = _record(document, "RuntimeAttestation", embodiment="server-sentinel")
+    attestation["issued_at"] = "2026-08-14T13:00:00Z"
+    _seal_record(attestation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="operational timestamp is after the fixed as_of"):
+        validate_audit_projection_document(document)
+
+
+@pytest.mark.parametrize(
+    ("kind", "matches", "mutation"),
+    [
+        (
+            "AgentConstitution",
+            {"constitution_id": "platform-steward-constitution"},
+            lambda record: record.__setitem__("effective_at", "2026-08-14T13:00:00Z"),
+        ),
+        (
+            "KnowledgeClaim",
+            {"claim_revision": 1},
+            lambda record: record["evidence"][0].__setitem__("observed_at", "2026-08-14T13:00:00Z"),
+        ),
+        (
+            "CapabilityInvocation",
+            {"call_index": 1},
+            lambda record: record["provider_validations"][0].__setitem__("validated_at", "2026-08-14T13:00:00Z"),
+        ),
+    ],
+)
+def test_all_operational_timestamps_are_bounded_by_as_of(
+    kind: str,
+    matches: dict[str, Any],
+    mutation: Any,
+) -> None:
+    document = _document()
+    record = _record(document, kind, **matches)
+    mutation(record)
+    _seal_record(record)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="operational timestamp is after the fixed as_of"):
+        validate_audit_projection_document(document)
+
+
+def test_platform_steward_cannot_be_resealed_as_a_dynamic_foundry_embodiment() -> None:
+    document = _document()
+    foundry = _record(document, "RuntimeAttestation", embodiment="foundry-replay")
+    steward_descriptor = _record(document, "AgentIdentityDescriptor", identity_id="platform-steward")
+    steward_revision = _record(
+        document,
+        "AgentIdentityRevision",
+        identity={
+            "identity_epoch": 1,
+            "identity_id": "platform-steward",
+            "identity_revision": 1,
+        },
+    )
+    foundry["identity"] = copy.deepcopy(steward_revision["identity"])
+    foundry["identity_descriptor_hash"] = steward_descriptor["record_hash"]
+    foundry["identity_revision_hash"] = steward_revision["record_hash"]
+    foundry["constitution_hash"] = steward_revision["constitution_hash"]
+    assert foundry["dynamic_cordis_allowed"] is True
+    _seal_record(foundry)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="runtime attestation identity, embodiment"):
+        validate_audit_projection_document(document)
+
+
+def test_provider_revalidates_the_exact_lease_and_attestation_on_every_call() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=1)
+    invocation["provider_validations"][1]["lease_hash"] = "sha256:" + "f" * 64
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="revalidate the exact lease"):
+        validate_audit_projection_document(document)
+
+
+def test_capability_invocation_provider_must_match_the_leased_audience() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=1)
+    invocation["provider_id"] = "unrelated-provider"
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="unrelated to its exact lease"):
+        validate_audit_projection_document(document)
+
+
+def test_capability_invocation_cannot_predate_its_lease() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=1)
+    invocation["started_at"] = "2026-08-14T12:04:00Z"
+    invocation["completed_at"] = "2026-08-14T12:04:30Z"
+    invocation["provider_validations"][0]["validated_at"] = invocation["started_at"]
+    invocation["provider_validations"][1]["validated_at"] = invocation["completed_at"]
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="unrelated to its exact lease|chronology or budget"):
+        validate_audit_projection_document(document)
+
+
+def test_successful_invocation_after_effective_revocation_is_rejected() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=2)
+    invocation["disposition"] = "succeeded"
+    invocation["provider_validations"] = [
+        {
+            **invocation["provider_validations"][0],
+            "result": "accepted",
+        },
+        {
+            **invocation["provider_validations"][0],
+            "phase": "before_return",
+            "result": "accepted",
+        },
+    ]
+    invocation["result_hash"] = "sha256:" + "a" * 64
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="chronology or budget"):
+        validate_audit_projection_document(document)
+
+
+def test_revoked_invocation_cannot_claim_entry_acceptance_after_revocation() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=2)
+    invocation["disposition"] = "revoked"
+    invocation["provider_validations"] = [
+        {
+            **invocation["provider_validations"][0],
+            "result": "accepted",
+        },
+        {
+            **invocation["provider_validations"][0],
+            "phase": "before_return",
+        },
+    ]
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="chronology or budget"):
+        validate_audit_projection_document(document)
+
+
+def test_capability_invocation_call_index_cannot_be_replayed() -> None:
+    document = _document()
+    invocation = _record(document, "CapabilityInvocation", call_index=2)
+    invocation["call_index"] = 1
+    _seal_record(invocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="call index was replayed"):
+        validate_audit_projection_document(document)
+
+
+def test_capability_revocation_cannot_be_effective_before_lease_issuance() -> None:
+    document = _document()
+    revocation = _record(document, "CapabilityRevocation")
+    revocation["effective_at"] = "2026-08-14T12:04:00Z"
+    _seal_record(revocation)
+    _refresh_records_digest(document)
+
+    with pytest.raises(AuditProjectionError, match="embedded evidence|revocation is unrelated"):
+        validate_audit_projection_document(document)
+
+
 def test_parser_and_canonicalizer_reject_ambiguous_json() -> None:
     with pytest.raises(AuditProjectionError, match="duplicate JSON object key"):
         load_json_strict(b'{"synthetic":true,"synthetic":false}')
@@ -243,6 +680,24 @@ def test_parser_and_canonicalizer_reject_ambiguous_json() -> None:
         canonical_json_bytes({"budget": 1.5})
     with pytest.raises(AuditProjectionError, match="safe range"):
         canonical_json_bytes({"budget": 9_007_199_254_740_992})
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        {"value": "\ud800"},
+        {"\udfff": "value"},
+    ],
+)
+def test_canonicalizer_rejects_unpaired_surrogates_in_strings_and_keys(value: dict[str, str]) -> None:
+    with pytest.raises(AuditProjectionError, match="unpaired Unicode surrogate"):
+        canonical_json_bytes(value)
+
+
+@pytest.mark.parametrize("payload", [b'{"value":"\\ud800"}', b'{"\\udfff":"value"}'])
+def test_strict_parser_rejects_escaped_unpaired_surrogates(payload: bytes) -> None:
+    with pytest.raises(AuditProjectionError, match="unpaired Unicode surrogate"):
+        load_json_strict(payload)
 
 
 def test_invalid_calendar_timestamp_is_rejected() -> None:
