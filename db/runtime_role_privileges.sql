@@ -56,6 +56,7 @@ BEGIN
         JOIN pg_namespace AS namespace ON namespace.oid = class.relnamespace
         WHERE namespace.nspname = 'ops'
           AND class.relkind IN ('r', 'p', 'v', 'm')
+          AND class.relname NOT LIKE 'chronicle\_%' ESCAPE '\'
           AND class.relname <> 'ops_portal_request_nonces'
     LOOP
         EXECUTE format(
@@ -84,8 +85,14 @@ GRANT SELECT ON dash.validated_queries TO dash_ops_indexer;
 -- Dockhand owns canonical observations and governed lifecycle records, not
 -- migration truth or derived search indexes. Grant current base tables
 -- dynamically so future migrations are admitted only after reconciliation.
+-- The unregistered Chronicle candidate is a reserved exception: every
+-- ops.chronicle_* relation is excluded and receives only the explicit
+-- test-only function/view grants reconciled below.
 GRANT USAGE ON SCHEMA public, ops TO dockhand_ops_writer;
-GRANT SELECT ON ALL TABLES IN SCHEMA ops TO dockhand_ops_writer;
+-- Preserve the pre-Chronicle health read used by Dockhand. The generic CRUD
+-- loop below intentionally covers base tables only, so this view stays an
+-- exact, auditable exception instead of restoring schema-wide view access.
+GRANT SELECT ON ops.ops_shadow_readiness TO dockhand_ops_writer;
 DO $runtime_privileges$
 DECLARE
     relation RECORD;
@@ -96,6 +103,7 @@ BEGIN
         JOIN pg_namespace AS namespace ON namespace.oid = class.relnamespace
         WHERE namespace.nspname IN ('public', 'ops')
           AND class.relkind IN ('r', 'p')
+          AND class.relname NOT LIKE 'chronicle\_%' ESCAPE '\'
           AND NOT (
               namespace.nspname = 'ops'
               AND class.relname IN (
@@ -114,9 +122,124 @@ BEGIN
     END LOOP;
 END
 $runtime_privileges$;
+
+-- Agent Chronicle is unregistered and default-disabled. Keep all runtime roles
+-- off every candidate relation, then expose only the owner-gated SECURITY
+-- DEFINER append/replay/rejection functions to Dockhand and the approved
+-- projection view to the two read identities. This block is safe before the
+-- candidate exists and is required after a no-ACL restore.
+DO $chronicle_runtime_boundary$
+DECLARE
+    relation RECORD;
+BEGIN
+    FOR relation IN
+        SELECT
+            namespace.nspname AS schema_name,
+            class.relname AS relation_name
+        FROM pg_class AS class
+        JOIN pg_namespace AS namespace
+            ON namespace.oid = class.relnamespace
+        WHERE namespace.nspname = 'ops'
+          AND class.relname LIKE 'chronicle\_%' ESCAPE '\'
+          AND class.relkind IN ('r', 'p', 'v', 'm', 'S')
+    LOOP
+        EXECUTE format(
+            'REVOKE ALL PRIVILEGES ON %I.%I '
+            'FROM dash_ops_reader, dash_ops_indexer, '
+            'dockhand_ops_writer, dash_api_runtime',
+            relation.schema_name,
+            relation.relation_name
+        );
+    END LOOP;
+
+    IF to_regprocedure(
+        'ops.chronicle_test_append_v1(jsonb,text[],text[],text[],bytea[],bytea)'
+    ) IS NOT NULL THEN
+        EXECUTE
+            'REVOKE ALL PRIVILEGES ON FUNCTION '
+            'ops.chronicle_test_append_v1('
+            'JSONB, TEXT[], TEXT[], TEXT[], BYTEA[], BYTEA'
+            ') FROM PUBLIC, dash_ops_reader, dash_ops_indexer, '
+            'dockhand_ops_writer, dash_api_runtime';
+        EXECUTE
+            'GRANT EXECUTE ON FUNCTION '
+            'ops.chronicle_test_append_v1('
+            'JSONB, TEXT[], TEXT[], TEXT[], BYTEA[], BYTEA'
+            ') TO dockhand_ops_writer';
+    END IF;
+
+    IF to_regprocedure(
+        'ops.chronicle_test_resolve_request_v1(text,text,text,uuid,uuid)'
+    ) IS NOT NULL THEN
+        EXECUTE
+            'REVOKE ALL PRIVILEGES ON FUNCTION '
+            'ops.chronicle_test_resolve_request_v1('
+            'TEXT, TEXT, TEXT, UUID, UUID'
+            ') FROM PUBLIC, dash_ops_reader, dash_ops_indexer, '
+            'dockhand_ops_writer, dash_api_runtime';
+        EXECUTE
+            'GRANT EXECUTE ON FUNCTION '
+            'ops.chronicle_test_resolve_request_v1('
+            'TEXT, TEXT, TEXT, UUID, UUID'
+            ') TO dockhand_ops_writer';
+    END IF;
+
+    IF to_regprocedure(
+        'ops.chronicle_test_record_rejection_v1('
+        'text,text,text,uuid,uuid,text,text,timestamp with time zone,boolean)'
+    ) IS NOT NULL THEN
+        EXECUTE
+            'REVOKE ALL PRIVILEGES ON FUNCTION '
+            'ops.chronicle_test_record_rejection_v1('
+            'TEXT, TEXT, TEXT, UUID, UUID, TEXT, TEXT, TIMESTAMPTZ, BOOLEAN'
+            ') FROM PUBLIC, dash_ops_reader, dash_ops_indexer, '
+            'dockhand_ops_writer, dash_api_runtime';
+        EXECUTE
+            'GRANT EXECUTE ON FUNCTION '
+            'ops.chronicle_test_record_rejection_v1('
+            'TEXT, TEXT, TEXT, UUID, UUID, TEXT, TEXT, TIMESTAMPTZ, BOOLEAN'
+            ') TO dockhand_ops_writer';
+    END IF;
+
+    IF to_regprocedure(
+        'ops.chronicle_canonical_json_text_v1(jsonb)'
+    ) IS NOT NULL THEN
+        EXECUTE
+            'REVOKE ALL PRIVILEGES ON FUNCTION '
+            'ops.chronicle_canonical_json_text_v1(JSONB) '
+            'FROM PUBLIC, dash_ops_reader, dash_ops_indexer, '
+            'dockhand_ops_writer, dash_api_runtime';
+    END IF;
+
+    IF to_regclass('ops.chronicle_audit_projection_v1') IS NOT NULL THEN
+        GRANT SELECT ON ops.chronicle_audit_projection_v1
+            TO dockhand_ops_writer, dash_ops_reader;
+    END IF;
+END
+$chronicle_runtime_boundary$;
+
 GRANT SELECT, INSERT, DELETE ON ops.ops_portal_request_nonces
     TO dockhand_ops_writer;
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public, ops TO dockhand_ops_writer;
+DO $runtime_sequence_privileges$
+DECLARE
+    sequence RECORD;
+BEGIN
+    FOR sequence IN
+        SELECT namespace.nspname AS schema_name, class.relname AS sequence_name
+        FROM pg_class AS class
+        JOIN pg_namespace AS namespace ON namespace.oid = class.relnamespace
+        WHERE namespace.nspname IN ('public', 'ops')
+          AND class.relkind = 'S'
+          AND class.relname NOT LIKE 'chronicle\_%' ESCAPE '\'
+    LOOP
+        EXECUTE format(
+            'GRANT USAGE, SELECT ON SEQUENCE %I.%I TO dockhand_ops_writer',
+            sequence.schema_name,
+            sequence.sequence_name
+        );
+    END LOOP;
+END
+$runtime_sequence_privileges$;
 
 -- Public AgentOS runtime: agent-managed ai/dash state and read-only company
 -- data. It has no visibility into the private Ops schema.

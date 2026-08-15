@@ -1,0 +1,16 @@
+{
+  "apiVersion": "platform.masonjames.dev/steward-chronicle/v1",
+  "canonical_source": "ops/steward/contracts/chronicle_v1.py",
+  "canonical_source_sha256": "sha256:e27a390d27adc412c9bc7cc65269a917493b332cd8a3348f0f05cde002ac3ac0",
+  "kind": "ChronicleBoundarySchemaManifest",
+  "schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "schemas": {
+    "chronicle-append-disposition.schema.json": "sha256:5bd34e0121a2e5291e3055e2e75e20fc3eaceeb7e8469d5cac4752f86d5c416e",
+    "chronicle-append-envelope.schema.json": "sha256:2cadac4040930b59a4826c0553a78fca4e34e35cbd147d99d4843350fb02a191",
+    "chronicle-append-receipt.schema.json": "sha256:f4c7b571572db419b1af826fc739d37f1de6874d71bb33a25e3f3b55e8923845",
+    "chronicle-projection-snapshot.schema.json": "sha256:f69ca32621c645be73ef5b8e45f9dc63bcecd83a9291705f5a9c90e8e9c1532e"
+  },
+  "test_vectors": {
+    "test-vectors/chronicle-boundary-vectors.json": "sha256:d8e965be4ace6aa572277224d7cf506ae27cb7627844eb9a03bf2fcfd5ac478e"
+  }
+}

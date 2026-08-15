@@ -1,6 +1,9 @@
+import hashlib
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+CHRONICLE_MIGRATION = ROOT / "db/migrations/ops_agent_chronicle_v1_disabled.sql"
+CHRONICLE_CHECKSUM = CHRONICLE_MIGRATION.with_suffix(".sql.sha256")
 
 
 def test_privileged_migration_installs_pgvector_before_runtime() -> None:
@@ -80,3 +83,217 @@ def test_shadow_readiness_requires_full_path_attempt_telemetry() -> None:
     assert "incomplete_attempts = 0" in migration
     assert "attempt.covered_days = 7" in migration
     assert "CREATE OR REPLACE VIEW ops.ops_shadow_readiness" in migration
+
+
+def test_agent_chronicle_candidate_is_checksummed_but_unregistered_and_disabled() -> None:
+    runner = (ROOT / "scripts/migrate_ops.py").read_text()
+    candidate = CHRONICLE_MIGRATION.read_bytes()
+    pinned_checksum = CHRONICLE_CHECKSUM.read_text(encoding="ascii").strip()
+
+    assert CHRONICLE_MIGRATION.name not in runner
+    assert runner.count('root / "db" / "migrations" / "ops_') == 8
+    assert hashlib.sha256(candidate).hexdigest() == pinned_checksum
+    assert b"UNREGISTERED AND DEFAULT-DISABLED" in candidate
+    assert b"enabled BOOLEAN NOT NULL DEFAULT FALSE" in candidate
+    assert b"VALUES (TRUE, FALSE)" in candidate
+    assert b"source and tests do not authorize applying it" in candidate
+    assert b"never delete, truncate, or rewrite Chronicle history" in candidate
+
+
+def test_agent_chronicle_candidate_persists_every_mechanical_state_family() -> None:
+    candidate = CHRONICLE_MIGRATION.read_text()
+    required_relations = (
+        "chronicle_candidate_gate",
+        "chronicle_signers",
+        "chronicle_evidence",
+        "chronicle_runtime_attestations",
+        "chronicle_identity_runtime_bindings",
+        "chronicle_identity_runtime_scopes",
+        "chronicle_trusted_clock",
+        "chronicle_replay_sequences",
+        "chronicle_replay_nonces",
+        "chronicle_replay_request_claims",
+        "chronicle_replay_nonce_claims",
+        "chronicle_rejection_attempts",
+        "chronicle_capability_state",
+        "chronicle_capability_revocations",
+        "chronicle_capability_invocations",
+        "chronicle_append_state",
+        "chronicle_append_requests",
+        "chronicle_records",
+        "chronicle_reasoning_leases",
+        "chronicle_append_request_evidence",
+        "chronicle_append_scopes",
+        "chronicle_append_scope_runtime_attestations",
+        "chronicle_append_scope_records",
+        "chronicle_append_request_reasoning_cas",
+        "chronicle_outbox",
+        "chronicle_outbox_delivery_state",
+    )
+    for relation in required_relations:
+        assert f"CREATE TABLE IF NOT EXISTS ops.{relation}" in candidate
+
+    assert "canonical_record_bytes BYTEA NOT NULL" in candidate
+    assert "canonical_bytes_sha256 TEXT NOT NULL" in candidate
+    assert "UNIQUE (record_kind, logical_id, logical_revision)" in candidate
+    assert "UNIQUE (chronicle_id, append_sequence)" in candidate
+    assert "Every Chronicle record must be scope-bound exactly once" in candidate
+    assert "v_last_append_sequence :=" in candidate
+    assert "chronicle_watermark := v_last_append_sequence" in candidate
+    assert "audit_outbox_watermark := v_append_state.audit_outbox_watermark + 1" in candidate
+    assert "claim_source IN ('committed', 'rejected')" in candidate
+    assert "rejection_atomic_no_commit BOOLEAN NOT NULL" in candidate
+
+    for record_kind in (
+        "AgentConstitution",
+        "AgentEpisode",
+        "AgentHandoff",
+        "AgentIdentityDescriptor",
+        "AgentIdentityRevision",
+        "CapabilityCandidate",
+        "CapabilityEvaluation",
+        "CapabilityGap",
+        "CapabilityInvocation",
+        "CapabilityLease",
+        "CapabilityPromotion",
+        "CapabilityRevocation",
+        "FoundryAdmissionAttestation",
+        "KnowledgeClaim",
+        "ReasoningLease",
+        "RuntimeAttestation",
+    ):
+        assert f"'{record_kind}'" in candidate
+
+
+def test_agent_chronicle_candidate_matches_frozen_dockhand_shapes() -> None:
+    candidate = CHRONICLE_MIGRATION.read_text()
+
+    for field in (
+        "'canonical_bytes_sha256'",
+        "'logical_id'",
+        "'logical_revision'",
+        "'prior_record_hash'",
+        "'record_hash'",
+        "'record_id'",
+        "'record_kind'",
+    ):
+        assert field in candidate
+    for field in (
+        "'calls'",
+        "'capability_lease_id'",
+        "'cost_microunits'",
+        "'expected_generation'",
+        "'tokens'",
+    ):
+        assert field in candidate
+    for field in (
+        "'authority_effect'",
+        "'outbox_id'",
+        "'projection_name'",
+        "'request_digest'",
+    ):
+        assert field in candidate
+
+    assert "jsonb_typeof(v_reservation) NOT IN ('null', 'object')" in candidate
+    assert "reasoning_cas_preconditions" in candidate
+    assert "expected_active_reasoning_lease_hash" in candidate
+    assert "previous_active_reasoning_lease_hash" in candidate
+    assert "committed_active_reasoning_lease_hash" in candidate
+    assert "v_derived_logical_id := v_record_json->>'constitution_id'" in candidate
+    assert "v_derived_logical_id := v_record_json->>'identity_id'" in candidate
+    assert "v_record_json->'identity'->>'identity_revision'" in candidate
+    assert "v_derived_logical_id := v_record_json->>'episode_id'" in candidate
+    assert "v_derived_logical_id := v_record_json->>'lease_id'" in candidate
+    assert "logical state binding does not match canonical bytes" in candidate
+    assert "convert_to('platform-steward-record-v1', 'UTF8')" in candidate
+    assert "v_record_json - 'record_hash'" in candidate
+    assert "record hash does not match the canonical steward domain" in candidate
+    assert "Chronicle reasoning CAS replacement requires its exact terminal record" in candidate
+    assert "v_committed_generation := v_expected_generation + 1" in candidate
+    assert "v_committed_generation := v_expected_generation;" in candidate
+    assert "v_committed_active_hash := NULL" in candidate
+    assert "v_terminal_lease_revision <> 2" in candidate
+    assert "v_target_lease_revision <> 1" in candidate
+    assert "Chronicle handoff transfer must use the exact ordered six-record transaction" in candidate
+    assert "v_capability.last_call_index + 1" in candidate
+    assert "Chronicle capability reservation is not bound to one committed invocation" in candidate
+    assert "Chronicle canonical record evidence is not in the envelope set" in candidate
+    assert "Chronicle source attestation is not in the evidence set" in candidate
+
+
+def test_agent_chronicle_candidate_has_closed_rejections_and_full_commit_shape() -> None:
+    candidate = CHRONICLE_MIGRATION.read_text()
+
+    for sqlstate in (
+        "P2D01",
+        "P2D02",
+        "P2D03",
+        "P2D04",
+        "P2D05",
+        "P2D06",
+        "P2D07",
+        "P2D08",
+        "P2D09",
+        "P2D10",
+        "PCH11",
+    ):
+        assert f"ERRCODE = '{sqlstate}'" in candidate or f"{sqlstate} " in candidate
+    assert "Constraint, connection, transaction-exit, and COMMIT" in candidate
+    assert "record_commits JSONB" in candidate
+    assert "reasoning_cas_results JSONB" in candidate
+    assert "jsonb_array_length(record_commits) <> v_record_count" in candidate
+    assert "jsonb_array_length(reasoning_cas_results) <> v_cas_count" in candidate
+    assert "max(committed.append_sequence)" in candidate
+    assert "record_committed" not in candidate
+    assert "CREATE OR REPLACE FUNCTION ops.chronicle_test_resolve_request_v1(" in candidate
+    assert "CREATE OR REPLACE FUNCTION ops.chronicle_test_record_rejection_v1(" in candidate
+    assert "rejection_atomic_no_commit BOOLEAN" in candidate
+    assert "Chronicle rejection decision moved behind the trusted clock" in candidate
+    assert "GREATEST(clock.high_water, EXCLUDED.high_water)" in candidate
+    assert "GREATEST(clock.updated_at, EXCLUDED.updated_at)" in candidate
+    for reason in (
+        "expired_request",
+        "audience_mismatch",
+        "scope_binding_mismatch",
+        "source_attestation_invalid",
+        "replay_conflict",
+        "cas_conflict",
+        "internal_failure",
+    ):
+        assert f"'{reason}'" in candidate
+
+
+def test_agent_chronicle_candidate_is_trigger_immutable_and_acl_is_explicit() -> None:
+    candidate = CHRONICLE_MIGRATION.read_text()
+    reconciliation = (ROOT / "db/runtime_role_privileges.sql").read_text()
+
+    assert "BEFORE UPDATE OR DELETE OR TRUNCATE" in candidate
+    assert "ERRCODE = 'PCH11'" in candidate
+    assert "SECURITY DEFINER" in candidate
+    assert "SET search_path = pg_catalog, ops" in candidate
+    assert "TO dockhand_ops_writer" in candidate
+
+    assert reconciliation.count("class.relname NOT LIKE 'chronicle\\_%' ESCAPE '\\'") == 3
+    assert "GRANT SELECT ON ALL TABLES IN SCHEMA ops TO dockhand_ops_writer" not in reconciliation
+    assert "GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public, ops" not in reconciliation
+    assert "ops.chronicle_test_append_v1(jsonb,text[],text[],text[],bytea[],bytea)" in reconciliation
+    assert "ops.chronicle_test_resolve_request_v1(text,text,text,uuid,uuid)" in reconciliation
+    assert "text,text,text,uuid,uuid,text,text,timestamp with time zone,boolean)" in reconciliation
+    assert "GRANT SELECT ON ops.ops_shadow_readiness TO dockhand_ops_writer" in reconciliation
+    assert "GRANT SELECT ON ops.chronicle_audit_projection_v1" in reconciliation
+    assert "TO dockhand_ops_writer, dash_ops_reader" in reconciliation
+
+
+def test_agent_chronicle_source_only_merge_cannot_publish_ghcr() -> None:
+    workflow = (ROOT / ".github/workflows/ghcr-build.yml").read_text()
+    ignored_paths = (
+        "db/migrations/ops_agent_chronicle_v1_disabled.sql",
+        "db/migrations/ops_agent_chronicle_v1_disabled.sql.sha256",
+        "db/runtime_role_privileges.sql",
+        "tests/test_migration_contract.py",
+        "tests/test_postgres_search_path_integration.py",
+        ".github/workflows/ghcr-build.yml",
+    )
+
+    for path in ignored_paths:
+        assert f'- "{path}"' in workflow

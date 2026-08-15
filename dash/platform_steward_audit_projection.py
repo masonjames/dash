@@ -26,11 +26,16 @@ API_VERSION = "platform.masonjames.dev/steward/v1"
 AUDIT_VECTOR_KIND = "PlatformStewardAuditProjectionRecords"
 HASH_ALGORITHM = "domain-separated-canonical-json-sha256-v1"
 RECORD_HASH_DOMAIN = b"platform-steward-record-v1\x00"
-PINNED_CANONICAL_COMMIT = "c02dbcdfacc6421c10eb863016d8aff346cef436"
+PINNED_CANONICAL_COMMIT = "1b70ba60b5c432adde683b9cec5c527b5cec77b2"
 PINNED_GENERATOR_SHA256 = "sha256:6ea228e5331dec4fb72be2fc077a940928291f230955103cb20eea33652c82d4"
 PINNED_SCHEMA_MANIFEST_SHA256 = "sha256:d685f2fd4af55f7222f3c1205b55c4bf7c20c85d0cb3038a29fa0adf5b3211ee"
 PINNED_AUDIT_VECTOR_SHA256 = "sha256:9866294256dd497d31a696a58f0db854a05064a6cb4f007b93a9f36f7236223e"
 PINNED_CANONICAL_HASH_VECTOR_SHA256 = "sha256:4525bc33203e926e2dbe8aa6319be1d33a55c36c151573a522d7f3238370e603"
+PINNED_CHRONICLE_GENERATOR_SHA256 = "sha256:e27a390d27adc412c9bc7cc65269a917493b332cd8a3348f0f05cde002ac3ac0"
+PINNED_CHRONICLE_SCHEMA_MANIFEST_SHA256 = "sha256:d94cb8d37e50c71aeb44e4243c43b1bc04bd8ea8102e564605d8c76a9565d6eb"
+PINNED_CHRONICLE_BOUNDARY_VECTOR_SHA256 = "sha256:d8e965be4ace6aa572277224d7cf506ae27cb7627844eb9a03bf2fcfd5ac478e"
+PINNED_PUBLIC_ARTIFACTS_DIGEST = "sha256:8bc3303914dde14bdff09f647d437cb6f4e2ddedddc1467b9a95d37bf1233ac9"
+PINNED_SOURCE_LOCK_SHA256 = "sha256:8eba05638f61403c29a7686037f85890bdc38f9158ef81c4964c11413026ee5b"
 
 JSON_SAFE_INTEGER_MAX = 9_007_199_254_740_991
 DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
@@ -2749,29 +2754,75 @@ def validate_audit_projection_document(value: object) -> dict[str, JSONValue]:
     )
 
 
+PINNED_SOURCE_FILES: dict[str, str] = {
+    "chronicle/v1/chronicle-append-disposition.schema.json": (
+        "sha256:5bd34e0121a2e5291e3055e2e75e20fc3eaceeb7e8469d5cac4752f86d5c416e"
+    ),
+    "chronicle/v1/chronicle-append-envelope.schema.json": (
+        "sha256:2cadac4040930b59a4826c0553a78fca4e34e35cbd147d99d4843350fb02a191"
+    ),
+    "chronicle/v1/chronicle-append-receipt.schema.json": (
+        "sha256:f4c7b571572db419b1af826fc739d37f1de6874d71bb33a25e3f3b55e8923845"
+    ),
+    "chronicle/v1/chronicle-projection-snapshot.schema.json": (
+        "sha256:f69ca32621c645be73ef5b8e45f9dc63bcecd83a9291705f5a9c90e8e9c1532e"
+    ),
+    "chronicle/v1/schema-manifest.json": PINNED_CHRONICLE_SCHEMA_MANIFEST_SHA256,
+    "chronicle/v1/test-vectors/chronicle-boundary-vectors.json": (PINNED_CHRONICLE_BOUNDARY_VECTOR_SHA256),
+    "v1/agent-constitution.schema.json": ("sha256:8e227a6f9d371cf0328ad0f09b6de4008726cc212f987b9ef0d309b98c2067c6"),
+    "v1/agent-episode.schema.json": ("sha256:d39c9e8314f691819ba5d50d8d76f4bc636ce18e8be2a762f21b01ee0196180e"),
+    "v1/agent-handoff.schema.json": ("sha256:5c1b4823f739e63bec041e1de448e5770f7adf3347a94794a8f11933571ac50e"),
+    "v1/agent-identity-descriptor.schema.json": (
+        "sha256:927e799741b82f9c587a5fcfea6db4923f8b6bd1aa06127d86664e8f07c12e2f"
+    ),
+    "v1/agent-identity-revision.schema.json": (
+        "sha256:3e1cf94bce7e2e47ab7685d53223fdf773c86264eda9eac263634281700983ac"
+    ),
+    "v1/capability-candidate.schema.json": ("sha256:c6b5158af95a1b9b928a86244366413ef08719058be343356e53050691ce46b4"),
+    "v1/capability-evaluation.schema.json": ("sha256:e76977a7a63fa73a658959c22b710a68c6d6fc222f1d9afbe23efceca6b0fdc4"),
+    "v1/capability-gap.schema.json": ("sha256:d3e59faf94fec7640cbe5200e0f0c3f1cdfd45cf23d4818be9218908a2fe9e75"),
+    "v1/capability-invocation.schema.json": ("sha256:7380f90a36bd03ea7996bdd6566ac7f247f8f2145cec3551c4fac0ae6c420781"),
+    "v1/capability-lease.schema.json": ("sha256:28765705b95497b884ff08a6d3505ace47ee0dac4f62b03677a0e843a78452e9"),
+    "v1/capability-promotion.schema.json": ("sha256:1e0fb275240c2752a6f8317a2105bf27b9114916bceac16333499b1fea0812d0"),
+    "v1/capability-revocation.schema.json": ("sha256:7a61a721bc176500859ac4abf6fa90eb474826b3c35a254b71fa106e8ed64b90"),
+    "v1/foundry-admission-attestation.schema.json": (
+        "sha256:c2feb8804a4acf293138de7993dc3157ddd0d077a7b1993211e27440bd314eaf"
+    ),
+    "v1/knowledge-claim.schema.json": ("sha256:a14ea59edd1ac0b3f16c762127f954845b672fd1ca5726d0f9c971178c8dc1ad"),
+    "v1/reasoning-lease.schema.json": ("sha256:43dde9a267c1b21eb4acd72ea0fe5ccbef075d8e6cb92a8bc39ea766aabe27f2"),
+    "v1/runtime-attestation.schema.json": ("sha256:c5508f4ee59dd6b1e760b97a0f61624fcbd1a5335fb86eff08a7c898dc04d7cf"),
+    "v1/schema-manifest.json": PINNED_SCHEMA_MANIFEST_SHA256,
+    "v1/test-vectors/audit-projection-records.json": PINNED_AUDIT_VECTOR_SHA256,
+    "v1/test-vectors/canonical-hash-vectors.json": (PINNED_CANONICAL_HASH_VECTOR_SHA256),
+}
 PINNED_SOURCE_LOCK: dict[str, JSONValue] = {
     "canonical_commit": PINNED_CANONICAL_COMMIT,
-    "canonical_generator": {
-        "path": "ops/steward/contracts/steward_v1.py",
-        "sha256": PINNED_GENERATOR_SHA256,
-    },
     "canonical_repository": "https://github.com/masonjames/platform-infra",
-    "generated_directory": "contracts/platform-steward/v1",
-    "generated_file_count": 19,
-    "schema_manifest": {
-        "path": "contracts/platform-steward/v1/schema-manifest.json",
-        "sha256": PINNED_SCHEMA_MANIFEST_SHA256,
+    "files": dict(PINNED_SOURCE_FILES),
+    "generated_file_count": 25,
+    "generators": [
+        {
+            "family": "steward-records-v1",
+            "path": "ops/steward/contracts/steward_v1.py",
+            "sha256": PINNED_GENERATOR_SHA256,
+        },
+        {
+            "family": "chronicle-boundary-v1",
+            "path": "ops/steward/contracts/chronicle_v1.py",
+            "sha256": PINNED_CHRONICLE_GENERATOR_SHA256,
+        },
+    ],
+    "manifests": {
+        "chronicle/v1/schema-manifest.json": PINNED_CHRONICLE_SCHEMA_MANIFEST_SHA256,
+        "v1/schema-manifest.json": PINNED_SCHEMA_MANIFEST_SHA256,
     },
-    "source_lock_version": 1,
+    "private_identity_included": False,
+    "public_artifacts_digest": PINNED_PUBLIC_ARTIFACTS_DIGEST,
+    "source_lock_version": 2,
     "test_vectors": {
-        "audit_projection": {
-            "path": "contracts/platform-steward/v1/test-vectors/audit-projection-records.json",
-            "sha256": PINNED_AUDIT_VECTOR_SHA256,
-        },
-        "canonical_hash": {
-            "path": "contracts/platform-steward/v1/test-vectors/canonical-hash-vectors.json",
-            "sha256": PINNED_CANONICAL_HASH_VECTOR_SHA256,
-        },
+        "chronicle/v1/test-vectors/chronicle-boundary-vectors.json": (PINNED_CHRONICLE_BOUNDARY_VECTOR_SHA256),
+        "v1/test-vectors/audit-projection-records.json": (PINNED_AUDIT_VECTOR_SHA256),
+        "v1/test-vectors/canonical-hash-vectors.json": (PINNED_CANONICAL_HASH_VECTOR_SHA256),
     },
 }
 
@@ -2807,11 +2858,27 @@ def load_pinned_audit_projection(repository_root: Path | None = None) -> dict[st
     lock_path = contract_root / "SOURCE.lock.json"
     if contract_root.is_symlink() or lock_path.is_symlink():
         raise AuditProjectionError("pinned contract root and source lock cannot be symlinks")
+    _assert_file_digest(lock_path, PINNED_SOURCE_LOCK_SHA256)
     try:
         source_lock = load_json_strict(lock_path.read_bytes())
     except OSError as exc:
         raise AuditProjectionError(f"cannot read pinned source lock {lock_path}: {exc}") from exc
     _validate_source_lock(source_lock)
+
+    expected_mirror_files = {Path(relative) for relative in PINNED_SOURCE_FILES}
+    for relative_name, expected_digest in PINNED_SOURCE_FILES.items():
+        path = contract_root / relative_name
+        if path.is_symlink():
+            raise AuditProjectionError(f"generated contract mirror cannot contain symlink {relative_name}")
+        _assert_file_digest(path, expected_digest)
+    actual_mirror_files: set[Path] = set()
+    for path in contract_root.rglob("*"):
+        if path.is_symlink():
+            raise AuditProjectionError(f"generated contract mirror cannot contain symlink {path}")
+        if path.is_file() and path != lock_path:
+            actual_mirror_files.add(path.relative_to(contract_root))
+    if actual_mirror_files != expected_mirror_files:
+        raise AuditProjectionError("generated contract mirror contains missing or unexpected files")
 
     generated_root = contract_root / "v1"
     manifest_path = generated_root / "schema-manifest.json"
@@ -2874,6 +2941,34 @@ def load_pinned_audit_projection(repository_root: Path | None = None) -> dict[st
             actual_relative_files.add(path.relative_to(generated_root))
     if actual_relative_files != expected_relative_files or len(actual_relative_files) != 19:
         raise AuditProjectionError("generated contract mirror contains missing or unexpected files")
+
+    chronicle_root = contract_root / "chronicle" / "v1"
+    chronicle_manifest_path = chronicle_root / "schema-manifest.json"
+    if chronicle_root.is_symlink() or chronicle_manifest_path.is_symlink():
+        raise AuditProjectionError("Chronicle contract root and manifest cannot be symlinks")
+    _assert_file_digest(
+        chronicle_manifest_path,
+        PINNED_CHRONICLE_SCHEMA_MANIFEST_SHA256,
+    )
+    chronicle_manifest = load_json_strict(chronicle_manifest_path.read_bytes())
+    if not isinstance(chronicle_manifest, dict) or set(chronicle_manifest) != expected_manifest_keys:
+        raise AuditProjectionError("Chronicle schema manifest is not the closed v1 shape")
+    if (
+        chronicle_manifest["apiVersion"] != "platform.masonjames.dev/steward-chronicle/v1"
+        or chronicle_manifest["canonical_source"] != "ops/steward/contracts/chronicle_v1.py"
+        or chronicle_manifest["canonical_source_sha256"] != PINNED_CHRONICLE_GENERATOR_SHA256
+        or chronicle_manifest["kind"] != "ChronicleBoundarySchemaManifest"
+        or chronicle_manifest["schema_dialect"] != "https://json-schema.org/draft/2020-12/schema"
+    ):
+        raise AuditProjectionError("Chronicle schema manifest provenance is invalid")
+    chronicle_schemas = chronicle_manifest["schemas"]
+    chronicle_vectors = chronicle_manifest["test_vectors"]
+    if not isinstance(chronicle_schemas, dict) or len(chronicle_schemas) != 4:
+        raise AuditProjectionError("Chronicle schema manifest must list exactly four schemas")
+    if not isinstance(chronicle_vectors, dict) or set(chronicle_vectors) != {
+        "test-vectors/chronicle-boundary-vectors.json"
+    }:
+        raise AuditProjectionError("Chronicle schema manifest has the wrong test-vector set")
 
     audit_vector_path = generated_root / "test-vectors" / "audit-projection-records.json"
     _assert_file_digest(audit_vector_path, PINNED_AUDIT_VECTOR_SHA256)

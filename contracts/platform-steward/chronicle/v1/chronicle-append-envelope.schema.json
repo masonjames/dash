@@ -1,0 +1,504 @@
+{
+  "$defs": {
+    "canonicalRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_record_json": {
+          "maxLength": 1048576,
+          "minLength": 2,
+          "type": "string"
+        },
+        "record_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "record_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "record_kind": {
+          "enum": [
+            "AgentConstitution",
+            "AgentEpisode",
+            "AgentHandoff",
+            "AgentIdentityDescriptor",
+            "AgentIdentityRevision",
+            "CapabilityCandidate",
+            "CapabilityEvaluation",
+            "CapabilityGap",
+            "CapabilityInvocation",
+            "CapabilityLease",
+            "CapabilityPromotion",
+            "CapabilityRevocation",
+            "FoundryAdmissionAttestation",
+            "KnowledgeClaim",
+            "ReasoningLease",
+            "RuntimeAttestation"
+          ]
+        }
+      },
+      "required": [
+        "record_id",
+        "record_kind",
+        "record_hash",
+        "canonical_record_json"
+      ],
+      "type": "object"
+    },
+    "capabilityBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_calls": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "maximum_cost_microunits": {
+          "maximum": 1000000000000,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "maximum_tokens": {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maximum_calls",
+        "maximum_cost_microunits",
+        "maximum_tokens"
+      ],
+      "type": "object"
+    },
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "identifier": {
+      "maxLength": 200,
+      "minLength": 1,
+      "pattern": "^[a-z0-9][a-z0-9._:/-]*$",
+      "type": "string"
+    },
+    "identity": {
+      "additionalProperties": false,
+      "properties": {
+        "constitution_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "identity_epoch": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "identity_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "identity_revision": {
+          "minimum": 1,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "identity_id",
+        "identity_revision",
+        "identity_epoch",
+        "constitution_hash"
+      ],
+      "type": "object"
+    },
+    "installation": {
+      "additionalProperties": false,
+      "properties": {
+        "embodiment": {
+          "enum": [
+            "server-sentinel",
+            "mac-engineer"
+          ]
+        },
+        "host_class": {
+          "enum": [
+            "near-platform-server",
+            "local-mac"
+          ]
+        },
+        "installation_id": {
+          "$ref": "#/$defs/identifier"
+        }
+      },
+      "required": [
+        "installation_id",
+        "embodiment",
+        "host_class"
+      ],
+      "type": "object"
+    },
+    "reasoningCasPrecondition": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_active_reasoning_lease_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "expected_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "identity_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_type": {
+          "enum": [
+            "installation",
+            "incident",
+            "journey",
+            "task"
+          ]
+        }
+      },
+      "required": [
+        "identity_id",
+        "scope_type",
+        "scope_id",
+        "expected_generation",
+        "expected_active_reasoning_lease_hash"
+      ],
+      "type": "object"
+    },
+    "reasoningCasResult": {
+      "additionalProperties": false,
+      "properties": {
+        "committed_active_reasoning_lease_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "committed_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "identity_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "previous_active_reasoning_lease_hash": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/digest"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "previous_generation": {
+          "maximum": 9007199254740991,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_type": {
+          "enum": [
+            "installation",
+            "incident",
+            "journey",
+            "task"
+          ]
+        }
+      },
+      "required": [
+        "identity_id",
+        "scope_type",
+        "scope_id",
+        "previous_generation",
+        "committed_generation",
+        "previous_active_reasoning_lease_hash",
+        "committed_active_reasoning_lease_hash"
+      ],
+      "type": "object"
+    },
+    "recordCommit": {
+      "additionalProperties": false,
+      "properties": {
+        "append_sequence": {
+          "maximum": 9007199254740991,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "record_hash": {
+          "$ref": "#/$defs/digest"
+        },
+        "record_id": {
+          "$ref": "#/$defs/uuid"
+        },
+        "record_kind": {
+          "enum": [
+            "AgentConstitution",
+            "AgentEpisode",
+            "AgentHandoff",
+            "AgentIdentityDescriptor",
+            "AgentIdentityRevision",
+            "CapabilityCandidate",
+            "CapabilityEvaluation",
+            "CapabilityGap",
+            "CapabilityInvocation",
+            "CapabilityLease",
+            "CapabilityPromotion",
+            "CapabilityRevocation",
+            "FoundryAdmissionAttestation",
+            "KnowledgeClaim",
+            "ReasoningLease",
+            "RuntimeAttestation"
+          ]
+        }
+      },
+      "required": [
+        "record_id",
+        "record_kind",
+        "record_hash",
+        "append_sequence"
+      ],
+      "type": "object"
+    },
+    "scope": {
+      "additionalProperties": false,
+      "properties": {
+        "installation_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "resource_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "resource_type": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "scope_type": {
+          "enum": [
+            "installation",
+            "incident",
+            "journey",
+            "task"
+          ]
+        }
+      },
+      "required": [
+        "scope_type",
+        "scope_id",
+        "installation_id",
+        "resource_type",
+        "resource_id"
+      ],
+      "type": "object"
+    },
+    "scopeBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "record_hashes": {
+          "items": {
+            "$ref": "#/$defs/digest"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "runtime_attestation_hashes": {
+          "items": {
+            "$ref": "#/$defs/digest"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        }
+      },
+      "required": [
+        "scope",
+        "runtime_attestation_hashes",
+        "record_hashes"
+      ],
+      "type": "object"
+    },
+    "utcTimestamp": {
+      "format": "date-time",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][0-9]|3[01])T([01][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]Z$",
+      "type": "string"
+    },
+    "uuid": {
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$",
+      "type": "string"
+    }
+  },
+  "$id": "https://schemas.masonjames.dev/platform-steward/chronicle/v1/chronicle-append-envelope.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "apiVersion": {
+      "const": "platform.masonjames.dev/steward-chronicle/v1"
+    },
+    "audience": {
+      "$ref": "#/$defs/identifier"
+    },
+    "authority_effect": {
+      "const": "chronicle-append-only"
+    },
+    "capability_budget": {
+      "$ref": "#/$defs/capabilityBudget"
+    },
+    "chronicle_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "evidence_hashes": {
+      "items": {
+        "$ref": "#/$defs/digest"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "expires_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "identity": {
+      "$ref": "#/$defs/identity"
+    },
+    "installation": {
+      "$ref": "#/$defs/installation"
+    },
+    "interface_id": {
+      "const": "dockhand-chronicle-append-v1"
+    },
+    "kind": {
+      "const": "ChronicleAppendEnvelope"
+    },
+    "mode": {
+      "const": "intent"
+    },
+    "previous_envelope_hash": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/digest"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reasoning_cas_preconditions": {
+      "items": {
+        "$ref": "#/$defs/reasoningCasPrecondition"
+      },
+      "maxItems": 6,
+      "minItems": 0,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/canonicalRecord"
+      },
+      "maxItems": 6,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "request_digest": {
+      "$ref": "#/$defs/digest"
+    },
+    "request_id": {
+      "$ref": "#/$defs/uuid"
+    },
+    "request_nonce": {
+      "$ref": "#/$defs/uuid"
+    },
+    "scope_bindings": {
+      "items": {
+        "$ref": "#/$defs/scopeBinding"
+      },
+      "maxItems": 6,
+      "minItems": 1,
+      "type": "array",
+      "uniqueItems": true
+    },
+    "signature_bundle_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "source_attestation_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "submitted_at": {
+      "$ref": "#/$defs/utcTimestamp"
+    },
+    "writer_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "writer_key_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "writer_runtime_attestation_hash": {
+      "$ref": "#/$defs/digest"
+    },
+    "writer_sequence": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer"
+    },
+    "writer_session_id": {
+      "$ref": "#/$defs/uuid"
+    }
+  },
+  "required": [
+    "apiVersion",
+    "kind",
+    "request_id",
+    "request_nonce",
+    "writer_sequence",
+    "previous_envelope_hash",
+    "submitted_at",
+    "expires_at",
+    "chronicle_id",
+    "identity",
+    "audience",
+    "installation",
+    "mode",
+    "writer_id",
+    "writer_key_id",
+    "writer_runtime_attestation_hash",
+    "writer_session_id",
+    "source_attestation_hash",
+    "interface_id",
+    "records",
+    "scope_bindings",
+    "reasoning_cas_preconditions",
+    "capability_budget",
+    "evidence_hashes",
+    "authority_effect",
+    "request_digest",
+    "signature_bundle_hash"
+  ],
+  "title": "ChronicleAppendEnvelope",
+  "type": "object"
+}

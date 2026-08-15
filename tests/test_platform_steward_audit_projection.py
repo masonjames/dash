@@ -18,7 +18,10 @@ from dash.platform_steward_audit_projection import (
     RECORD_HASH_DOMAIN,
     PINNED_AUDIT_VECTOR_SHA256,
     PINNED_CANONICAL_COMMIT,
+    PINNED_CHRONICLE_BOUNDARY_VECTOR_SHA256,
+    PINNED_SOURCE_FILES,
     PINNED_SOURCE_LOCK,
+    PINNED_SOURCE_LOCK_SHA256,
     PROJECTION_FIELDS,
     WARNING_CATEGORIES,
     AuditProjectionError,
@@ -34,6 +37,7 @@ from dash.platform_steward_audit_projection import (
 ROOT = Path(__file__).parents[1]
 CONTRACT_ROOT = ROOT / "contracts" / "platform-steward"
 VECTOR_PATH = CONTRACT_ROOT / "v1" / "test-vectors" / "audit-projection-records.json"
+BOUNDARY_VECTOR_PATH = CONTRACT_ROOT / "chronicle" / "v1" / "test-vectors" / "chronicle-boundary-vectors.json"
 VALID_INVOCATION_PHASES: dict[str, tuple[str, str | None]] = {
     "succeeded": ("accepted", "accepted"),
     "rejected": ("rejected", None),
@@ -123,12 +127,60 @@ def test_pinned_generated_mirror_loads_with_all_sections_and_no_authority() -> N
 
 def test_public_vector_bytes_and_source_lock_are_exactly_pinned() -> None:
     raw_vector = VECTOR_PATH.read_bytes()
-    source_lock = load_json_strict((CONTRACT_ROOT / "SOURCE.lock.json").read_bytes())
+    raw_source_lock = (CONTRACT_ROOT / "SOURCE.lock.json").read_bytes()
+    source_lock = load_json_strict(raw_source_lock)
 
     assert "sha256:" + hashlib.sha256(raw_vector).hexdigest() == PINNED_AUDIT_VECTOR_SHA256
+    assert "sha256:" + hashlib.sha256(raw_source_lock).hexdigest() == PINNED_SOURCE_LOCK_SHA256
     assert source_lock == PINNED_SOURCE_LOCK
     assert source_lock["canonical_commit"] == PINNED_CANONICAL_COMMIT
-    assert source_lock["generated_file_count"] == 19
+    assert source_lock["generated_file_count"] == 25
+    assert source_lock["source_lock_version"] == 2
+    assert source_lock["private_identity_included"] is False
+    assert set(source_lock["files"]) == set(PINNED_SOURCE_FILES)
+
+
+def test_canonical_boundary_vector_binds_source_and_record_evidence() -> None:
+    raw_boundary = BOUNDARY_VECTOR_PATH.read_bytes()
+    boundary = load_json_strict(raw_boundary)
+
+    assert "sha256:" + hashlib.sha256(raw_boundary).hexdigest() == PINNED_CHRONICLE_BOUNDARY_VECTOR_SHA256
+    assert isinstance(boundary, dict)
+    for envelope_name in ("append_envelope", "handoff_append_envelope"):
+        envelope = boundary[envelope_name]
+        assert isinstance(envelope, dict)
+        evidence_hashes = envelope["evidence_hashes"]
+        assert isinstance(evidence_hashes, list)
+        assert envelope["source_attestation_hash"] in evidence_hashes
+        for record in envelope["records"]:
+            assert isinstance(record, dict)
+            canonical_record = load_json_strict(record["canonical_record_json"].encode("utf-8"))
+            assert isinstance(canonical_record, dict)
+            cited_hashes: set[str] = set()
+
+            def collect_evidence(value: object) -> None:
+                if isinstance(value, dict):
+                    for key, item in value.items():
+                        if key in {
+                            "evidence_hash",
+                            "selection_evidence_hash",
+                            "signing_evidence_hash",
+                        } and isinstance(item, str):
+                            cited_hashes.add(item)
+                        elif key in {
+                            "evidence_preconditions",
+                            "input_evidence_hashes",
+                            "result_evidence_hashes",
+                        } and isinstance(item, list):
+                            cited_hashes.update(digest for digest in item if isinstance(digest, str))
+                        else:
+                            collect_evidence(item)
+                elif isinstance(value, list):
+                    for item in value:
+                        collect_evidence(item)
+
+            collect_evidence(canonical_record)
+            assert cited_hashes <= set(evidence_hashes)
 
 
 def test_normalizer_returns_a_detached_projection() -> None:
@@ -786,7 +838,7 @@ def test_tampered_source_lock_fails_before_projection_consumption(tmp_path: Path
     lock["canonical_commit"] = "0" * 40
     lock_path.write_text(json.dumps(lock), encoding="utf-8")
 
-    with pytest.raises(AuditProjectionError, match="compiled closed source lock"):
+    with pytest.raises(AuditProjectionError, match="pinned contract digest mismatch"):
         load_pinned_audit_projection(checkout)
 
 
