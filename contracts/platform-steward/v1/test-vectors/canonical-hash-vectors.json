@@ -1,0 +1,129 @@
+{
+  "apiVersion": "platform.masonjames.dev/steward/v1",
+  "canonicalization": {
+    "array_order": "preserved",
+    "duplicate_object_keys": "forbidden",
+    "encoding": "utf-8",
+    "floating_point_values": "forbidden",
+    "integer_range": "-9007199254740991..9007199254740991",
+    "object_keys": "lexicographic-code-point-order",
+    "separators": "comma-and-colon-without-whitespace",
+    "unicode_escaping": "disabled"
+  },
+  "contains_private_identity": false,
+  "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+  "kind": "PlatformStewardCanonicalHashVectors",
+  "record_hash_field_rule": "omit-record_hash-before-canonicalization",
+  "synthetic": true,
+  "vectors": [
+    {
+      "canonical_record_without_hash_utf8": "{\"apiVersion\":\"platform.masonjames.dev/steward/v1\",\"constitution_hash\":\"sha256:1111111111111111111111111111111111111111111111111111111111111111\",\"created_at\":\"2026-08-14T00:00:00Z\",\"durable_store\":\"agent-chronicle\",\"hash_algorithm\":\"domain-separated-canonical-json-sha256-v1\",\"identity_id\":\"example-platform-steward\",\"initial_identity_epoch\":1,\"initial_identity_revision\":1,\"issuer\":\"example-owner\",\"kind\":\"AgentIdentityDescriptor\",\"logical_name\":\"example-platform-steward\",\"maximum_authority_mode\":\"intent\",\"owner_id\":\"example-owner\",\"permitted_embodiments\":[\"server-sentinel\",\"mac-engineer\"],\"personal_memory_isolation\":true,\"provenance_state\":\"externally-authenticated\",\"record_id\":\"00000000-0000-4000-8000-000000000001\",\"recorded_at\":\"2026-08-14T00:00:00Z\",\"signature_bundle_hash\":\"sha256:9999999999999999999999999999999999999999999999999999999999999999\",\"signer_key_id\":\"example-identity-key-v1\",\"status\":\"active\"}",
+      "domain_prefix_hex": "706c6174666f726d2d737465776172642d7265636f72642d763100706c6174666f726d2e6d61736f6e6a616d65732e6465762f737465776172642f7631004167656e744964656e7469747944657363726970746f7200",
+      "domain_separator_inputs": {
+        "apiVersion": "platform.masonjames.dev/steward/v1",
+        "delimiter_hex": "00",
+        "kind": "AgentIdentityDescriptor",
+        "profile_prefix_utf8": "platform-steward-record-v1"
+      },
+      "expected_record_hash": "sha256:a8e6ff9459ed8fd67ae4fdeb18a1c551beddacba54988cb63231d975091d4153",
+      "hash_input_length_bytes": 1005,
+      "name": "synthetic-identity-descriptor",
+      "record": {
+        "apiVersion": "platform.masonjames.dev/steward/v1",
+        "constitution_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "created_at": "2026-08-14T00:00:00Z",
+        "durable_store": "agent-chronicle",
+        "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+        "identity_id": "example-platform-steward",
+        "initial_identity_epoch": 1,
+        "initial_identity_revision": 1,
+        "issuer": "example-owner",
+        "kind": "AgentIdentityDescriptor",
+        "logical_name": "example-platform-steward",
+        "maximum_authority_mode": "intent",
+        "owner_id": "example-owner",
+        "permitted_embodiments": [
+          "server-sentinel",
+          "mac-engineer"
+        ],
+        "personal_memory_isolation": true,
+        "provenance_state": "externally-authenticated",
+        "record_hash": "sha256:a8e6ff9459ed8fd67ae4fdeb18a1c551beddacba54988cb63231d975091d4153",
+        "record_id": "00000000-0000-4000-8000-000000000001",
+        "recorded_at": "2026-08-14T00:00:00Z",
+        "signature_bundle_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "signer_key_id": "example-identity-key-v1",
+        "status": "active"
+      }
+    },
+    {
+      "canonical_record_without_hash_utf8": "{\"apiVersion\":\"platform.masonjames.dev/steward/v1\",\"audience\":\"example-read-provider\",\"budget\":{\"maximum_calls\":2,\"maximum_cost_microunits\":1000,\"maximum_tokens\":100},\"capability_id\":\"example-convergence-analyzer\",\"constitution_hash\":\"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\"evidence_preconditions\":[\"sha256:3333333333333333333333333333333333333333333333333333333333333333\"],\"expires_at\":\"2026-08-14T01:00:00Z\",\"hash_algorithm\":\"domain-separated-canonical-json-sha256-v1\",\"identity\":{\"identity_epoch\":1,\"identity_id\":\"example-platform-steward\",\"identity_revision\":1},\"identity_revision_hash\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"issued_at\":\"2026-08-14T00:00:00Z\",\"issuer\":\"example-capability-lease-issuer\",\"issuer_key_id\":\"example-capability-lease-key-v1\",\"kind\":\"CapabilityLease\",\"lease_id\":\"00000000-0000-4000-8000-000000000102\",\"mode\":\"read\",\"nonce\":\"00000000-0000-4000-8000-000000000202\",\"overlay_selection_hash\":\"sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc\",\"permitted_interface\":\"example-convergence-analyzer-v1\",\"record_id\":\"00000000-0000-4000-8000-000000000002\",\"recorded_at\":\"2026-08-14T00:00:00Z\",\"release\":{\"capability_id\":\"example-convergence-analyzer\",\"interface_schema_digest\":\"sha256:5555555555555555555555555555555555555555555555555555555555555555\",\"overlay_selection_digest\":\"sha256:7777777777777777777777777777777777777777777777777777777777777777\",\"package_digest\":\"sha256:4444444444444444444444444444444444444444444444444444444444444444\",\"profile_digest\":\"sha256:6666666666666666666666666666666666666666666666666666666666666666\",\"release_id\":\"example-convergence-analyzer-v1.0.0\",\"signature_bundle_hash\":\"sha256:8888888888888888888888888888888888888888888888888888888888888888\",\"signer_key_id\":\"example-release-key-v1\"},\"revocation_identity\":\"example-capability-revocation\",\"runtime_attestation_hash\":\"sha256:2222222222222222222222222222222222222222222222222222222222222222\",\"runtime_installation_id\":\"example-runtime-installation\",\"scope\":{\"installation_id\":\"example-installation\",\"resource_id\":\"example-installation\",\"resource_type\":\"platform-installation\",\"scope_id\":\"example-convergence-journey\",\"scope_type\":\"journey\"},\"signature_bundle_hash\":\"sha256:9999999999999999999999999999999999999999999999999999999999999999\",\"status\":\"active\"}",
+      "domain_prefix_hex": "706c6174666f726d2d737465776172642d7265636f72642d763100706c6174666f726d2e6d61736f6e6a616d65732e6465762f737465776172642f7631004361706162696c6974794c6561736500",
+      "domain_separator_inputs": {
+        "apiVersion": "platform.masonjames.dev/steward/v1",
+        "delimiter_hex": "00",
+        "kind": "CapabilityLease",
+        "profile_prefix_utf8": "platform-steward-record-v1"
+      },
+      "expected_record_hash": "sha256:86d8dd3d0ee2ac08c01a8282053c48fa600b4f6dabd8ddd56d32dd74598506e1",
+      "hash_input_length_bytes": 2437,
+      "name": "synthetic-capability-lease",
+      "record": {
+        "apiVersion": "platform.masonjames.dev/steward/v1",
+        "audience": "example-read-provider",
+        "budget": {
+          "maximum_calls": 2,
+          "maximum_cost_microunits": 1000,
+          "maximum_tokens": 100
+        },
+        "capability_id": "example-convergence-analyzer",
+        "constitution_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "evidence_preconditions": [
+          "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+        ],
+        "expires_at": "2026-08-14T01:00:00Z",
+        "hash_algorithm": "domain-separated-canonical-json-sha256-v1",
+        "identity": {
+          "identity_epoch": 1,
+          "identity_id": "example-platform-steward",
+          "identity_revision": 1
+        },
+        "identity_revision_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "issued_at": "2026-08-14T00:00:00Z",
+        "issuer": "example-capability-lease-issuer",
+        "issuer_key_id": "example-capability-lease-key-v1",
+        "kind": "CapabilityLease",
+        "lease_id": "00000000-0000-4000-8000-000000000102",
+        "mode": "read",
+        "nonce": "00000000-0000-4000-8000-000000000202",
+        "overlay_selection_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "permitted_interface": "example-convergence-analyzer-v1",
+        "record_hash": "sha256:86d8dd3d0ee2ac08c01a8282053c48fa600b4f6dabd8ddd56d32dd74598506e1",
+        "record_id": "00000000-0000-4000-8000-000000000002",
+        "recorded_at": "2026-08-14T00:00:00Z",
+        "release": {
+          "capability_id": "example-convergence-analyzer",
+          "interface_schema_digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "overlay_selection_digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "package_digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "profile_digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "release_id": "example-convergence-analyzer-v1.0.0",
+          "signature_bundle_hash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+          "signer_key_id": "example-release-key-v1"
+        },
+        "revocation_identity": "example-capability-revocation",
+        "runtime_attestation_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "runtime_installation_id": "example-runtime-installation",
+        "scope": {
+          "installation_id": "example-installation",
+          "resource_id": "example-installation",
+          "resource_type": "platform-installation",
+          "scope_id": "example-convergence-journey",
+          "scope_type": "journey"
+        },
+        "signature_bundle_hash": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+        "status": "active"
+      }
+    }
+  ]
+}

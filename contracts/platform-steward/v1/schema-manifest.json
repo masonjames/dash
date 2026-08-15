@@ -1,0 +1,29 @@
+{
+  "apiVersion": "platform.masonjames.dev/steward/v1",
+  "canonical_source": "ops/steward/contracts/steward_v1.py",
+  "canonical_source_sha256": "sha256:6ea228e5331dec4fb72be2fc077a940928291f230955103cb20eea33652c82d4",
+  "kind": "PlatformStewardSchemaManifest",
+  "schema_dialect": "https://json-schema.org/draft/2020-12/schema",
+  "schemas": {
+    "agent-constitution.schema.json": "sha256:8e227a6f9d371cf0328ad0f09b6de4008726cc212f987b9ef0d309b98c2067c6",
+    "agent-episode.schema.json": "sha256:d39c9e8314f691819ba5d50d8d76f4bc636ce18e8be2a762f21b01ee0196180e",
+    "agent-handoff.schema.json": "sha256:5c1b4823f739e63bec041e1de448e5770f7adf3347a94794a8f11933571ac50e",
+    "agent-identity-descriptor.schema.json": "sha256:927e799741b82f9c587a5fcfea6db4923f8b6bd1aa06127d86664e8f07c12e2f",
+    "agent-identity-revision.schema.json": "sha256:3e1cf94bce7e2e47ab7685d53223fdf773c86264eda9eac263634281700983ac",
+    "capability-candidate.schema.json": "sha256:c6b5158af95a1b9b928a86244366413ef08719058be343356e53050691ce46b4",
+    "capability-evaluation.schema.json": "sha256:e76977a7a63fa73a658959c22b710a68c6d6fc222f1d9afbe23efceca6b0fdc4",
+    "capability-gap.schema.json": "sha256:d3e59faf94fec7640cbe5200e0f0c3f1cdfd45cf23d4818be9218908a2fe9e75",
+    "capability-invocation.schema.json": "sha256:7380f90a36bd03ea7996bdd6566ac7f247f8f2145cec3551c4fac0ae6c420781",
+    "capability-lease.schema.json": "sha256:28765705b95497b884ff08a6d3505ace47ee0dac4f62b03677a0e843a78452e9",
+    "capability-promotion.schema.json": "sha256:1e0fb275240c2752a6f8317a2105bf27b9114916bceac16333499b1fea0812d0",
+    "capability-revocation.schema.json": "sha256:7a61a721bc176500859ac4abf6fa90eb474826b3c35a254b71fa106e8ed64b90",
+    "foundry-admission-attestation.schema.json": "sha256:c2feb8804a4acf293138de7993dc3157ddd0d077a7b1993211e27440bd314eaf",
+    "knowledge-claim.schema.json": "sha256:a14ea59edd1ac0b3f16c762127f954845b672fd1ca5726d0f9c971178c8dc1ad",
+    "reasoning-lease.schema.json": "sha256:43dde9a267c1b21eb4acd72ea0fe5ccbef075d8e6cb92a8bc39ea766aabe27f2",
+    "runtime-attestation.schema.json": "sha256:c5508f4ee59dd6b1e760b97a0f61624fcbd1a5335fb86eff08a7c898dc04d7cf"
+  },
+  "test_vectors": {
+    "test-vectors/audit-projection-records.json": "sha256:9866294256dd497d31a696a58f0db854a05064a6cb4f007b93a9f36f7236223e",
+    "test-vectors/canonical-hash-vectors.json": "sha256:4525bc33203e926e2dbe8aa6319be1d33a55c36c151573a522d7f3238370e603"
+  }
+}
