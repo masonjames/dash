@@ -16,6 +16,10 @@ on:
       - "contracts/platform-steward/**"
       - "dash/platform_steward_audit_projection.py"
       - "tests/test_platform_steward_audit_projection.py"
+      # The default-disabled signed Chronicle reader is source-only and has no
+      # route or runtime wiring. Its focused tests still run in validate.yml.
+      - "dash/platform_steward_chronicle_projection.py"
+      - "tests/test_platform_steward_chronicle_projection.py"
       # Phase 2 Chronicle persistence remains an unregistered, owner-gated
       # test candidate. Merging only these exact source/proof paths must never
       # publish a runtime image.
