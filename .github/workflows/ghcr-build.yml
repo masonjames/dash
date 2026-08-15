@@ -10,6 +10,13 @@ name: Build and Push to GHCR
 on:
   push:
     branches: [main]
+    # Contract mirrors and their read-only audit projection do not change the
+    # runtime image. Any push containing another path still runs this workflow.
+    paths-ignore:
+      - "contracts/platform-steward/**"
+      - "dash/platform_steward_audit_projection.py"
+      - "tests/test_platform_steward_audit_projection.py"
+      - ".github/workflows/ghcr-build.yml"
   workflow_dispatch:
 
 permissions:
