@@ -71,6 +71,7 @@ def main() -> None:
         root / "db" / "migrations" / "ops_desired_state_suggestions.sql",
         root / "db" / "migrations" / "ops_incidents.sql",
         root / "db" / "migrations" / "ops_shadow_attempts.sql",
+        root / "db" / "migrations" / "ops_agent_chronicle_v1_disabled.sql",
     ]
     db_url = build_db_url().replace("postgresql+psycopg://", "postgresql://", 1)
     role_secrets = [(role, _required_secret(env_name), read_only) for role, env_name, read_only in _RUNTIME_ROLES]

@@ -1,10 +1,10 @@
 -- Agent Chronicle v1 durable persistence candidate.
 --
--- UNREGISTERED AND DEFAULT-DISABLED:
---   * scripts/migrate_ops.py must not list this file.
+-- REGISTERED AND DEFAULT-DISABLED:
+--   * scripts/migrate_ops.py lists this as the ninth additive Ops migration.
 --   * its sibling .sha256 file pins these exact source bytes.
---   * source and tests do not authorize applying it outside the disposable
---     DASH_TEST_POSTGRES_DSN database.
+--   * registration and application create inert persistence objects only;
+--     neither action authorizes enabling the Chronicle writer gate.
 --   * the database owner alone may enable ops.chronicle_candidate_gate.
 --   * mutable gate/registry/high-water/CAS/budget/delivery rows are authorized
 --     database-owner state. Runtime roles receive no direct relation access;

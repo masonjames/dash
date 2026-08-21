@@ -956,7 +956,6 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
         "password": _ROLE_SECRETS["DOCKHAND_OPS_WRITER_PASSWORD"],
     }
     base_time = datetime(2026, 8, 15, 12, 0, tzinfo=UTC)
-    candidate_sql = _CANDIDATE.read_text(encoding="utf-8")
     disabled_record = chronicle_test_record(
         record_id=chronicle_test_uuid(0x30000000, 1),
         kind="AgentEpisode",
@@ -980,9 +979,11 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
     )
 
     with psycopg.connect(dsn, autocommit=True) as connection:
-        connection.execute(candidate_sql)
-        connection.execute(candidate_sql)
-        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (8,)
+        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (9,)
+        assert connection.execute(
+            "SELECT checksum FROM ops.schema_migrations WHERE name = %s",
+            (_CANDIDATE.name,),
+        ).fetchone() == (hashlib.sha256(_CANDIDATE.read_bytes()).hexdigest(),)
         with pytest.raises(psycopg.DatabaseError) as disabled_error:
             chronicle_execute_append(connection, disabled_decision, [disabled_record], disabled_outbox)
         assert disabled_error.value.sqlstate == "P2D01"
