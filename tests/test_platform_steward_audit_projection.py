@@ -560,9 +560,7 @@ def test_invocation_revocation_lookup_includes_the_lease_identity() -> None:
     for validation in successful["provider_validations"]:
         validation["lease_hash"] = independent_lease["record_hash"]
         validation["validated_at"] = (
-            successful["started_at"]
-            if validation["phase"] == "entry"
-            else successful["completed_at"]
+            successful["started_at"] if validation["phase"] == "entry" else successful["completed_at"]
         )
     successful.pop("record_hash")
     _seal_record(successful)
