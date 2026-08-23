@@ -508,6 +508,70 @@ def test_revocation_release_must_match_a_present_capability_lease() -> None:
         validate_audit_projection_document(document)
 
 
+def test_projection_revokes_only_the_matching_identity_and_release_pair() -> None:
+    document = _document()
+    original = _record(document, "CapabilityLease")
+    other_release = copy.deepcopy(original)
+    other_release.update(
+        {
+            "lease_id": "10000000-0000-4000-8000-000000013101",
+            "record_hash": "sha256:" + "a" * 64,
+            "record_id": "10000000-0000-4000-8000-000000001101",
+        }
+    )
+    other_release["release"]["release_id"] = "synthetic-convergence-analyzer-v2.0.0"
+    document["records"].append(other_release)
+
+    projection = _derive_expected_projection(document["records"], as_of=document["as_of"])
+    states = {lease["lease_id"]: lease["state"] for lease in projection["capability_leases"]}
+
+    assert states[original["lease_id"]] == "revoked"
+    assert states[other_release["lease_id"]] == "active"
+
+
+def test_invocation_revocation_lookup_includes_the_lease_identity() -> None:
+    document = _document()
+    original_lease = _record(document, "CapabilityLease")
+    independent_lease = copy.deepcopy(original_lease)
+    independent_lease.update(
+        {
+            "lease_id": "10000000-0000-4000-8000-000000013102",
+            "nonce": "10000000-0000-4000-8000-000000013103",
+            "record_id": "10000000-0000-4000-8000-000000001102",
+            "recorded_at": "2026-08-14T12:06:00Z",
+            "revocation_identity": "synthetic-independent-revocation",
+        }
+    )
+    independent_lease.pop("record_hash")
+    _seal_record(independent_lease)
+
+    successful = copy.deepcopy(_record(document, "CapabilityInvocation", call_index=1))
+    successful.update(
+        {
+            "call_nonce": "10000000-0000-4000-8000-000000014102",
+            "capability_lease_hash": independent_lease["record_hash"],
+            "completed_at": "2026-08-14T12:21:30Z",
+            "invocation_id": "10000000-0000-4000-8000-000000014101",
+            "record_id": "10000000-0000-4000-8000-000000001202",
+            "recorded_at": "2026-08-14T12:21:30Z",
+            "started_at": "2026-08-14T12:21:00Z",
+        }
+    )
+    for validation in successful["provider_validations"]:
+        validation["lease_hash"] = independent_lease["record_hash"]
+        validation["validated_at"] = (
+            successful["started_at"] if validation["phase"] == "entry" else successful["completed_at"]
+        )
+    successful.pop("record_hash")
+    _seal_record(successful)
+
+    document["records"].extend((independent_lease, successful))
+    document["records"].sort(key=lambda item: (item["recorded_at"], item["record_id"]))
+    _reseal_document(document)
+
+    validate_audit_projection_document(document)
+
+
 def test_review_requested_promotion_cannot_retain_signed_release_or_overlay() -> None:
     document = _document()
     promotion = _record(document, "CapabilityPromotion", promotion_revision=2)
