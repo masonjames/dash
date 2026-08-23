@@ -1203,7 +1203,10 @@ def _derive_expected_projection(records: Sequence[Mapping[str, Any]], *, as_of: 
         key=lambda record: (record["effective_at"], record["revocation_id"]),
     )
     effective_revocations = {
-        record["target_revocation_identity"]: record
+        (
+            record["target_revocation_identity"],
+            canonical_json_bytes(record["release"]),
+        ): record
         for record in revocation_records
         if record["effective_at"] <= canonical_as_of
     }
@@ -1214,7 +1217,10 @@ def _derive_expected_projection(records: Sequence[Mapping[str, Any]], *, as_of: 
     capability_leases = []
     for record in capability_lease_records:
         state = record["status"]
-        if record["revocation_identity"] in effective_revocations:
+        if (
+            record["revocation_identity"],
+            canonical_json_bytes(record["release"]),
+        ) in effective_revocations:
             state = "revoked"
         elif state == "active" and record["expires_at"] <= canonical_as_of:
             state = "expired"
@@ -1725,7 +1731,7 @@ def _validate_record_relationships(records: Sequence[Mapping[str, Any]], *, as_o
     capability_leases_by_hash: dict[str, Mapping[str, Any]] = {}
     capability_lease_ids: set[str] = set()
     capability_nonces: set[tuple[str, str]] = set()
-    revocations_by_release: dict[bytes, Mapping[str, Any]] = {}
+    revocations_by_target: dict[tuple[bytes, str], Mapping[str, Any]] = {}
     revocation_ids: set[str] = set()
     invocation_ids: set[str] = set()
     invocation_nonces: set[tuple[str, str]] = set()
@@ -2556,10 +2562,13 @@ def _validate_record_relationships(records: Sequence[Mapping[str, Any]], *, as_o
                 or matching_lease["issued_at"] > record["effective_at"]
             ):
                 raise record_error(record, "capability revocation is unrelated to its target lease")
-            release_key = canonical_json_bytes(record["release"])
-            previous = revocations_by_release.get(release_key)
+            target_key = (
+                canonical_json_bytes(record["release"]),
+                record["target_revocation_identity"],
+            )
+            previous = revocations_by_target.get(target_key)
             if previous is None or record["effective_at"] < previous["effective_at"]:
-                revocations_by_release[release_key] = record
+                revocations_by_target[target_key] = record
             revocation_ids.add(record["revocation_id"])
             continue
 
@@ -2594,7 +2603,12 @@ def _validate_record_relationships(records: Sequence[Mapping[str, Any]], *, as_o
             started = record["started_at"]
             completed = record["completed_at"]
             expiry = min(invocation_lease["expires_at"], invocation_attestation["expires_at"])
-            revocation = revocations_by_release.get(canonical_json_bytes(invocation_lease["release"]))
+            revocation = revocations_by_target.get(
+                (
+                    canonical_json_bytes(invocation_lease["release"]),
+                    invocation_lease["revocation_identity"],
+                )
+            )
             revocation_cause = (
                 max(revocation["effective_at"], revocation["recorded_at"]) if revocation is not None else None
             )
