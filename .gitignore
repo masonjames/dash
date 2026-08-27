@@ -32,6 +32,7 @@ htmlcov/
 # Virtual envs + secrets
 # =========================
 .venv/
+.tools/
 venv/
 env/
 ENV/
