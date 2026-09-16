@@ -12,13 +12,15 @@
     "first_seen_at tracks when drift was first detected, not when it started",
     "resolved_at is NULL for active drift — filter WHERE resolved_at IS NULL for current state",
     "severity is subjective: 'critical' = public-facing + version mismatch",
-    "category values: 'image_version', 'missing_service', 'orphaned_route', 'config_mismatch'"
+    "category includes image_version, missing_service, orphaned_service and inventory_unverified. inventory_unverified is unresolved mapping/lifecycle or unverified one-shot completion, not a confirmed outage."
   ],
   "table_columns": [
     {"name": "id", "type": "SERIAL", "description": "Auto-increment primary key"},
     {"name": "observed_at", "type": "TIMESTAMPTZ", "description": "When this drift was last observed"},
     {"name": "category", "type": "TEXT", "description": "Drift category (image_version, missing_service, etc.)"},
     {"name": "severity", "type": "TEXT", "description": "'critical', 'high', 'medium', 'low'"},
+    {"name": "host", "type": "TEXT", "description": "Workload host in the drift identity"},
+    {"name": "environment", "type": "TEXT", "description": "Logical environment in the drift identity"},
     {"name": "service_name", "type": "TEXT", "description": "Service affected by drift"},
     {"name": "desired_value", "type": "TEXT", "description": "What git says (e.g., desired image tag)"},
     {"name": "actual_value", "type": "TEXT", "description": "What's actually running"},

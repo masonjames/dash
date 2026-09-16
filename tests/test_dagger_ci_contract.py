@@ -80,7 +80,4 @@ def test_dependabot_caps_routine_updates_and_keeps_majors_separate() -> None:
         "minor",
         "patch",
     ]
-    assert all(
-        update["open-pull-requests-limit"] == 0
-        for update in document["updates"][1:]
-    )
+    assert all(update["open-pull-requests-limit"] == 0 for update in document["updates"][1:])

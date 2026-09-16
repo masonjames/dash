@@ -9,14 +9,8 @@ from dagger import check as dagger_check
 from dagger import dag, function, object_type
 
 
-PYTHON_IMAGE = (
-    "python:3.12.11-bookworm@"
-    "sha256:13c9584604a99ca134c4f41800f74ffc64ee6ac8cf555cf1e704a6087fc84f12"
-)
-PGVECTOR_IMAGE = (
-    "agnohq/pgvector@"
-    "sha256:e502d095cfb097bc6a4ac8b4bf12224d64c0a0d79fc2fe2b691a268ea2452681"
-)
+PYTHON_IMAGE = "python:3.12.11-bookworm@sha256:13c9584604a99ca134c4f41800f74ffc64ee6ac8cf555cf1e704a6087fc84f12"
+PGVECTOR_IMAGE = "agnohq/pgvector@sha256:e502d095cfb097bc6a4ac8b4bf12224d64c0a0d79fc2fe2b691a268ea2452681"
 TARGET_PLATFORM = dagger.Platform("linux/amd64")
 IMAGE_REPOSITORY = "ghcr.io/masonjames/dash"
 
@@ -128,7 +122,7 @@ class DashCi:
                 "DASH_TEST_POSTGRES_DSN",
                 "postgresql://ai@postgres-search-path:5432/dash_search_path_ci",
             )
-            .with_exec(["python", "-c", POSTGRES_WAIT_SCRIPT])
+            .with_exec(["uv", "run", "python", "-c", POSTGRES_WAIT_SCRIPT])
             .with_exec(
                 [
                     "uv",
@@ -166,11 +160,7 @@ class DashCi:
     async def build(self, ws: dagger.Workspace) -> dagger.Container:
         """Build and smoke-test the linux/amd64 production image."""
         image = self._image(ws)
-        await (
-            image.with_entrypoint([])
-            .with_exec(["python", "-c", IMAGE_SMOKE_SCRIPT])
-            .sync()
-        )
+        await image.with_entrypoint([]).with_exec(["python", "-c", IMAGE_SMOKE_SCRIPT]).sync()
         return image
 
     @function
@@ -214,7 +204,7 @@ class DashCi:
     @staticmethod
     def _test_environment(source: dagger.Directory) -> dagger.Container:
         return (
-            dag.container(platform=TARGET_PLATFORM)
+            dag.container()
             .from_(PYTHON_IMAGE)
             .with_directory("/src", source)
             .with_workdir("/src")

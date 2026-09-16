@@ -10,9 +10,9 @@
   "data_quality_notes": [
     "replicas is TEXT (e.g., '1/1') — split on '/' to compare desired vs actual",
     "image_tag may be 'latest' which hides the actual version",
-    "Multiple snapshots per day — use MAX(observed_at) for current state",
-    "Container names follow Dokploy convention: project_service_hash",
-    "state values: 'running', 'exited', 'created', 'restarting'"
+    "Host partitions refresh independently; join on host plus service_name and use per-host MAX(observed_at). Expose stale or unobserved partitions.",
+    "Swarm task labels establish service identity and host placement; one row per service/host, not per task. Manager-only records without observed placement are cluster observations.",
+    "state includes running, degraded, stopped and unknown. Positive equal replicas mean available, 0/0 means intentionally stopped; availability does not prove application health."
   ],
   "table_columns": [
     {"name": "id", "type": "SERIAL", "description": "Auto-increment primary key"},
