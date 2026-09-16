@@ -1,6 +1,6 @@
 {
   "table_name": "desired_services",
-  "table_description": "Desired state of platform services from git manifests (infra/dokploy/apps/**). Represents what SHOULD be running based on checked-in configuration.",
+  "table_description": "Desired state of platform services from git manifests (infra/dokploy/apps/**). Declarations include templates, one-shot dependencies and unverified intent; a declaration is not proof of an active deployment.",
   "use_cases": [
     "See what services are declared in git",
     "Compare desired images against actual running images",
@@ -12,12 +12,15 @@
     "domains is a TEXT[] array — use ANY() or && operators for array queries",
     "traefik_labels is JSONB — use ->> operator for label access",
     "source_file points to the git manifest path for traceability",
-    "Refreshed on each ETL run — loaded_at shows when last parsed"
+    "Refreshed on each ETL run — loaded_at shows when last parsed",
+    "Join on host and service_name; environment is a logical scope and may differ from host.",
+    "Runtime names use verified catalog mappings. Check inventory_unverified drift before describing an unmatched declaration as an outage."
   ],
   "table_columns": [
     {"name": "id", "type": "SERIAL", "description": "Auto-increment primary key"},
     {"name": "app_name", "type": "TEXT", "description": "Application name (e.g., 'ghost-test')"},
     {"name": "service_name", "type": "TEXT", "description": "Service within the app (e.g., 'ghost', 'ghost-db')"},
+    {"name": "host", "type": "TEXT", "description": "Expected workload host; distinct from logical environment"},
     {"name": "environment", "type": "TEXT", "description": "'platform-core', 'prod', or 'test'"},
     {"name": "image", "type": "TEXT", "description": "Full image reference from manifest"},
     {"name": "image_tag", "type": "TEXT", "description": "Tag portion only"},

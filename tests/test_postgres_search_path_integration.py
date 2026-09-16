@@ -2812,3 +2812,44 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
                     connection.execute("SELECT marker FROM ai.desired_services").fetchone()
                 with pytest.raises(psycopg.errors.InsufficientPrivilege):
                     connection.execute("SELECT nextval('ai.desired_services_id_seq')").fetchone()
+
+
+@pytest.mark.skipif(not os.getenv(_DSN_ENV), reason="explicit PostgreSQL integration DSN is required")
+def test_inventory_queries_keep_host_identity_and_preserved_partitions() -> None:
+    import re
+
+    dsn = os.environ[_DSN_ENV]
+    assert conninfo_to_dict(dsn).get("dbname") == _EXPECTED_DATABASE
+    source = (ROOT / "dash/knowledge/queries/ops_queries.sql").read_text()
+    queries = dict(re.findall(r"-- <query name>(.*?)</query name>.*?-- <query>\n(.*?)-- </query>", source, re.DOTALL))
+    with psycopg.connect(dsn) as connection:
+        connection.execute(
+            "CREATE TEMP TABLE desired_services (host text, service_name text, image_tag text, domains text[])"
+        )
+        connection.execute(
+            "CREATE TEMP TABLE actual_services (host text, service_name text, image_tag text, observed_at timestamptz, replicas text, state text)"
+        )
+        connection.execute("CREATE TEMP TABLE update_status (service text, latest text, status text)")
+        connection.execute(
+            "CREATE TEMP TABLE state_snapshots (host text, captured_at timestamptz, disk_usage_pct float, memory_usage_pct float, docker_services int)"
+        )
+        connection.execute(
+            "INSERT INTO desired_services VALUES ('prod','api','2',ARRAY['prod.example']), ('platform-core','api','3',ARRAY['core.example'])"
+        )
+        connection.execute(
+            "INSERT INTO actual_services VALUES ('prod','api','1',NOW()-INTERVAL '3 hours','1/1','running'), ('platform-core','api','3',NOW(),'0/0','stopped')"
+        )
+        connection.execute("INSERT INTO update_status VALUES ('api','4','UPDATE AVAILABLE')")
+        connection.execute(
+            "INSERT INTO state_snapshots VALUES ('prod',NOW()-INTERVAL '3 hours',80,30,1), ('platform-core',NOW(),40,20,1)"
+        )
+        rows = connection.execute(queries["version_triangulation"]).fetchall()
+        by_host = {row[0]: row for row in rows}
+        assert by_host["prod"][3] == "stale"
+        assert by_host["prod"][5] == "1"
+        assert by_host["platform-core"][5] == "3"
+        routes = connection.execute(queries["orphaned_routes"]).fetchall()
+        assert [row[0] for row in routes] == ["platform-core"]
+        pressure = connection.execute(queries["host_resource_pressure"]).fetchall()
+        assert {row[0] for row in pressure} == {"prod", "platform-core"}
+        connection.rollback()

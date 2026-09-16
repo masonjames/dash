@@ -50,7 +50,14 @@ LIMIT 12
 -- </query description>
 -- <query>
 SELECT
+    d.host,
     d.service_name,
+    a.observed_at,
+    CASE
+        WHEN a.observed_at IS NULL THEN 'unobserved'
+        WHEN a.observed_at < NOW() - INTERVAL '2 hours' THEN 'stale'
+        ELSE 'recent'
+    END AS observation_freshness,
     d.image_tag AS desired,
     a.image_tag AS actual,
     u.latest AS latest_available,
@@ -63,7 +70,11 @@ SELECT
     END AS alignment
 FROM desired_services d
 LEFT JOIN actual_services a ON d.service_name = a.service_name
-    AND a.observed_at = (SELECT MAX(observed_at) FROM actual_services)
+    AND d.host = a.host
+    AND a.observed_at = (
+        SELECT MAX(current_host.observed_at) FROM actual_services current_host
+        WHERE current_host.host = d.host
+    )
 LEFT JOIN update_status u ON d.service_name = u.service
 WHERE d.image_tag != a.image_tag OR a.image_tag != u.latest
 ORDER BY alignment, d.service_name
@@ -72,21 +83,32 @@ ORDER BY alignment, d.service_name
 
 -- <query name>orphaned_routes</query name>
 -- <query description>
--- Traefik routes pointing at dead or degraded services.
--- Finds services with domains configured but not running.
+-- Declared routes whose workloads need review, with observation freshness.
+-- An unobserved/stale row or intentionally stopped service is not proof of an outage.
 -- </query description>
 -- <query>
 SELECT
+    d.host,
     d.service_name,
+    a.observed_at,
+    CASE
+        WHEN a.observed_at IS NULL THEN 'unobserved'
+        WHEN a.observed_at < NOW() - INTERVAL '2 hours' THEN 'stale'
+        ELSE 'recent'
+    END AS observation_freshness,
     d.domains,
     a.replicas,
     a.state
 FROM desired_services d
 LEFT JOIN actual_services a ON d.service_name = a.service_name
-    AND a.observed_at = (SELECT MAX(observed_at) FROM actual_services)
+    AND d.host = a.host
+    AND a.observed_at = (
+        SELECT MAX(current_host.observed_at) FROM actual_services current_host
+        WHERE current_host.host = d.host
+    )
 WHERE d.domains IS NOT NULL
     AND d.domains != '{}'
-    AND (a.service_name IS NULL OR a.replicas LIKE '0/%' OR a.state != 'running')
+    AND (a.service_name IS NULL OR a.state != 'running')
 -- </query>
 
 
@@ -107,8 +129,11 @@ SELECT
         WHEN disk_usage_pct > 70 OR memory_usage_pct > 70 THEN 'warning'
         ELSE 'healthy'
     END AS pressure_level
-FROM state_snapshots
-WHERE captured_at = (SELECT MAX(captured_at) FROM state_snapshots WHERE host = state_snapshots.host)
+FROM state_snapshots snapshot
+WHERE captured_at = (
+    SELECT MAX(current_host.captured_at) FROM state_snapshots current_host
+    WHERE current_host.host = snapshot.host
+)
 ORDER BY GREATEST(disk_usage_pct, memory_usage_pct) DESC
 -- </query>
 
@@ -211,7 +236,7 @@ SELECT
     (SELECT AVG(disk_usage_pct) FROM state_snapshots
         WHERE captured_at > NOW() - INTERVAL '1 day') AS avg_disk_pct,
     (SELECT COUNT(*) FROM actual_services
-        WHERE replicas LIKE '0/%') AS degraded_services
+        WHERE state = 'degraded') AS degraded_services
 -- </query>
 
 
