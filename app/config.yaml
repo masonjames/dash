@@ -1,6 +1,0 @@
-chat:
-  quick_prompts:
-    dash:
-      - "What's our current MRR?"
-      - "Break down our MRR by plan"
-      - "Show me the revenue trend by month"

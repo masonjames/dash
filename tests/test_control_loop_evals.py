@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import json
+import subprocess
+import sys
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
@@ -183,3 +186,25 @@ def test_control_loop_harness_has_no_agent_or_model_dependency() -> None:
     assert "dash.team" not in source
     assert "OpenAI" not in source
     assert ".run(" not in source
+
+
+def test_control_loop_cli_is_ops_only_and_emits_json_without_demo_imports() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            "import runpy, sys; sys.argv = ['evals', 'control-loop', '--json']; "
+            "\ntry: runpy.run_module('evals', run_name='__main__')"
+            "\nexcept SystemExit as exc: assert exc.code == 0"
+            "\nassert not any(name == 'agno' or name.startswith('agno.') for name in sys.modules)",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    report = json.loads(result.stdout)
+    assert report["gate_passed"]
+    assert not report["live_release_gate_passed"]
+    for arguments in ([], ["smoke"], ["improve"], ["--category", "accuracy"]):
+        retired = subprocess.run([sys.executable, "-m", "evals", *arguments], capture_output=True)
+        assert retired.returncode == 2

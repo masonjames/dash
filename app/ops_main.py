@@ -1,6 +1,6 @@
 """Minimal private process for Dockhand-to-Dash Ops contracts.
 
-Run separately from the public AgentOS process:
+Default service entry point:
 
     uvicorn app.ops_main:app --host 0.0.0.0 --port 8001
 """

@@ -1,132 +1,58 @@
-# AGENTS.md
+# Dash Ops contributor guidance
 
-## Project Overview
+This repository serves the private Ops API in `app/ops_main.py`, default port
+8001. Keep its route set exact: `GET /internal/health/ready`,
+`POST /internal/ops/investigate`, and `POST /internal/ops/evaluate-outcome`.
+All three require HMAC authentication; public docs and OpenAPI routes are disabled.
 
-Dash is a self-learning data agent that delivers **insights, not just SQL results**. It grounds SQL generation in 6 layers of context and improves automatically with every query. Inspired by [OpenAI's in-house data agent](https://openai.com/index/inside-our-in-house-data-agent/).
+## Boundaries
 
-## Structure
-
-```
-dash/
-├── agents.py             # Dash agents (dash, reasoning_dash)
-├── paths.py              # Path constants
-├── knowledge/            # Knowledge files (tables, queries, business rules)
-│   ├── tables/           # Table metadata JSON files
-│   ├── queries/          # Validated SQL queries
-│   └── business/         # Business rules and metrics
-├── context/
-│   ├── semantic_model.py # Layer 1: Table usage
-│   └── business_rules.py # Layer 2: Business rules
-├── tools/
-│   ├── introspect.py     # Layer 6: Runtime context
-│   └── save_query.py     # Save validated queries
-├── scripts/
-│   ├── load_data.py      # Load F1 sample data
-│   └── load_knowledge.py # Load knowledge files
-└── evals/
-    ├── test_cases.py     # Test cases with golden SQL
-    ├── grader.py         # LLM-based response grader
-    └── run_evals.py      # Run evaluations
-
-app/
-├── main.py               # API entry point (AgentOS)
-└── config.yaml           # Agent configuration
-
-db/
-├── session.py            # PostgreSQL session factory
-└── url.py                # Database URL builder
-```
+- `dash/internal_ops.py` validates evidence, readiness, and outcome requests.
+  Preserve HMAC/replay protection, typed contracts, and fail-closed behavior.
+- The API uses explicit `OPS_DB_*` credentials for `dash_ops_reader`, with
+  read-only transactions and SELECT-only access. Never fall back to `DB_*`.
+- Dockhand owns canonical writes, approvals, and execution through its isolated
+  `dockhand_ops_writer` identity. Dash only returns typed results/proposals.
+- `dash/ops_indexer.py` uses independent `OPS_INDEXER_DB_*` credentials for
+  `dash_ops_indexer`. It may mutate only derived retrieval documents/status.
+- Preserve canonical retrieval in `dash/ops_retrieval.py`, OpenAI query/document
+  embeddings, and Ops runtime settings (`DASH_OPS_INDEX_MAX_AGE_SECONDS`,
+  `DASH_OPS_MODEL_VERSION`). See `example.env` for process-specific placeholders.
+- Keep all ten checksummed SQL migrations unchanged. The owner-only migration
+  runner in `scripts/migrate_ops.py` provisions four roles, including
+  `dash_api_runtime`, and reapplies `db/runtime_role_privileges.sql`.
+- Preserve `dash.validated_queries`, including support for zero rows, and all
+  nested Ops knowledge: `dash/knowledge/tables/ops_*.json`,
+  `dash/knowledge/business/ops_metrics.json`, and
+  `dash/knowledge/queries/ops_queries.sql`.
 
 ## Commands
 
+Run from the repository root with project dependencies already available:
+
 ```bash
-./scripts/venv_setup.sh && source .venv/bin/activate
-./scripts/format.sh      # Format code
-./scripts/validate.sh    # Lint + type check
-python -m dash           # CLI mode
-python -m dash.agents    # Test mode (runs sample query)
-
-# Data & Knowledge
-python -m dash.scripts.load_data       # Load F1 sample data
-python -m dash.scripts.load_knowledge  # Load knowledge into vector DB
-
-# Evaluations
-python -m dash.evals.run_evals              # Run all evals (string matching)
-python -m dash.evals.run_evals -c basic     # Run specific category
-python -m dash.evals.run_evals -v           # Verbose mode (show responses)
-python -m dash.evals.run_evals -g           # Use LLM grader
-python -m dash.evals.run_evals -r           # Compare against golden SQL results
-python -m dash.evals.run_evals -g -r -v     # All modes combined
+uvicorn app.ops_main:app --host 0.0.0.0 --port 8001
+python -m scripts.migrate_ops                    # owner + four role passwords
+python -m scripts.index_ops                      # independent indexer credentials
+python -m scripts.index_ops --interval-seconds 1800
+ruff format --check .
+ruff check .
+mypy .
+python -m pytest -q --ignore=tests/test_postgres_search_path_integration.py
+python -m evals control-loop --json
+python -m scripts.export_control_loop_corpus --out /tmp/dash-control-loop.jsonl
 ```
 
-## Architecture
+`./scripts/format.sh` applies formatting/import sorting;
+`./scripts/validate.sh` runs Ruff, mypy, and pytest. PostgreSQL integration tests
+use only an explicitly configured disposable `dash_search_path_ci` database
+(`DASH_TEST_POSTGRES_DSN`). Synthetic replay and corpus export require no model
+calls and make no live readiness claims.
 
-**Two Learning Systems:**
-
-| System | What It Stores | How It Evolves |
-|--------|---------------|----------------|
-| **Knowledge** | Validated queries, table metadata, business rules | Curated by you + Dash |
-| **Learnings** | Error patterns, type gotchas, discovered fixes | Managed by Learning Machine automatically |
-
-```python
-# KNOWLEDGE: Static, curated (table schemas, validated queries)
-dash_knowledge = Knowledge(...)
-
-# LEARNINGS: Dynamic, discovered (error patterns, gotchas)
-dash_learnings = Knowledge(...)
-
-dash = Agent(
-    knowledge=dash_knowledge,
-    search_knowledge=True,
-    learning=LearningMachine(
-        knowledge=dash_learnings,  # separate from static knowledge
-        user_profile=UserProfileConfig(mode=LearningMode.AGENTIC),
-        user_memory=UserMemoryConfig(mode=LearningMode.AGENTIC),
-        learned_knowledge=LearnedKnowledgeConfig(mode=LearningMode.AGENTIC),
-    ),
-)
-```
-
-**Learning Machine provides:**
-- `search_learnings` / `save_learning` tools
-- `user_profile` - structured facts about user
-- `user_memory` - unstructured observations
-
-## The Six Layers of Context
-
-| Layer | Source | Code |
-|-------|--------|------|
-| 1. Table Usage | `dash/knowledge/tables/*.json` | `dash/context/semantic_model.py` |
-| 2. Business Rules | `dash/knowledge/business/*.json` | `dash/context/business_rules.py` |
-| 3. Query Patterns | `dash/knowledge/queries/*.sql` | Loaded into knowledge base |
-| 4. Institutional Knowledge | Exa MCP | `dash/agents.py` |
-| 5. Learnings | Learning Machine | Separate knowledge base |
-| 6. Runtime Context | `introspect_schema` | `dash/tools/introspect.py` |
-
-## Data Quality (F1 Dataset)
-
-| Issue | Solution |
-|-------|----------|
-| `position` is TEXT in `drivers_championship` | Use `position = '1'` |
-| `position` is INTEGER in `constructors_championship` | Use `position = 1` |
-| `date` is TEXT in `race_wins` | Use `TO_DATE(date, 'DD Mon YYYY')` |
-
-## Evaluation System
-
-Three evaluation modes (can be combined):
-
-| Mode | Flag | Description |
-|------|------|-------------|
-| String matching | (default) | Check if expected strings appear in response |
-| LLM grader | `-g` | Use GPT to evaluate response quality |
-| Result comparison | `-r` | Execute golden SQL and compare results |
-
-Test cases use `TestCase` dataclass with optional `golden_sql` for validation.
-
-## Environment Variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OPENAI_API_KEY` | Yes | OpenAI API key |
-| `EXA_API_KEY` | No | Exa for web research |
-| `DB_*` | No | Database config |
+Keep the separation assertions in `tests/test_private_ops.py`, migration and
+role tests, and the three-route image smoke checks in `.dagger` and
+`.github/workflows/ghcr-build.yml`. Preserve the entrypoint's CMD pass-through.
+Run `./scripts/run-dagger-ci.sh check` before opening a PR. For image changes,
+also run `./scripts/run-dagger-ci.sh call build` for the local build and smoke
+check. Local tests, image checks, publication, and deployment are separate
+results. Do not infer permission for live operations from a local code task.
