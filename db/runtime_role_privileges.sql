@@ -93,6 +93,8 @@ GRANT USAGE ON SCHEMA public, ops TO dockhand_ops_writer;
 -- loop below intentionally covers base tables only, so this view stays an
 -- exact, auditable exception instead of restoring schema-wide view access.
 GRANT SELECT ON ops.ops_shadow_readiness TO dockhand_ops_writer;
+-- Portal timelines read this canonical view through the Dockhand identity.
+GRANT SELECT ON public.ops_unified_timeline TO dockhand_ops_writer;
 DO $runtime_privileges$
 DECLARE
     relation RECORD;
