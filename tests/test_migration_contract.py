@@ -92,9 +92,13 @@ def test_advisory_migration_preserves_readiness_and_append_only_privileges() -> 
     assert '"ops_advisory_decisions.sql"' in runner
     assert runner.index('"ops_agent_chronicle_v1_disabled.sql"') < runner.index('"ops_advisory_decisions.sql"')
     assert "CREATE TABLE IF NOT EXISTS ops.ops_advisory_decisions" in migration
-    assert "CREATE TRIGGER ops_advisory_decisions_append_only" in migration
-    assert "BEFORE UPDATE OR DELETE ON ops.ops_advisory_decisions" in migration
-    assert "EXECUTE FUNCTION ops.reject_append_only_mutation()" in migration
+    drop_trigger = "DROP TRIGGER IF EXISTS ops_advisory_decisions_append_only ON ops.ops_advisory_decisions;"
+    create_trigger = "CREATE TRIGGER ops_advisory_decisions_append_only"
+    assert drop_trigger in migration
+    assert migration.index(drop_trigger) < migration.index(create_trigger)
+    assert "BEFORE UPDATE OR DELETE OR TRUNCATE ON ops.ops_advisory_decisions" in migration
+    assert "FOR EACH STATEMENT EXECUTE FUNCTION ops.reject_append_only_mutation();" in migration
+    assert "UNIQUE (decision_kind, subject_id, detector_version)" in migration
     assert "'ops_advisory_decisions'," in privileges
     assert "GRANT SELECT, INSERT ON ops.ops_advisory_decisions TO dockhand_ops_writer" in privileges
     assert "GRANT SELECT ON ops.ops_advisory_decisions TO dash_ops_reader" in migration

@@ -27,9 +27,10 @@ CREATE INDEX IF NOT EXISTS ops_advisory_decisions_kind_advised_idx
 CREATE INDEX IF NOT EXISTS ops_advisory_decisions_subject_idx
     ON ops.ops_advisory_decisions (subject_type, subject_id);
 
+DROP TRIGGER IF EXISTS ops_advisory_decisions_append_only ON ops.ops_advisory_decisions;
 CREATE TRIGGER ops_advisory_decisions_append_only
-    BEFORE UPDATE OR DELETE ON ops.ops_advisory_decisions
-    FOR EACH ROW EXECUTE FUNCTION ops.reject_append_only_mutation();
+    BEFORE UPDATE OR DELETE OR TRUNCATE ON ops.ops_advisory_decisions
+    FOR EACH STATEMENT EXECUTE FUNCTION ops.reject_append_only_mutation();
 
 CREATE OR REPLACE VIEW ops.ops_shadow_readiness AS
 WITH evaluation_window AS (

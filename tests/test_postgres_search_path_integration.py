@@ -891,8 +891,14 @@ def chronicle_race_append(
 
 
 def assert_advisory_ledger_contract(dsn: str) -> None:
-    """Exercise real SQL after migrations and no-op privilege reconciliation."""
+    """Exercise full SQL replay after migrations and no-op privilege reconciliation."""
 
+    migration = (ROOT / "db/migrations/ops_advisory_decisions.sql").read_text()
+    mutations = (
+        "UPDATE ops.ops_advisory_decisions SET confidence = 0.9",
+        "DELETE FROM ops.ops_advisory_decisions",
+        "TRUNCATE ops.ops_advisory_decisions",
+    )
     insert = """
         INSERT INTO ops.ops_advisory_decisions (
             id, decision_kind, subject_type, subject_id, detector_version,
@@ -921,17 +927,10 @@ def assert_advisory_ledger_contract(dsn: str) -> None:
         "advised_at": datetime.now(UTC),
     }
     with psycopg.connect(dsn) as connection:
-        for role, allowed in (
-            ("dash_ops_reader", {"SELECT"}),
-            ("dockhand_ops_writer", {"SELECT", "INSERT"}),
-            ("dash_ops_indexer", set()),
-            ("dash_api_runtime", set()),
-        ):
-            for privilege in ("SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"):
-                assert connection.execute(
-                    "SELECT has_table_privilege(%s, 'ops.ops_advisory_decisions', %s)",
-                    (role, privilege),
-                ).fetchone() == (privilege in allowed,)
+        assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (0,)
+        for statement in mutations:
+            with pytest.raises(psycopg.errors.RaiseException, match="append-only"), connection.transaction():
+                connection.execute(statement)
 
         # Compare PostgreSQL's actual names, order, types and values to the
         # original definition, including both eligible and ineligible states.
@@ -966,13 +965,6 @@ def assert_advisory_ledger_contract(dsn: str) -> None:
                 connection.execute(insert, row | {"id": "invalid", "subject_id": "invalid"} | changes)
         with pytest.raises(psycopg.errors.UniqueViolation), connection.transaction():
             connection.execute(insert, row | {"id": "duplicate-decision"})
-        for statement in (
-            "UPDATE ops.ops_advisory_decisions SET confidence = 0.9",
-            "DELETE FROM ops.ops_advisory_decisions",
-        ):
-            with pytest.raises(psycopg.errors.RaiseException, match="append-only"), connection.transaction():
-                connection.execute(statement)
-
         for index, changes in enumerate(
             (
                 {"agrees_with_rules": False},
@@ -1047,16 +1039,41 @@ def assert_advisory_ledger_contract(dsn: str) -> None:
             "SELECT outcome_gate_eligible FROM ops.ops_playbook_automation_readiness"
         ).fetchone() == (False,)
 
+        ledger_rows = connection.execute("SELECT * FROM ops.ops_advisory_decisions ORDER BY id").fetchall()
+        readiness_cursor = connection.execute("SELECT * FROM ops.ops_shadow_readiness")
+        readiness_columns = [(column.name, column.type_code) for column in readiness_cursor.description]
+        readiness_row = readiness_cursor.fetchone()
+        for replay in range(3):
+            if replay:
+                # Execute the entire migration, bypassing the runner's applied-migration skip.
+                connection.execute(migration)
+            for statement in mutations:
+                with pytest.raises(psycopg.errors.RaiseException, match="append-only"), connection.transaction():
+                    connection.execute(statement)
+            assert connection.execute("SELECT * FROM ops.ops_advisory_decisions ORDER BY id").fetchall() == ledger_rows
+            readiness_cursor = connection.execute("SELECT * FROM ops.ops_shadow_readiness")
+            assert [(column.name, column.type_code) for column in readiness_cursor.description] == readiness_columns
+            assert readiness_cursor.fetchone() == readiness_row
+            for role, allowed in (
+                ("dash_ops_reader", {"SELECT"}),
+                ("dockhand_ops_writer", {"SELECT", "INSERT"}),
+                ("dash_ops_indexer", set()),
+                ("dash_api_runtime", set()),
+            ):
+                for privilege in ("SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"):
+                    assert connection.execute(
+                        "SELECT has_table_privilege(%s, 'ops.ops_advisory_decisions', %s)",
+                        (role, privilege),
+                    ).fetchone() == (privilege in allowed,)
+
         connection.execute("SET LOCAL ROLE dockhand_ops_writer")
         connection.execute(insert, row | {"id": "writer-advisory", "subject_id": "writer-subject"})
         assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (6,)
-        for statement in (
-            "UPDATE ops.ops_advisory_decisions SET confidence = 0.9",
-            "DELETE FROM ops.ops_advisory_decisions",
-            "TRUNCATE ops.ops_advisory_decisions",
-        ):
+        for statement in mutations:
             with pytest.raises(psycopg.errors.InsufficientPrivilege), connection.transaction():
                 connection.execute(statement)
+        connection.execute("SET LOCAL ROLE dash_ops_reader")
+        assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (6,)
         connection.rollback()
 
 
