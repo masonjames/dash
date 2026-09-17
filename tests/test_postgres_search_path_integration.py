@@ -2706,6 +2706,10 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
 
     with psycopg.connect(**writer_settings, autocommit=True) as connection:
         connection.execute("SELECT COUNT(*) FROM ops.ops_shadow_readiness").fetchone()
+        connection.execute("SELECT COUNT(*) FROM public.ops_unified_timeline").fetchone()
+        assert not connection.execute(
+            "SELECT has_table_privilege(current_user, 'public.ops_unified_timeline', 'INSERT,UPDATE,DELETE')"
+        ).fetchone()[0]
         connection.execute("SELECT COUNT(*) FROM ops.chronicle_audit_projection_v1").fetchone()
         for statement in (
             "SELECT COUNT(*) FROM ops.chronicle_records",
