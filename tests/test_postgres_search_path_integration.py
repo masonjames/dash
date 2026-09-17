@@ -890,6 +890,193 @@ def chronicle_race_append(
         return "error", error.sqlstate
 
 
+def assert_advisory_ledger_contract(dsn: str) -> None:
+    """Exercise full SQL replay after migrations and no-op privilege reconciliation."""
+
+    migration = (ROOT / "db/migrations/ops_advisory_decisions.sql").read_text()
+    mutations = (
+        "UPDATE ops.ops_advisory_decisions SET confidence = 0.9",
+        "DELETE FROM ops.ops_advisory_decisions",
+        "TRUNCATE ops.ops_advisory_decisions",
+    )
+    insert = """
+        INSERT INTO ops.ops_advisory_decisions (
+            id, decision_kind, subject_type, subject_id, detector_version,
+            model_version, state_hash, answers, top_answer, confidence,
+            rules_answer, agrees_with_rules, latency_ms, advised_at
+        ) VALUES (
+            %(id)s, %(decision_kind)s, %(subject_type)s, %(subject_id)s, %(detector_version)s,
+            %(model_version)s, %(state_hash)s, %(answers)s, %(top_answer)s, %(confidence)s,
+            %(rules_answer)s, %(agrees_with_rules)s, %(latency_ms)s, %(advised_at)s
+        )
+    """
+    row = {
+        "id": "advisory-test",
+        "decision_kind": "cause_code",
+        "subject_type": "investigation",
+        "subject_id": "advisory-subject",
+        "detector_version": "question-v1",
+        "model_version": "model+0123456789ab",
+        "state_hash": "a" * 64,
+        "answers": '{"container_oom": 0.6}',
+        "top_answer": "container_oom",
+        "confidence": 0.6,
+        "rules_answer": "container_oom",
+        "agrees_with_rules": True,
+        "latency_ms": 0,
+        "advised_at": datetime.now(UTC),
+    }
+    with psycopg.connect(dsn) as connection:
+        assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (0,)
+        for statement in mutations:
+            with pytest.raises(psycopg.errors.RaiseException, match="append-only"), connection.transaction():
+                connection.execute(statement)
+
+        # Compare PostgreSQL's actual names, order, types and values to the
+        # original definition, including both eligible and ineligible states.
+        original = (ROOT / "db/migrations/ops_shadow_attempts.sql").read_text()
+        original_view = original.split("CREATE OR REPLACE VIEW ops.ops_shadow_readiness AS", 1)[1].split(";", 1)[0]
+        connection.execute("CREATE TEMP VIEW original_shadow_readiness AS" + original_view)
+        original_cursor = connection.execute("SELECT * FROM original_shadow_readiness")
+        current_cursor = connection.execute("SELECT * FROM ops.ops_shadow_readiness")
+        assert [(column.name, column.type_code) for column in current_cursor.description[:10]] == [
+            (column.name, column.type_code) for column in original_cursor.description
+        ]
+        assert [column.name for column in current_cursor.description[10:]] == [
+            "advisory_cause_decisions",
+            "advisory_cause_agreements",
+            "advisory_cause_comparable",
+            "advisory_model_versions",
+        ]
+        assert current_cursor.fetchone() == (*original_cursor.fetchone(), 0, 0, 0, 0)
+        connection.execute(insert, row)
+        for changes in (
+            {"decision_kind": "unknown"},
+            {"subject_type": "unknown"},
+            {"state_hash": "A" * 64},
+            {"state_hash": "a" * 63},
+            {"confidence": -0.01},
+            {"confidence": 1.01},
+            {"latency_ms": -1},
+            {"rules_answer": None},
+            {"agrees_with_rules": None},
+        ):
+            with pytest.raises(psycopg.errors.CheckViolation), connection.transaction():
+                connection.execute(insert, row | {"id": "invalid", "subject_id": "invalid"} | changes)
+        with pytest.raises(psycopg.errors.UniqueViolation), connection.transaction():
+            connection.execute(insert, row | {"id": "duplicate-decision"})
+        for index, changes in enumerate(
+            (
+                {"agrees_with_rules": False},
+                {"rules_answer": None, "agrees_with_rules": None},
+                {"decision_kind": "alert_job", "model_version": "other+0123456789ab"},
+                {"advised_at": row["advised_at"] - timedelta(days=7), "model_version": "expired-model"},
+            )
+        ):
+            connection.execute(insert, row | {"id": f"advisory-{index}", "subject_id": f"subject-{index}"} | changes)
+        for eligible in (False, True, False):
+            if eligible:
+                connection.execute("""
+                    INSERT INTO ops.ops_investigations (id, request_id, request_hash, prompt, state)
+                    SELECT 'advisory-inv-' || day, 'advisory-request-' || day,
+                        'advisory-hash-' || day, 'synthetic readiness proof', 'resolved'
+                    FROM generate_series(0, 6) day
+                """)
+                connection.execute("""
+                    INSERT INTO ops.ops_shadow_attempts (investigation_id, status, stage, started_at, completed_at)
+                    SELECT 'advisory-inv-' || day, 'succeeded', 'complete',
+                        date_trunc('day', NOW()) - day * INTERVAL '1 day', NOW()
+                    FROM generate_series(0, 6) day
+                """)
+                connection.execute("""
+                    INSERT INTO ops.ops_shadow_evaluations (
+                        id, investigation_id, model_version, detector_version, registry_version,
+                        response_hash, latency_ms, citation_valid, citation_count,
+                        proposal_schema_valid, policy_violations
+                    ) VALUES ('advisory-eval', 'advisory-inv-0', 'model', 'detector', 'registry',
+                        'hash', 0, TRUE, 1, TRUE, 0)
+                """)
+            current = connection.execute("SELECT * FROM ops.ops_shadow_readiness").fetchone()
+            assert current[:10] == connection.execute("SELECT * FROM original_shadow_readiness").fetchone()
+            assert current[5] is eligible
+            assert current[10:] == (3, 1, 2, 2)
+            if eligible:
+                connection.execute(
+                    "UPDATE ops.ops_shadow_attempts SET status = 'failed' WHERE investigation_id = 'advisory-inv-0'"
+                )
+
+        original_playbook = (ROOT / "db/migrations/ops_release_gates.sql").read_text()
+        original_playbook_view = original_playbook.split(
+            "CREATE OR REPLACE VIEW ops.ops_playbook_automation_readiness AS", 1
+        )[1].split(";", 1)[0]
+        connection.execute("CREATE TEMP VIEW original_playbook_readiness AS" + original_playbook_view)
+        connection.execute("""
+            INSERT INTO ops.ops_learning_candidates (
+                id, investigation_id, playbook_id, playbook_version, status,
+                confidence, evidence_ids, automatic_eligibility
+            ) VALUES ('advisory-learning', 'advisory-inv-0', 'test-playbook', '1',
+                'promoted', 0.1, '[]', TRUE)
+        """)
+        connection.execute("""
+            INSERT INTO ops.ops_playbook_outcomes (
+                id, investigation_id, incident_id, playbook_id, playbook_version,
+                outcome_kind, verified, success, confidence, evidence_ids
+            ) SELECT 'advisory-outcome-' || n, 'advisory-inv-0', 'incident-' || n,
+                'test-playbook', '1', CASE WHEN n = 3 THEN 'rollback_drill' ELSE 'execution' END,
+                TRUE, TRUE, 0.1, '[]'
+            FROM generate_series(0, 3) n
+        """)
+        original_cursor = connection.execute("SELECT * FROM original_playbook_readiness")
+        current_cursor = connection.execute("SELECT * FROM ops.ops_playbook_automation_readiness")
+        assert [(column.name, column.type_code) for column in current_cursor.description] == [
+            (column.name, column.type_code) for column in original_cursor.description
+        ]
+        before, after = original_cursor.fetchone(), current_cursor.fetchone()
+        assert before[:-1] == after[:-1]
+        assert before[-1] is False and after[-1] is True
+        connection.execute("UPDATE ops.ops_learning_candidates SET automatic_eligibility = FALSE")
+        assert connection.execute(
+            "SELECT outcome_gate_eligible FROM ops.ops_playbook_automation_readiness"
+        ).fetchone() == (False,)
+
+        ledger_rows = connection.execute("SELECT * FROM ops.ops_advisory_decisions ORDER BY id").fetchall()
+        readiness_cursor = connection.execute("SELECT * FROM ops.ops_shadow_readiness")
+        readiness_columns = [(column.name, column.type_code) for column in readiness_cursor.description]
+        readiness_row = readiness_cursor.fetchone()
+        for replay in range(3):
+            if replay:
+                # Execute the entire migration, bypassing the runner's applied-migration skip.
+                connection.execute(migration)
+            for statement in mutations:
+                with pytest.raises(psycopg.errors.RaiseException, match="append-only"), connection.transaction():
+                    connection.execute(statement)
+            assert connection.execute("SELECT * FROM ops.ops_advisory_decisions ORDER BY id").fetchall() == ledger_rows
+            readiness_cursor = connection.execute("SELECT * FROM ops.ops_shadow_readiness")
+            assert [(column.name, column.type_code) for column in readiness_cursor.description] == readiness_columns
+            assert readiness_cursor.fetchone() == readiness_row
+            for role, allowed in (
+                ("dash_ops_reader", {"SELECT"}),
+                ("dockhand_ops_writer", {"SELECT", "INSERT"}),
+                ("dash_ops_indexer", set()),
+                ("dash_api_runtime", set()),
+            ):
+                for privilege in ("SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"):
+                    assert connection.execute(
+                        "SELECT has_table_privilege(%s, 'ops.ops_advisory_decisions', %s)",
+                        (role, privilege),
+                    ).fetchone() == (privilege in allowed,)
+
+        connection.execute("SET LOCAL ROLE dockhand_ops_writer")
+        connection.execute(insert, row | {"id": "writer-advisory", "subject_id": "writer-subject"})
+        assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (6,)
+        for statement in mutations:
+            with pytest.raises(psycopg.errors.InsufficientPrivilege), connection.transaction():
+                connection.execute(statement)
+        connection.execute("SET LOCAL ROLE dash_ops_reader")
+        assert connection.execute("SELECT COUNT(*) FROM ops.ops_advisory_decisions").fetchone() == (6,)
+        connection.rollback()
+
+
 @pytest.mark.skipif(not os.getenv(_DSN_ENV), reason="explicit PostgreSQL integration DSN is required")
 def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pytest.MonkeyPatch) -> None:
     """Prove the existing boundary plus disabled, durable, atomic Chronicle storage."""
@@ -943,7 +1130,15 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
     monkeypatch.setattr(migrate_ops, "build_db_url", lambda: dsn)
 
     migrate_ops.main()
+    # Simulate stale grants surviving a restore; the skipped-migration run
+    # must re-establish the advisory ledger's exact runtime privilege matrix.
+    with psycopg.connect(dsn) as connection:
+        connection.execute(
+            "GRANT ALL ON ops.ops_advisory_decisions TO "
+            "dash_ops_reader, dockhand_ops_writer, dash_ops_indexer, dash_api_runtime"
+        )
     migrate_ops.main()
+    assert_advisory_ledger_contract(dsn)
 
     base_settings = {
         "host": connection_settings.get("host", "127.0.0.1"),
@@ -979,7 +1174,7 @@ def test_live_owner_collision_resolves_only_canonical_warehouse(monkeypatch: pyt
     )
 
     with psycopg.connect(dsn, autocommit=True) as connection:
-        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (9,)
+        assert connection.execute("SELECT COUNT(*) FROM ops.schema_migrations").fetchone() == (10,)
         assert connection.execute(
             "SELECT checksum FROM ops.schema_migrations WHERE name = %s",
             (_CANDIDATE.name,),

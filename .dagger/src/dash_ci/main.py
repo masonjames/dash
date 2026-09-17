@@ -107,7 +107,7 @@ class DashCi:
         """Run Ruff, mypy, pytest, and the PostgreSQL boundary proof."""
         source = self._source(ws)
         postgres = (
-            dag.container(platform=TARGET_PLATFORM)
+            dag.container()
             .from_(PGVECTOR_IMAGE)
             .with_env_variable("POSTGRES_USER", "ai")
             .with_env_variable("POSTGRES_DB", "dash_search_path_ci")
