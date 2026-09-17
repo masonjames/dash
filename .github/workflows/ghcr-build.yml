@@ -1,6 +1,6 @@
 name: Build and Push to GHCR
 
-# Builds the Dash Docker image and pushes to GHCR.
+# Publication requires a separate reviewed manual opt-in; source pushes validate only.
 # Quality gates (validate) must pass before the image is built.
 # Promotion is a reviewed platform-infra digest update; this workflow never
 # deploys a mutable tag directly.
@@ -22,6 +22,12 @@ on:
       - "tests/test_platform_steward_chronicle_projection.py"
       - ".github/workflows/ghcr-build.yml"
   workflow_dispatch:
+    inputs:
+      publish_image:
+        description: "Explicitly run the reviewed image publication job"
+        required: true
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -85,6 +91,10 @@ jobs:
 
   build:
     needs: [validate]
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.publish_image == true
     runs-on: ubuntu-latest
 
     permissions:
