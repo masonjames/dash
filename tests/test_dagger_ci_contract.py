@@ -32,6 +32,8 @@ def test_portable_surface_covers_dash_quality_image_and_postgres_contracts() -> 
     ):
         assert command in source
     assert 'TARGET_PLATFORM = dagger.Platform("linux/amd64")' in source
+    assert "postgres = (\n            dag.container()\n            .from_(PGVECTOR_IMAGE)" in source
+    assert "platform=TARGET_PLATFORM" in source.split("def _image(", 1)[1]
     assert "with_service_binding" in source
     assert 'dockerfile="Dockerfile"' in source
     assert "IMAGE_SMOKE_SCRIPT" in source

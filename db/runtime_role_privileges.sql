@@ -108,6 +108,7 @@ BEGIN
               namespace.nspname = 'ops'
               AND class.relname IN (
                   'schema_migrations',
+                  'ops_advisory_decisions',
                   'ops_portal_request_nonces',
                   'ops_retrieval_documents',
                   'ops_retrieval_index_status'
@@ -122,6 +123,7 @@ BEGIN
     END LOOP;
 END
 $runtime_privileges$;
+GRANT SELECT, INSERT ON ops.ops_advisory_decisions TO dockhand_ops_writer;
 
 -- Agent Chronicle is unregistered and default-disabled. Keep all runtime roles
 -- off every candidate relation, then expose only the owner-gated SECURITY

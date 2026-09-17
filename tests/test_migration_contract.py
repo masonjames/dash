@@ -85,13 +85,47 @@ def test_shadow_readiness_requires_full_path_attempt_telemetry() -> None:
     assert "CREATE OR REPLACE VIEW ops.ops_shadow_readiness" in migration
 
 
+def test_advisory_migration_preserves_readiness_and_append_only_privileges() -> None:
+    migration = (ROOT / "db/migrations/ops_advisory_decisions.sql").read_text()
+    runner = (ROOT / "scripts/migrate_ops.py").read_text()
+    privileges = (ROOT / "db/runtime_role_privileges.sql").read_text()
+    assert '"ops_advisory_decisions.sql"' in runner
+    assert runner.index('"ops_agent_chronicle_v1_disabled.sql"') < runner.index('"ops_advisory_decisions.sql"')
+    assert "CREATE TABLE IF NOT EXISTS ops.ops_advisory_decisions" in migration
+    assert "CREATE TRIGGER ops_advisory_decisions_append_only" in migration
+    assert "BEFORE UPDATE OR DELETE ON ops.ops_advisory_decisions" in migration
+    assert "EXECUTE FUNCTION ops.reject_append_only_mutation()" in migration
+    assert "'ops_advisory_decisions'," in privileges
+    assert "GRANT SELECT, INSERT ON ops.ops_advisory_decisions TO dockhand_ops_writer" in privileges
+    assert "GRANT SELECT ON ops.ops_advisory_decisions TO dash_ops_reader" in migration
+    assert "0.85" not in migration
+
+    original = (ROOT / "db/migrations/ops_shadow_attempts.sql").read_text()
+    original_projection = original.split("    evaluation.evaluation_count,", 1)[1].split("\nFROM", 1)[0]
+    projection = migration.split("    evaluation.evaluation_count,", 1)[1].split("\nFROM", 1)[0]
+    assert projection.startswith(original_projection + ",\n    advisory.advisory_cause_decisions,")
+    predicate = projection.split("    (", 1)[1].split(") AS recommendation_mode_eligible", 1)[0]
+    assert "advisory" not in predicate
+    assert projection.endswith(
+        "    advisory.advisory_cause_agreements,\n"
+        "    advisory.advisory_cause_comparable,\n"
+        "    advisory.advisory_model_versions"
+    )
+
+    playbook_view = "CREATE OR REPLACE VIEW ops.ops_playbook_automation_readiness"
+    original_playbook = (ROOT / "db/migrations/ops_release_gates.sql").read_text().split(playbook_view, 1)[1]
+    assert migration.split(playbook_view, 1)[1].split("\nDO $$", 1)[0] == original_playbook.split("\nDO $$", 1)[
+        0
+    ].replace("        AND candidate.confidence >= 0.85\n", "")
+
+
 def test_agent_chronicle_migration_is_checksummed_registered_and_disabled() -> None:
     runner = (ROOT / "scripts/migrate_ops.py").read_text()
     candidate = CHRONICLE_MIGRATION.read_bytes()
     pinned_checksum = CHRONICLE_CHECKSUM.read_text(encoding="ascii").strip()
 
     assert CHRONICLE_MIGRATION.name in runner
-    assert runner.count('root / "db" / "migrations" / "ops_') == 9
+    assert runner.count('root / "db" / "migrations" / "ops_') == 10
     assert hashlib.sha256(candidate).hexdigest() == pinned_checksum
     assert b"REGISTERED AND DEFAULT-DISABLED" in candidate
     assert b"enabled BOOLEAN NOT NULL DEFAULT FALSE" in candidate

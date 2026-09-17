@@ -770,11 +770,6 @@ def evaluate_canonical_outcome(
                 summary = "Independent canonical verification records a failure; automatic eligibility is disabled."
                 confidence = canonical.confidence
                 eligible_candidate = False
-            elif canonical.confidence < 0.85:
-                disposition = "insufficient_evidence"
-                summary = "Canonical verification confidence is below the learning-candidate threshold."
-                confidence = canonical.confidence
-                eligible_candidate = False
             else:
                 disposition = "candidate"
                 summary = (

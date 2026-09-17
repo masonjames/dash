@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import replace
 from datetime import UTC, datetime, timedelta
 
+import pytest
+
 from dash.internal_ops import CanonicalOutcome, _payload_hash, evaluate_canonical_outcome
 from dash.ops_contract import EvidenceReference
 
@@ -75,6 +77,20 @@ def test_pre_action_or_wrong_source_evidence_cannot_back_a_learning() -> None:
     assert result.disposition == "insufficient_evidence"
     assert not result.eligible_candidate
     assert result.evidence_ids == []
+
+
+@pytest.mark.parametrize("confidence", [0.0, 0.5, 0.84])
+def test_verified_success_is_a_candidate_regardless_of_confidence(confidence: float) -> None:
+    result = evaluate_canonical_outcome(
+        _canonical(confidence=confidence),
+        [_evidence("ev_post", kind="postcondition_verification", success=True)],
+    )
+
+    assert result.disposition == "candidate"
+    assert result.eligible_candidate
+    assert result.confidence == confidence
+    assert result.evidence_ids == ["ev_post"]
+    assert result.automatic_eligibility_disabled
 
 
 def test_failure_and_rollback_are_cited_and_never_automatically_eligible() -> None:
