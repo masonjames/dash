@@ -1,5 +1,5 @@
 # ===========================================================================
-# Dash - Self-learning Data Agent
+# Dash - Private Ops Service
 # ===========================================================================
 
 FROM agnohq/python:3.12
@@ -22,6 +22,6 @@ RUN chmod +x /app/scripts/entrypoint.sh
 ENTRYPOINT ["/app/scripts/entrypoint.sh"]
 
 # ---------------------------------------------------------------------------
-# Default command (overridden by compose)
+# Default private Ops command
 # ---------------------------------------------------------------------------
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.ops_main:app", "--host", "0.0.0.0", "--port", "8001"]

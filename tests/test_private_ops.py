@@ -136,15 +136,35 @@ def _evidence_row(
     )
 
 
-def test_public_agentos_does_not_mount_private_ops_or_ops_agents() -> None:
-    public_source = (Path(__file__).parents[1] / "app" / "main.py").read_text(encoding="utf-8")
-    private_source = (Path(__file__).parents[1] / "app" / "ops_main.py").read_text(encoding="utf-8")
+def test_demo_is_retired_and_default_service_is_private_ops_only() -> None:
+    from app.ops_main import app
 
-    assert "dash.internal_ops" not in public_source
-    assert "dash.agents_ops" not in public_source
-    assert "ops_dash" not in public_source
+    root = Path(__file__).parents[1]
+    for retired in (
+        "app/main.py",
+        "app/config.yaml",
+        "dash/__main__.py",
+        "dash/team.py",
+        "dash/agents_ops.py",
+        "dash/agents/analyst.py",
+        "dash/agents/engineer.py",
+        "dash/settings.py",
+        "dash/instructions.py",
+    ):
+        assert not (root / retired).exists(), retired
+    private_source = (root / "app" / "ops_main.py").read_text(encoding="utf-8")
     assert "dash.internal_ops" in private_source
     assert "agno" not in private_source.casefold()
+    assert len(app.routes) == 3
+    assert {(route.path, frozenset(route.methods)) for route in app.routes} == {
+        ("/internal/health/ready", frozenset({"GET"})),
+        ("/internal/ops/investigate", frozenset({"POST"})),
+        ("/internal/ops/evaluate-outcome", frozenset({"POST"})),
+    }
+    dockerfile = (root / "Dockerfile").read_text(encoding="utf-8")
+    commands = [line.removeprefix("CMD ") for line in dockerfile.splitlines() if line.startswith("CMD ")]
+    assert len(commands) == 1
+    assert json.loads(commands[0]) == ["uvicorn", "app.ops_main:app", "--host", "0.0.0.0", "--port", "8001"]
 
 
 def test_readiness_contract_includes_the_canonical_public_warehouse() -> None:
@@ -303,8 +323,10 @@ def test_readiness_rejects_wrong_identity_transaction_or_schema(
         asyncio.run(internal_ops._check_readiness())
 
 
+@pytest.mark.parametrize("document_count", [0, 3])
 def test_readiness_requires_tables_select_and_no_write_privileges(
     monkeypatch: pytest.MonkeyPatch,
+    document_count: int,
 ) -> None:
     _set_reader_env(monkeypatch)
     registrations = [(name, name) for name in internal_ops._REQUIRED_TABLES]
@@ -319,13 +341,13 @@ def test_readiness_requires_tables_select_and_no_write_privileges(
                     "ready",
                     "text-embedding-3-small",
                     datetime.now(UTC),
-                    3,
-                    3,
+                    document_count,
+                    document_count,
                     None,
                     60,
                 )
             ),
-            FakeCursor(one=(3, 3)),
+            FakeCursor(one=(document_count, document_count)),
         ]
     )
 

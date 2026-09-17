@@ -1,390 +1,101 @@
-# Dash
+# Dash Ops
 
-A **self-learning data agent** built with systems engineering principles. It grounds answers in 6 layers of context and improves with every query.
+Dash is a private, read-only Ops service for Dockhand. It validates canonical
+evidence, investigates operational failures, retrieves relevant canonical records,
+and evaluates verification outcomes. Dockhand owns policy, approvals, canonical
+writes, and execution; Dash returns typed results and catalog-bound proposals.
 
-Chat with Dash via Slack, the terminal, or the [AgentOS](https://os.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=agentos) web UI.
+## Private API
 
-## Quick Start
+The default Docker command starts `app.ops_main:app` on port **8001** through
+`scripts/entrypoint.sh`. The service exposes exactly three routes, with no public
+UI or OpenAPI endpoints:
 
-```sh
-# Clone the repo
-git clone https://github.com/agno-agi/dash.git && cd dash
+| Method | Route | Purpose |
+| --- | --- | --- |
+| GET | `/internal/health/ready` | Check reader privileges, schema and hybrid index readiness |
+| POST | `/internal/ops/investigate` | Investigate scoped canonical evidence |
+| POST | `/internal/ops/evaluate-outcome` | Evaluate a canonical verification outcome |
 
-cp example.env .env
-# Edit .env and add your OPENAI_API_KEY
+All routes require HMAC authentication using `DASH_INTERNAL_API_SECRET` and
+`X-Dash-Timestamp`, `X-Dash-Nonce`, and `X-Dash-Signature`. The signature covers
+newline-separated timestamp, nonce, uppercase method, path, and raw body bytes.
+Requests enforce clock skew and nonce replay checks.
 
-# Start the system
-docker compose up -d --build
+## Roles and configuration
 
-# Generate sample data and load knowledge
-docker exec -it dash-api python scripts/generate_data.py
-docker exec -it dash-api python scripts/load_knowledge.py
-```
+Use the placeholders in [example.env](example.env) to configure each process
+independently. Export the appropriate variables in that process's environment;
+the API and maintenance commands do not automatically load `.env`.
 
-Confirm Dash is running at [http://localhost:8000/docs](http://localhost:8000/docs).
+- **API reader:** all five `OPS_DB_*` settings are required, with no fallback to
+  `DB_*`. Use `dash_ops_reader`, which has SELECT-only access and read-only
+  transactions. The API also requires the internal HMAC secret and
+  `OPENAI_API_KEY` for query embeddings.
+- **Indexer:** all five `OPS_INDEXER_DB_*` settings are independently required,
+  with no fallback to reader or general DB credentials. `dash_ops_indexer` reads
+  canonical records and writes only the derived retrieval documents and status.
+  It requires `OPENAI_API_KEY` for document embeddings.
+- **Canonical writer:** `dockhand_ops_writer` belongs to Dockhand, isolated from
+  the API reader and derived indexer. Do not give its credentials to the API.
+- **Migration process:** `DB_*` supplies the database owner connection. It also
+  requires all four role passwords listed in `example.env`. Provisioning retains
+  `dash_api_runtime`; retiring the demo does not remove database roles or data.
 
-### Connect to the Web UI
+Canonical retrieval combines lexical search and OpenAI `text-embedding-3-small`
+embeddings. Readiness checks index coverage and freshness; the default maximum
+index age is 7200 seconds (`DASH_OPS_INDEX_MAX_AGE_SECONDS`).
+`DASH_OPS_MODEL_VERSION` optionally overrides the returned detector version label.
 
-1. Open [os.agno.com](https://os.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=agentos) and login
-2. Add OS → Local → `http://localhost:8000`
-3. Click "Connect"
+## Runtime and maintenance commands
 
-**Try it** (SaaS metrics dataset):
-
-- What's our current MRR?
-- Which plan has the highest churn rate?
-- Show me revenue trends by plan over the last 6 months
-- Which customers are at risk of churning?
-
-## Deploy to Railway
-
-Railway deployment uses `.env.production` to keep production credentials separate from local dev.
-
-```sh
-cp example.env .env.production
-# Edit .env.production — set OPENAI_API_KEY
-```
-
-### Step 1: Deploy infrastructure
-
-This creates the Railway project, database, and app service. The app will crash-loop until the JWT key is added in the next step — that's expected.
-
-```sh
-railway login
-./scripts/railway_up.sh
-```
-
-### Step 2: Get your JWT key
-
-Production requires a `JWT_VERIFICATION_KEY` from [AgentOS](https://os.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=agentos). You need the Railway domain from step 1 to set this up.
-
-1. Copy your Railway domain from the output of step 1 (e.g. `dash-production-xxxx.up.railway.app`)
-2. Open [os.agno.com](https://os.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=agentos) and login
-3. Add OS → Live → paste your Railway URL
-4. Go to **Settings** and generate a key pair
-5. Add the public key to `.env.production` (wrap in single quotes):
+With Python 3.12+ and the locked project dependencies available:
 
 ```bash
-JWT_VERIFICATION_KEY='-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkq...
------END PUBLIC KEY-----'
+# Migration owner environment only: applies checksummed migrations and role grants
+python -m scripts.migrate_ops
+
+# Independent indexer environment; one-shot or recurring projection
+python -m scripts.index_ops
+python -m scripts.index_ops --interval-seconds 1800
+
+# Reader environment only; also the Docker default
+uvicorn app.ops_main:app --host 0.0.0.0 --port 8001
 ```
 
-### Step 3: Push environment and redeploy
+The ten migrations in `db/migrations/` are immutable once applied.
+`db/runtime_role_privileges.sql` reconciles grants even after a restore with an
+existing migration ledger. Canonical `dash.validated_queries` remains available
+to retrieval and readiness; zero validated-query rows are allowed.
 
-```sh
-./scripts/railway_env.sh
-./scripts/railway_redeploy.sh
+Preserved Ops reference knowledge is under `dash/knowledge/`: `tables/ops_*.json`,
+`business/ops_metrics.json`, and `queries/ops_queries.sql`. The canonical indexer
+in `dash/ops_indexer.py` projects database records, independently of those files.
+
+## Offline validation and synthetic replay
+
+```bash
+ruff format --check .
+ruff check .
+mypy .
+python -m pytest -q --ignore=tests/test_postgres_search_path_integration.py
+python -m evals control-loop --verbose
+python -m evals control-loop --json
+python -m scripts.export_control_loop_corpus --out /tmp/dash-control-loop.jsonl
 ```
 
-`railway_env.sh` reads `.env.production` and sets each variable on the Railway service. Safe to run repeatedly. Handles multiline values (PEM keys) correctly.
+`./scripts/format.sh` formats and sorts imports; `./scripts/validate.sh` runs Ruff,
+mypy, and pytest. PostgreSQL integration tests require an explicitly configured,
+disposable `dash_search_path_ci` database via `DASH_TEST_POSTGRES_DSN`.
 
-### Production operations
+Replay and corpus export use synthetic scenarios without model calls. Replay
+results do not establish live operational readiness. Run the full pinned Dagger
+gate before opening a PR, and build/smoke-test image changes locally without
+publishing:
 
-Database scripts must run inside Railway's network (the internal hostname `pgvector.railway.internal` isn't reachable from your local machine). Use SSH to connect to the running container:
-
-```sh
-railway ssh --service dash
-# Inside the container:
-python scripts/generate_data.py
-python scripts/load_knowledge.py
+```bash
+./scripts/run-dagger-ci.sh check
+./scripts/run-dagger-ci.sh call build
 ```
 
-Other operations run locally:
-
-```sh
-railway logs --service dash
-railway open
-```
-
-## Why Dash Exists
-
-Ask a question in English, get a correct, meaningful answer. That's the goal. But raw LLMs writing SQL hit a wall fast: schemas lack meaning, types are misleading, tribal knowledge is missing, there's no way to learn from mistakes, and results lack interpretation.
-
-The root cause is missing context and missing memory. Dash solves this with **six layers of grounded context**, a **self-learning loop** that improves with every query, and a focus on delivering insights you can act on.
-
-## Architecture: Five Layers, One System
-
-Agentic software is just software with the business logic replaced by agents. Everything else is systems engineering. Dash is built across five layers that reinforce each other.
-
-```
-Agent Engineering     →  dash/team.py + dash/agents/
-Data Engineering      →  knowledge/ + Agno Learning Machine + PostgreSQL
-Security Engineering  →  AgentOS auth + RBAC + read-only SQL enforcement
-Interface Engineering →  app/main.py (FastAPI) + Slack + AgentOS
-Infrastructure        →  Dockerfile + compose.yaml + scripts/
-```
-
-### 1. Agent Engineering
-
-The agent team and execution flow. Model, instructions, tools, knowledge, and the self-learning loop.
-
-```
-AgentOS (app/main.py)  [scheduler=True, tracing=True]
- ├── FastAPI / Uvicorn
- ├── Slack Interface (optional)
- └── Dash Team (dash/team.py, coordinate mode)
-     ├─ Analyst (dash/agents/analyst.py)         reads public + dash
-     │  ├─ SQLTools (read-only)  → public schema (company data)
-     │  ├─ introspect_schema     → both schemas
-     │  ├─ save_validated_query  → knowledge base
-     │  └─ ReasoningTools
-     ├─ Engineer (dash/agents/engineer.py)       reads public, writes dash
-     │  ├─ SQLTools (full)       → dash schema (agent-managed)
-     │  ├─ introspect_schema     → both schemas
-     │  ├─ update_knowledge      → knowledge base (schema changes)
-     │  └─ ReasoningTools
-     │
-     Leader tools: SlackTools (optional)
-     Knowledge:    dash_knowledge (table schemas, queries, business rules, dash views)
-     Learnings:    dash_learnings (error patterns, type gotchas, fixes)
-```
-
-### 2. Data Engineering
-
-Context is data. Memory is data. Knowledge is data. All managed with data engineering principles: well-designed schemas, structured querying, databases for fast read/writes.
-
-**Six layers of grounded context:**
-
-| Layer | Purpose | Source |
-|------|--------|--------|
-| **Table Usage** | Schema, columns, relationships | `knowledge/tables/*.json` |
-| **Human Annotations** | Metrics, definitions, business rules | `knowledge/business/*.json` |
-| **Query Patterns** | SQL that is known to work | `knowledge/queries/*.sql` |
-| **Institutional Knowledge** | Docs, wikis, external references | MCP (optional) |
-| **Learnings** | Error patterns and discovered fixes | Agno `Learning Machine` |
-| **Runtime Context** | Live schema changes | `introspect_schema` tool |
-
-**The self-learning loop:**
-
-```
-User Question
-     ↓
-Retrieve Knowledge + Learnings
-     ↓
-Reason about intent
-     ↓
-Generate grounded SQL
-     ↓
-Execute and interpret
-     ↓
- ┌────┴────┐
- ↓         ↓
-Success    Error
- ↓         ↓
- ↓         Diagnose → Fix → Save Learning
- ↓                           (never repeated)
- ↓
-Return insight
- ↓
-Optionally save as Knowledge
-```
-
-Two complementary systems:
-
-| System | Stores | How It Evolves |
-|------|--------|----------------|
-| **Knowledge** | Validated queries and business context | Curated by you + Dash |
-| **Learnings** | Error patterns and fixes | Managed by `Learning Machine` automatically |
-
-**Dual schema enforcement:** A structural boundary between company data and agent-managed data.
-
-| Schema | Owner | Access |
-|--------|-------|--------|
-| `public` | Company (loaded externally) | Read-only — never modified by agents |
-| `dash` | Engineer agent | Views, summary tables, computed data |
-
-The Engineer builds reusable data assets (`dash.monthly_mrr`, `dash.customer_health_score`, `dash.churn_risk`) and records them to knowledge. The Analyst discovers and prefers these views over raw table queries.
-
-### 3. Security Engineering
-
-Auth uses RBAC with JWT verification in production. Every query is scoped to `user_id`. Read-only access is a tool configuration, not a prompt instruction. The Analyst agent's SQL tools are scoped to read-only at the system level.
-
-See [Security](#security) for setup details.
-
-### 4. Interface Engineering
-
-One agent definition, multiple surfaces. Dash is reachable via REST API (FastAPI), Slack threads, and the AgentOS web UI. Each surface has its own identity system: a Slack user ID maps to sessions via thread timestamps, the API uses JWT-backed auth.
-
-### 5. Infrastructure Engineering
-
-Dockerfile, Docker Compose, one-command deployment. Scheduled tasks for proactive behavior. The infrastructure layer is boring on purpose. 95% of running an agent is identical to running any other service.
-
-## Slack
-
-Dash can receive Slack DMs, @mentions, and thread replies, and can also post to channels proactively.
-
-Quick setup:
-1. Run Dash and give it a public URL (ngrok locally, or your Railway domain).
-2. Follow [docs/SLACK_CONNECT.md](docs/SLACK_CONNECT.md) to create and install the Slack app from the manifest.
-3. Set `SLACK_TOKEN` and `SLACK_SIGNING_SECRET`, then restart Dash.
-4. In Slack, confirm Event Subscriptions is verified and send a DM or `@mention` to test it.
-
-Each Slack thread maps to one Dash session. For the manifest, ngrok commands, Railway deployment, permissions, and troubleshooting, see [docs/SLACK_CONNECT.md](docs/SLACK_CONNECT.md).
-
-## Data Model (SaaS Metrics)
-
-Synthetic B2B SaaS dataset (~900 customers, 2 years of data):
-
-| Table | Description |
-|-------|-------------|
-| `customers` | Company info, industry, size, acquisition source, status |
-| `subscriptions` | Plan, MRR, seats, billing cycle, lifecycle status |
-| `plan_changes` | Upgrades, downgrades, cancellations with MRR impact |
-| `invoices` | Billing records, payment status, billing periods |
-| `usage_metrics` | Daily API calls, active users, storage, reports |
-| `support_tickets` | Priority, category, resolution time, satisfaction |
-
-## Adding Knowledge
-
-Dash works best when it understands how your organization talks about data.
-
-```
-knowledge/
-├── tables/      # Table meaning and caveats
-├── queries/     # Proven SQL patterns
-└── business/    # Metrics and language
-```
-
-### Table Metadata
-
-```json
-{
-  "table_name": "customers",
-  "table_description": "B2B SaaS customer accounts with company info and lifecycle status",
-  "use_cases": ["Churn analysis", "Cohort segmentation", "Acquisition reporting"],
-  "data_quality_notes": [
-    "signup_date is DATE (not TIMESTAMP) — no time component",
-    "status values: active, churned, trial",
-    "company_size is self-reported"
-  ]
-}
-```
-
-### Query Patterns
-
-```sql
--- <query monthly_mrr>
--- <description>Monthly MRR from active subscriptions</description>
--- <query>
-SELECT
-    DATE_TRUNC('month', started_at) AS month,
-    SUM(mrr) AS total_mrr
-FROM subscriptions
-WHERE ended_at IS NULL
-GROUP BY 1
-ORDER BY 1 DESC
--- </query>
-```
-
-### Business Rules
-
-```json
-{
-  "metrics": [
-    {
-      "name": "MRR",
-      "definition": "Sum of active subscriptions excluding trials"
-    }
-  ],
-  "common_gotchas": [
-    {
-      "issue": "Active subscription detection",
-      "solution": "Filter on ended_at IS NULL, not status column"
-    }
-  ]
-}
-```
-
-### Load Knowledge
-
-```sh
-python scripts/load_knowledge.py            # Upsert changes
-python scripts/load_knowledge.py --recreate  # Fresh start
-```
-
-## Evaluations
-
-Five eval categories using Agno's eval framework:
-
-| Category | Eval Type | What It Tests |
-|----------|-----------|---------------|
-| accuracy | AccuracyEval (1-10) | Correct data and meaningful insights |
-| routing | ReliabilityEval | Team routes to correct agent/tools |
-| security | AgentAsJudgeEval (binary) | No credential or secret leaks |
-| governance | AgentAsJudgeEval (binary) | Refuses destructive SQL operations |
-| boundaries | AgentAsJudgeEval (binary) | Schema access boundaries respected |
-
-```sh
-python -m evals                      # Run all evals
-python -m evals --category accuracy  # Run specific category
-python -m evals --verbose            # Show response details
-```
-
-## Local Development
-
-```sh
-./scripts/venv_setup.sh && source .venv/bin/activate
-docker compose up -d dash-db
-python scripts/generate_data.py
-python scripts/load_knowledge.py
-python -m dash            # CLI mode
-python -m app.main        # AgentOS mode (web UI at os.agno.com)
-```
-
-## Environment Variables
-
-| Variable | Required | Default | Purpose |
-|----------|----------|---------|---------|
-| `OPENAI_API_KEY` | Yes | — | OpenAI API key |
-| `SLACK_TOKEN` | No | `""` | Slack bot token (interface + tools) |
-| `SLACK_SIGNING_SECRET` | No | `""` | Slack signing secret (interface only) |
-| `DB_HOST` | No | `localhost` | PostgreSQL host |
-| `DB_PORT` | No | `5432` | PostgreSQL port |
-| `DB_USER` | No | `ai` | PostgreSQL user |
-| `DB_PASS` | No | `ai` | PostgreSQL password |
-| `DB_DATABASE` | No | `ai` | PostgreSQL database |
-| `PORT` | No | `8000` | API port |
-| `RUNTIME_ENV` | No | `prd` | `dev` enables hot reload |
-| `AGENTOS_URL` | No | `http://127.0.0.1:8000` | Scheduler callback URL (production) |
-| `JWT_VERIFICATION_KEY` | Production | — | RBAC public key from [os.agno.com](https://os.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=agentos) |
-
-## Security
-
-Production deployments require authentication via [Agno AgentOS](https://docs.agno.com/agent-os/security/overview?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=security). Dash enables [RBAC authorization](https://docs.agno.com/agent-os/security/rbac?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=rbac) when `RUNTIME_ENV=prd` (the default). Without a valid `JWT_VERIFICATION_KEY`, production endpoints will reject all requests.
-
-Local development (`RUNTIME_ENV=dev`, set by Docker Compose) runs without auth so you can iterate freely.
-
-### Auth Setup
-
-See [Deploy to Railway](#deploy-to-railway) for the full setup flow, including how to get your `JWT_VERIFICATION_KEY` from AgentOS. The Agno control plane handles JWT issuance, session management, traces, metrics, and the web UI. See the [AgentOS Security docs](https://docs.agno.com/agent-os/security/overview?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=security) for details.
-
-### Schema-Level Enforcement
-
-Beyond API-level auth, Dash enforces data access at the database level:
-
-- **Analyst** connects with `default_transaction_read_only=on` — PostgreSQL rejects any write attempt
-- **Engineer** writes are scoped to the `dash` schema — a SQLAlchemy event listener blocks any DDL/DML targeting `public`
-- **Leader** has no direct database access
-
-These are infrastructure guardrails, not prompt instructions. They hold regardless of what the model generates.
-
-Privileged Ops migrations treat `public` as the canonical warehouse schema.
-The migration transaction pins `search_path=public`, leaving `pg_catalog`
-implicitly first so legacy functions cannot shadow PostgreSQL built-ins. This matters
-when the database owner is named `ai`: PostgreSQL's default `"$user",public`
-path would otherwise resolve pre-existing `ai.*` shadow tables. Those legacy
-relations are preserved for old-image rollback but denied to the new runtime.
-Runtime reads resolve `public,dash,ai`, so canonical company data also precedes
-agent-managed objects; Dash and AgentOS objects remain available through their
-explicit schemas. Dockhand and the private Ops services resolve canonical
-`ops,public,dash`. Run warehouse SQL only through `scripts/migrate_ops.py`
-so this invariant and the role reconciliation are both applied.
-
-## Learn More
-
-- [OpenAI's In-House Data Agent](https://openai.com/index/inside-our-in-house-data-agent/) — the inspiration
-- [Self-Improving SQL Agent](https://www.ashpreetbedi.com/articles/sql-agent) — deep dive on an earlier architecture
-- [Agno Docs](https://docs.agno.com?utm_source=github&utm_medium=example-repo&utm_campaign=agent-example&utm_content=dash&utm_term=docs)
-
-<p align="center">Built on <a href="https://github.com/agno-agi/agno">Agno</a> · the runtime for agentic software</p>
+The Dagger build and GHCR workflow retain their exact three-route image smoke checks.
