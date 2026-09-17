@@ -100,7 +100,8 @@ _SECRET_VALUE_PATTERNS = (
     re.compile(r"(?i)://[^:/\s]+:[^@\s/]+@"),
     re.compile(
         r"(?i)(?:[?&]|\b)(?:access[_-]?token|api[_-]?key|client[_-]?secret|"
-        r"password|passwd|refresh[_-]?token)\s*[=:]\s*[^&\s]+"
+        r"password|passwd|refresh[_-]?token)\s*[=:]\s*"
+        r"(?!(?:\[redacted\]|<redacted>|\*\*\*redacted\*\*\*|redacted)(?:[&\s]|$))[^&\s]+"
     ),
 )
 

@@ -123,6 +123,10 @@ def test_drift_first_seen_survives_etl_and_reappearance_preserves_history() -> N
         {"url": "https://ops.example/run?access_token=live-token"},
         {"tool": {"arguments": {"api_key": "live-key"}}},
         {"endpoint": "postgresql://ops:live-password@db.internal/ops"},
+        {"output": "password=[REDACTED] password=live-value"},
+        {"output": "password=[REDACTED]live-value"},
+        {"output": "password= [REDACTED]live-value"},
+        {"url": "https://ops.example/?password=[REDACTED]&api_key=live-value"},
     ],
 )
 def test_secret_bearing_evidence_is_rejected_even_if_marked_redacted(payload: dict) -> None:
@@ -178,6 +182,14 @@ def test_secret_bearing_evidence_metadata_is_rejected(field: str, value: object)
 
     with pytest.raises(ValidationError, match="unredacted secret"):
         EvidenceReference.model_validate(values)
+
+
+@pytest.mark.parametrize("marker", ["[REDACTED]", "<redacted>", "***redacted***", "redacted"])
+@pytest.mark.parametrize("suffix", ["", " --other-option", "&next=value"])
+def test_inline_redacted_assignment_is_accepted(marker: str, suffix: str) -> None:
+    from dash.ops_contract import _reject_secret_material
+
+    _reject_secret_material({"state": {"containers": {"output": f"password={marker}{suffix}"}}})
 
 
 def test_control_loop_harness_has_no_agent_or_model_dependency() -> None:
