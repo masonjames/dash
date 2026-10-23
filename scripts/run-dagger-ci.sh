@@ -33,6 +33,7 @@ chmod 400 "$public_config/config.json"
 chmod 500 "$public_config"
 unset DOCKER_AUTH_CONFIG
 export DOCKER_CONFIG="$public_config"
+export DAGGER_ENGINE="image+docker://registry.dagger.io/engine:v1.0.0-beta.21"
 
 if [[ "${RUNNER_ENVIRONMENT:-}" == "self-hosted" ]]; then
   host_guard="${DAGGER_CI_HOST_GUARD:-/usr/local/libexec/dagger-ci-host-guard}"

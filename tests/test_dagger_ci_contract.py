@@ -13,8 +13,8 @@ MODULE = ROOT / ".dagger/src/dash_ci/main.py"
 def test_dagger_pin_and_repository_bootstrap_are_exact() -> None:
     config = json.loads((ROOT / "dagger.json").read_text())
     bootstrap = (ROOT / "scripts/bootstrap-dagger.sh").read_text()
-    assert config["engineVersion"] == "v0.21.8"
-    assert 'readonly DAGGER_VERSION="0.21.8"' in bootstrap
+    assert config["engineVersion"] == "v1.0.0-beta.21"
+    assert 'readonly DAGGER_VERSION="1.0.0-beta.21"' in bootstrap
     assert "binary_checksum=" in bootstrap
     assert "command -v dagger" not in bootstrap
 

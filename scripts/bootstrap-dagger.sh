@@ -2,7 +2,7 @@
 # Install the repository-pinned Dagger CLI without modifying the host toolchain.
 set -euo pipefail
 
-readonly DAGGER_VERSION="0.21.8"
+readonly DAGGER_VERSION="1.0.0-beta.21"
 readonly ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 readonly INSTALL_ROOT="${DASH_DAGGER_INSTALL_ROOT:-$ROOT/.tools/dagger}"
 readonly TARGET_DIR="$INSTALL_ROOT/v$DAGGER_VERSION"
@@ -27,20 +27,20 @@ esac
 archive="dagger_v${DAGGER_VERSION}_${os}_${arch}.tar.gz"
 case "${os}_${arch}" in
   darwin_amd64)
-    checksum="4759befe3fa951fd2ba05551306023df7e8c7fc9eff57bb823481803cb44b215"
-    binary_checksum="414f64941f69fc44339e7148b0cfb0309d6757a6e144b06ff6652a71328c8909"
+    checksum="fdbe191c965d240ee9cc90719fa9dca1586805cbb89b0a0087314a84a0937354"
+    binary_checksum="0dfc7e18c60e2400d513b08c625e8f8b4ded53515d2dff1486c495be9441a3ea"
     ;;
   darwin_arm64)
-    checksum="f3f37a831afd53d09bf9c9a9df63492c16ad43622e5c197d9815e82f334ef1c4"
-    binary_checksum="0a0c1f2610fe60d2abef5eefdb71b6471508390185359de20d557308de83f839"
+    checksum="781f4862c022a19b9a4c498b59e1d9cfda1ee3cdc8ce210e4545bd8842a7416d"
+    binary_checksum="0646cb9491a47b5a7abc5dfb74af5bd561f498f74e3cf4b325c53a9b6cd2b7ea"
     ;;
   linux_amd64)
-    checksum="53e226c7da8fb75171e58c35759d736d961ce8b3a12db0baa7b7107954fccc5a"
-    binary_checksum="c6d08ba2edf34583844eecbf3ae0897127c0cc8377d151da56c66997cb503db2"
+    checksum="c5ac777a5c99089869660943381136e22177b59a46412e310c2fef594760a041"
+    binary_checksum="989220a1a61af238e74207f2f59ad0dfd8b00284223d93f243aa20c04cd0748a"
     ;;
   linux_arm64)
-    checksum="cd0df4885f2050082932b4abc5a6aad9a733f6aa4e7d8474740558517ffec4af"
-    binary_checksum="f07bdcc15d75e96aa78b5cc52ccb3762a36a8744eae5c35db4e34920b7b163cd"
+    checksum="ba9d55638636918a3404313511bceba5cc0af22f487c1c1b6a5ba60ce70a61bb"
+    binary_checksum="068f745b53251693f2614d51378a581cc318a677d3971bceb1e88cd96fa98b68"
     ;;
   *) echo "No admitted Dagger checksum for this platform" >&2; exit 69 ;;
 esac
@@ -57,8 +57,8 @@ version_is_exact() {
   [[ -f "$TARGET" && ! -L "$TARGET" && -x "$TARGET" ]] \
     && [[ "$(file_sha256 "$TARGET")" == "$binary_checksum" ]] \
     && "$TARGET" version 2>/dev/null | awk -v wanted="v$DAGGER_VERSION" '
-    $1 == "dagger" && $2 == wanted { found = 1 }
-    END { exit found ? 0 : 1 }
+    $1 == "version:" && $2 == wanted && NF == 2 { found++ }
+    END { exit found == 1 ? 0 : 1 }
   '
 }
 
