@@ -1,5 +1,19 @@
 # Dash Ops
 
+## Siteworthy Q4 ownership
+
+The adopted October 22, 2026 roadmap keeps Dash as an internal service for
+Dockhand's existing consumers. Siteworthy owns customer care delivery; neither
+Dash nor a replicated internal Ops stack is required for its founding beta.
+Necessary internal fixes remain in scope. Broader governed diagnosis is preserved
+in [Siteworthy's later register](https://github.com/masonjames/siteworthy/issues/80)
+and carries no new Q4 delivery commitment.
+
+[Siteworthy product roadmap](https://github.com/masonjames/siteworthy/blob/main/docs/roadmap.md) · [product tracker](https://github.com/masonjames/siteworthy/issues/1) · [platform coordination](https://github.com/masonjames/platform-infra/issues/795) · [Dockhand internal maintenance](https://github.com/masonjames/dockhand/issues/199).
+
+Siteworthy is the product name; Figaro is its display persona. These roadmap
+links do not alter Dash's read-only role or grant execution authority.
+
 Dash is a private, read-only Ops service for Dockhand. It validates canonical
 evidence, investigates operational failures, retrieves relevant canonical records,
 and evaluates verification outcomes. Dockhand owns policy, approvals, canonical
