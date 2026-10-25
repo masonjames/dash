@@ -103,6 +103,11 @@ print("sha256:" + digest.hexdigest())
 class DashCi:
     @function
     @dagger_check
+    async def verify(self, ws: dagger.Workspace) -> None:
+        """Run all CI checks; use check for the compatibility result."""
+        await self.check(ws)
+
+    @function
     async def check(self, ws: dagger.Workspace) -> str:
         """Run Ruff, mypy, pytest, and the PostgreSQL boundary proof."""
         source = self._source(ws)
