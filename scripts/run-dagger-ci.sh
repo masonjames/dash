@@ -2,6 +2,15 @@
 # Run the repository-pinned Dagger CLI with credential-isolated Docker config.
 set -euo pipefail
 
+# All Mac callers, including local shells, share the installed admission lease.
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  mac_ci_guard=/Users/masonjames/.local/libexec/dagger-ci-host-guard
+  [[ -x "$mac_ci_guard" ]] || { echo "Mac CI admission guard is not installed" >&2; exit 69; }
+  if ! "$mac_ci_guard" --check-lease >/dev/null 2>&1; then
+    exec "$mac_ci_guard" -- /bin/bash "$0" "$@"
+  fi
+fi
+
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 dagger_bin="$("$ROOT/scripts/bootstrap-dagger.sh")"
 
@@ -35,7 +44,9 @@ unset DOCKER_AUTH_CONFIG
 export DOCKER_CONFIG="$public_config"
 export DAGGER_ENGINE="image+docker://registry.dagger.io/engine:v1.0.0-beta.21"
 
-if [[ "${RUNNER_ENVIRONMENT:-}" == "self-hosted" ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
+  DAGGER_CI_BIN="$dagger_bin" "$mac_ci_guard" -- "$dagger_bin" "$@"
+elif [[ "${RUNNER_ENVIRONMENT:-}" == "self-hosted" ]]; then
   host_guard="${DAGGER_CI_HOST_GUARD:-/usr/local/libexec/dagger-ci-host-guard}"
   if [[ ! -x "$host_guard" ]]; then
     echo "Self-hosted Dagger execution requires the admitted host-wide guard" >&2
