@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 import logging
+import re
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from os import getenv
@@ -56,6 +57,39 @@ class IndexerPrivilegeError(RuntimeError):
 
 class IndexerEmbeddingError(RuntimeError):
     """The embedding pass failed; lexical-only index publication is forbidden."""
+
+    def __init__(self, message: str, *, provider_error: Exception | None = None) -> None:
+        super().__init__(message)
+        self.provider_detail: str | None = None
+        self.retryable = True
+        if provider_error is not None:
+            status = getattr(provider_error, "status_code", None)
+            error_type = _provider_error_token(getattr(provider_error, "type", None))
+            code = _provider_error_token(getattr(provider_error, "code", None))
+            fields = [f"IndexerEmbeddingError provider={type(provider_error).__name__}"]
+            if type(status) is int and 100 <= status <= 599:
+                fields.append(f"status={status}")
+            if error_type is not None:
+                fields.append(f"type={error_type}")
+            if code is not None:
+                fields.append(f"code={code}")
+            self.provider_detail = " ".join(fields)
+            self.retryable = not (status in (401, 403) or (status == 429 and error_type == "insufficient_quota"))
+
+
+def _provider_error_token(value: object) -> str | None:
+    # Provider fields are untrusted. Reject free text, keys, and oversized values.
+    if isinstance(value, str) and re.fullmatch(r"[a-zA-Z0-9_]{1,64}", value):
+        return value
+    return None
+
+
+def indexer_error_detail(error: Exception) -> str:
+    """Expose only bounded provider metadata, never arbitrary exception text."""
+
+    if isinstance(error, IndexerEmbeddingError) and error.provider_detail is not None:
+        return error.provider_detail
+    return type(error).__name__
 
 
 @dataclass(frozen=True)
@@ -285,7 +319,8 @@ async def embed_documents(
     api_key = getenv("OPENAI_API_KEY", "").strip()
     if not api_key and client is None:
         raise IndexerConfigurationError("OPENAI_API_KEY is required for non-degenerate hybrid indexing")
-    embedding_client = client or AsyncOpenAI(api_key=api_key, timeout=20.0, max_retries=2)
+    # The cycle loop owns retries so the SDK cannot retry an exhausted quota.
+    embedding_client = client or AsyncOpenAI(api_key=api_key, timeout=20.0, max_retries=0)
     embedded: list[IndexDocument] = []
     try:
         for start in range(0, len(pending), 100):
@@ -301,7 +336,9 @@ async def embed_documents(
                 replace(document, embedding=vector) for document, vector in zip(batch, vectors, strict=True)
             )
     except (OpenAIError, TimeoutError, ValueError) as exc:
-        raise IndexerEmbeddingError("embedding provider failed; index publication was aborted") from exc
+        raise IndexerEmbeddingError(
+            "embedding provider failed; index publication was aborted", provider_error=exc
+        ) from None
     return embedded
 
 
@@ -377,9 +414,10 @@ async def run_indexer() -> int:
         logger.info("Published %s fully embedded canonical retrieval documents", len(embedded))
         return len(embedded)
     except Exception as exc:
-        logger.error("Canonical retrieval indexing failed: %s", type(exc).__name__)
-        # Best-effort failure heartbeat. It contains no exception message because
-        # database/provider errors can include credentials or URLs.
+        detail = indexer_error_detail(exc)
+        logger.error("Canonical retrieval indexing failed: %s", detail)
+        # Only the bounded provider fields above may accompany the exception class.
+        # Arbitrary exception messages can include credentials or URLs.
         try:
             async with await psycopg.AsyncConnection.connect(_conninfo(), row_factory=dict_row) as conn:
                 await conn.execute(
@@ -392,8 +430,8 @@ async def run_indexer() -> int:
                         status = 'failed', indexed_at = NOW(),
                         document_count = 0, embedded_count = 0, error = EXCLUDED.error
                     """,
-                    (INDEXER_NAME, EMBEDDING_MODEL, type(exc).__name__),
+                    (INDEXER_NAME, EMBEDDING_MODEL, detail),
                 )
-        except Exception:
-            logger.exception("Unable to persist retrieval index failure heartbeat")
+        except Exception as heartbeat_error:
+            logger.error("Unable to persist retrieval index failure heartbeat: %s", type(heartbeat_error).__name__)
         raise
