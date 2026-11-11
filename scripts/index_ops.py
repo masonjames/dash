@@ -9,7 +9,7 @@ import signal
 from collections.abc import Awaitable, Callable, Sequence
 from time import monotonic
 
-from dash.ops_indexer import run_indexer
+from dash.ops_indexer import IndexerEmbeddingError, indexer_error_detail, run_indexer
 
 
 logger = logging.getLogger(__name__)
@@ -66,6 +66,7 @@ async def run_loop(
     last_count = 0
     while not stop.is_set():
         cycle_started = monotonic()
+        cooldown_seconds = 0
         for attempt, delay in enumerate((0, *retry_delays(max_retries))):
             if delay and await _wait_or_stop(stop, delay):
                 return last_count
@@ -80,10 +81,13 @@ async def run_loop(
                     "Ops index cycle attempt %s/%s failed: %s",
                     attempt + 1,
                     max_retries + 1,
-                    type(exc).__name__,
+                    indexer_error_detail(exc),
                 )
+                if isinstance(exc, IndexerEmbeddingError) and not exc.retryable:
+                    cooldown_seconds = 900
+                    break
         remaining = interval_seconds - (monotonic() - cycle_started)
-        if await _wait_or_stop(stop, max(0.0, remaining)):
+        if await _wait_or_stop(stop, max(0.0, remaining, cooldown_seconds)):
             break
     return last_count
 
