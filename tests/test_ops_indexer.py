@@ -3,11 +3,15 @@
 from __future__ import annotations
 
 import asyncio
+import traceback
 from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import AsyncMock
 
+import httpx
 import pytest
+from openai import RateLimitError
 
 from dash import ops_indexer
 
@@ -141,3 +145,68 @@ def test_indexer_source_writes_only_derived_index_and_status_tables() -> None:
         assert f"INSERT INTO {canonical_table}" not in source
         assert f"UPDATE {canonical_table}" not in source
         assert f"DELETE FROM {canonical_table}" not in source
+
+
+@pytest.mark.parametrize("heartbeat_fails", [False, True])
+@pytest.mark.parametrize("malformed_fields", [False, True])
+def test_provider_failure_detail_is_bounded_and_secret_free(
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    heartbeat_fails: bool,
+    malformed_fields: bool,
+) -> None:
+    key = "sk-test-key-must-not-appear"
+    input_text = "PRIVATE embedding input must not appear"
+    response_text = "PRIVATE response body must not appear"
+    message = f"{key} {input_text} {response_text}"
+    fields = {
+        "type": f"insufficient_quota\n{message}" if malformed_fields else "insufficient_quota",
+        "code": "x" * 4096 + message if malformed_fields else "organization_spend_limit_exceeded",
+        "message": message,
+    }
+    request = httpx.Request(
+        "POST", "https://provider.invalid/embeddings", headers={"Authorization": f"Bearer {key}"}, content=input_text
+    )
+    failure = RateLimitError(
+        message,
+        response=httpx.Response(429, request=request, headers={"x-private": key}, json={"error": fields}),
+        body=fields,
+    )
+    document = ops_indexer.build_learning_document(
+        {"id": "learning_1", "kind": "test", "lifecycle_status": "verified", "updated_at": datetime.now(UTC)}
+    )
+    connection = AsyncMock()
+    connection.__aenter__.return_value = connection
+    if heartbeat_fails:
+        connection.execute.side_effect = RuntimeError(message)
+    publish = AsyncMock()
+    monkeypatch.setattr(ops_indexer, "_config", lambda: {"OPS_INDEXER_DB_USER": "dash_ops_indexer"})
+    monkeypatch.setattr(ops_indexer, "_conninfo", lambda: "test-only")
+    monkeypatch.setattr(ops_indexer.psycopg.AsyncConnection, "connect", AsyncMock(return_value=connection))
+    monkeypatch.setattr(ops_indexer, "_verify_privileges", AsyncMock())
+    monkeypatch.setattr(ops_indexer, "_load_documents", AsyncMock(return_value=[document]))
+    monkeypatch.setattr(ops_indexer, "_replace_index", publish)
+    monkeypatch.setenv("OPENAI_API_KEY", key)
+    monkeypatch.setattr(
+        ops_indexer,
+        "AsyncOpenAI",
+        lambda **_kwargs: SimpleNamespace(embeddings=SimpleNamespace(create=AsyncMock(side_effect=failure))),
+    )
+
+    with pytest.raises(ops_indexer.IndexerEmbeddingError) as caught:
+        asyncio.run(ops_indexer.run_indexer())
+
+    expected = "IndexerEmbeddingError provider=RateLimitError status=429"
+    if not malformed_fields:
+        expected += " type=insufficient_quota code=organization_spend_limit_exceeded"
+    connection.execute.assert_awaited_once()
+    sql, parameters = connection.execute.call_args.args
+    assert "INSERT INTO ops.ops_retrieval_index_status" in sql
+    assert parameters[-1] == expected
+    assert f"Canonical retrieval indexing failed: {expected}" in caplog.text
+    assert len(parameters[-1]) < 256
+    output = caplog.text + parameters[-1] + "".join(traceback.format_exception(caught.value))
+    for private in (key, input_text, response_text, "x" * 65, "Authorization", "x-private"):
+        assert private not in output
+    assert all(record.exc_info is None for record in caplog.records)
+    publish.assert_not_awaited()
